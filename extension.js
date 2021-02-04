@@ -66,28 +66,28 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         lib.arenaReady.push(function () {
           ui.backgroundMusic.volume = lib.config.volumn_background / 8;
           setTimeout(function () {
-            ui.backgroundMusic.src = lib.assetURL + "extension/民间极略/jlsg_identity_music_image.mp3";
+            ui.backgroundMusic.src = lib.assetURL + "extension/极略/jlsg_identity_music_image.mp3";
           }, 100);
           setInterval(function () {
-            ui.backgroundMusic.src = lib.assetURL + "extension/民间极略/jlsg_identity_music_image.mp3";
+            ui.backgroundMusic.src = lib.assetURL + "extension/极略/jlsg_identity_music_image.mp3";
           }, 137000);
         });
         lib.arenaReady.push(function () {
-          ui.background.setBackgroundImage("extension/民间极略/jlsg_identity_music_image.jpg");
+          ui.background.setBackgroundImage("extension/极略/jlsg_identity_music_image.jpg");
         });
       }
       if (config.jlsg_boss_music_image && get.mode() == 'boss') {
         lib.arenaReady.push(function () {
           ui.backgroundMusic.volume = lib.config.volumn_background / 8;
           setTimeout(function () {
-            ui.backgroundMusic.src = lib.assetURL + "extension/民间极略/jlsg_boss_music_image.mp3";
+            ui.backgroundMusic.src = lib.assetURL + "extension/极略/jlsg_boss_music_image.mp3";
           }, 100);
           setInterval(function () {
-            ui.backgroundMusic.src = lib.assetURL + "extension/民间极略/jlsg_boss_music_image.mp3";
+            ui.backgroundMusic.src = lib.assetURL + "extension/极略/jlsg_boss_music_image.mp3";
           }, 168000);
         });
         lib.arenaReady.push(function () {
-          ui.background.setBackgroundImage("extension/民间极略/jlsg_boss_music_image.jpg");
+          ui.background.setBackgroundImage("extension/极略/jlsg_boss_music_image.jpg");
         });
       }
       // lib.characterReplace['caocao'].push('jlsgsr_caocao');
@@ -149,7 +149,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_qinran: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 selectTarget: [1],
@@ -282,7 +282,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return num + player.maxHp;
                   },
                 },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   player: "phaseEnd",
                 },
@@ -316,7 +316,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_lanjuan: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   player: "phaseDrawBegin",
                 },
@@ -406,7 +406,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger: {
                   player: "useCard2",
                 },
-                audio: 'ext:民间极略:2',
+                audio: 'ext:极略:2',
                 direct: true,
                 mod: {
                   maxHandcard: function (player, num) {
@@ -506,13 +506,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_longdan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 group: ['jlsg_longdan1', 'jlsg_longdan2', "jlsg_longdan3", "jlsg_longdan4"],
               },
               jlsg_longdan1: {
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: true,
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 position: "h",
                 viewAs: {
                   name: "sha",
@@ -574,7 +574,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_longdan2: {
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: true,
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 position: "h",
                 viewAs: {
                   name: "shan",
@@ -600,7 +600,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_longdan3: {
                 enable: "chooseToUse",
                 filterCard: true,
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 position: "h",
                 viewAs: {
                   name: "tao",
@@ -678,7 +678,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_longdan4: {
                 enable: "chooseToUse",
                 filterCard: true,
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 position: "h",
                 viewAs: {
                   name: "tao",
@@ -947,7 +947,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               sc_fuhun: {
-                audio: 'ext:民间极略:2',
+                audio: 'ext:极略:2',
                 trigger: { player: 'phaseDrawBegin' },
                 derivation: ['sc_wusheng', 'sc_paoxiao'],
                 priority: -10,
@@ -984,7 +984,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (get.suit(card) == 'diamond' && (_status.event.skill == 'new_rewusheng' || card.name == 'sha')) return true;
                   },
                 },
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: ["chooseToRespond", "chooseToUse"],
                 filterCard: function (card, player) {
                   if (get.zhu(player, 'shouyue')) return true;
@@ -1057,7 +1057,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               sc_paoxiao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 inherit: "paoxiao",
                 mod: {
                   targetInRange: function (card, player) {
@@ -1203,7 +1203,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_longying: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   global: "useCard",
                 },
@@ -1351,11 +1351,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           };
           if (lib.device || lib.node) {
             for (var i in jlsg_sc.character) {
-              jlsg_sc.character[i][4].push('ext:民间极略/' + i + '.jpg');
+              jlsg_sc.character[i][4].push('ext:极略/' + i + '.jpg');
             }
           } else {
             for (var i in jlsg_sc.character) {
-              jlsg_sc.character[i][4].push('db:extension-民间极略:' + i + '.jpg');
+              jlsg_sc.character[i][4].push('db:extension-极略:' + i + '.jpg');
             }
           }
           return jlsg_sc;
@@ -1642,11 +1642,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_wusheng: {
-                audio: 'ext:民间极略:true',
+                audio: 'ext:极略:true',
                 inherit: 'wusheng',
               },
               jlsg_quanlue: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: "phaseUseBegin",
                 },
@@ -1721,7 +1721,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huaiju: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: [
                     "phaseJudgeEnd",
@@ -1748,7 +1748,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huntian: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: "discardEnd" },
                 filter: function (event, player) {
                   for (var i = 0; i < event.cards.length; i++) {
@@ -1796,7 +1796,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_cangshu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: "useCard" },
                 direct: true,
                 filter: function (event, player) {
@@ -1826,11 +1826,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_kanwu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 group: ['jlsg_kanwu1', 'jlsg_kanwu2', "jlsg_kanwu3"],
               },
               jlsg_kanwu1: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filter: function (event, player) {
                   return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
@@ -1848,7 +1848,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_kanwu2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToRespond', 'chooseToUse'],
                 filter: function (event, player) {
                   return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
@@ -1864,7 +1864,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 ai: {}
               },
               jlsg_kanwu3: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filter: function (event, player) {
                   return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
@@ -1897,7 +1897,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huage: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: "phaseUse",
                 usable: 1,
                 selectTarget: -1,
@@ -1943,7 +1943,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_muyi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: "phaseBegin" },
                 filter: function (event, player) {
                   return event.player != player && event.player.countCards('he');
@@ -2002,7 +2002,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_diezhang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'useCard' },
                 frequent: true,
                 filter: function (event, player) {
@@ -2055,7 +2055,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_xiongyi1', 'jlsg_xiongyi2'],
               },
               jlsg_xiongyi1: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 forced: true,
                 priority: 10,
                 trigger: { player: 'phaseBeginStart' },
@@ -2067,7 +2067,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xiongyi2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 forced: true,
                 priority: 11,
                 trigger: { player: 'phaseBeginStart' },
@@ -2079,7 +2079,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_gangzhi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageBegin4' },
                 filter: function (event, player) {
                   return player.countCards('h') > 0;
@@ -2108,7 +2108,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_sijian: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageEnd' },
                 filter: function (event, player) {
                   return player.countCards('h') <= 0;
@@ -2132,7 +2132,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yanxi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: ['phaseBegin', 'phaseEnd'] },
                 filter: function (event, player) {
                   return player.countCards('e') <= 0;
@@ -2145,11 +2145,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhige: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 group: ["jlsg_zhige_3", "jlsg_zhige_4"],
               },
               jlsg_zhige_3: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: function () {
                   return false;
@@ -2197,7 +2197,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_zhige_4: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: function () {
                   return false;
@@ -2245,7 +2245,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_wangsi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageEnd' },
                 filter: function (event, player) {
                   return event.source && event.source.countCards('he') > 0 && event.source != player;
@@ -2281,7 +2281,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shangyi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -2330,7 +2330,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_kuangzheng: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 direct: true,
                 trigger: { player: 'phaseEnd' },
                 filter: function (event, player) {
@@ -2426,7 +2426,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_bibu2: {},
               jlsg_duanlan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -2580,7 +2580,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yaoming: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 locked: false,
                 init: function (player) {
                   player.storage.jlsg_yaoming = {
@@ -2636,7 +2636,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_yaoming1: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'useCardAfter' },
                 filter: function (event, player) {
                   return player.storage.jlsg_yaoming.suits.length == 2;
@@ -2661,7 +2661,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yaoming2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'useCardAfter' },
                 filter: function (event, player) {
                   return player.storage.jlsg_yaoming.suits.length == 3 && player.canMoveCard();
@@ -2679,7 +2679,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yaoming3: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'useCardAfter' },
                 filter: function (event, player) {
                   return player.storage.jlsg_yaoming.suits.length == 4;
@@ -2706,7 +2706,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_kuangfu: {
                 trigger: { source: 'damageEnd' },
                 direct: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event) {
                   if (event._notrigger.contains(event.player)) return false;
                   return event.card && event.card.name == 'sha' && event.player.countCards('e');
@@ -2730,7 +2730,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhoufu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   return player.num('h') > 0 && event.player != player;
@@ -2806,7 +2806,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_yingbing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 trigger: { global: 'judgeEnd' },
                 filter: function (event, player) {
@@ -2857,7 +2857,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_tuodao: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { target: 'shaMiss' },
                 filter: function (event, player) {
                   return get.distance(player, event.player, 'attack') <= 1;
@@ -2887,7 +2887,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_hemeng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return player.countCards('h') && player.storage.jlsg_hemeng_usable;
@@ -2931,7 +2931,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_sujian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'gainEnd' },
                 filter: function (event, player) {
                   return (event.cards[0].original == 'h' || event.cards[0].original == 'e' || event.cards[0].original == 'j');
@@ -2956,7 +2956,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yexi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseAfter' },
                 filter: function (event, player) {
                   return player.countCards('h') > 0;
@@ -3079,7 +3079,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_kuangyan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 priority: -1,
                 trigger: { player: 'damageBegin3' },
                 filter: function (event, player) {
@@ -3104,7 +3104,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: 'jlsg_kuangyan2'
               },
               jlsg_kuangyan2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageBegin3' },
                 filter: function (event, player) {
                   return event.num >= 2;
@@ -3125,7 +3125,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_chaochen: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 enable: 'phaseUse',
                 filterCard: true,
@@ -3160,7 +3160,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_chaochen2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 mark: true,
                 marktext: '朝',
                 intro: {
@@ -3178,7 +3178,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_quanzheng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { target: 'useCardToBefore' },
                 filter: function (event, player) {
                   if (event.player == player) return false;
@@ -3192,7 +3192,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shejian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return !player.get('e', '2');
@@ -3226,7 +3226,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_shejian2: {},
               jlsg_kuangao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { target: 'shaAfter' },
                 filter: function (event, player) {
                   return player.countCards('he');
@@ -3269,7 +3269,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yinbing: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'shaBegin' },
                 filter: function (event, player) {
                   return get.distance(player, event.target, 'attack') <= 1 && event.target != player && event.player != player && event.target.countCards('e');
@@ -3292,7 +3292,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_yinbing2'],
               },
               jlsg_yinbing2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { target: 'shaBefore' },
                 filter: function (event, player) {
                   return player.countCards('he') > 0 && player.isDamaged();
@@ -3314,7 +3314,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_fenwei: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { source: 'damageBegin1' },
                 filter: function (event, player) {
                   return event.card && event.card.name == 'sha' && event.notLink() && event.player.countCards('h');
@@ -3338,7 +3338,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_shiyong: {
                 trigger: { player: 'damageEnd' },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 filter: function (event) {
                   if (event.card && (event.card.name == 'sha')) {
                     if (get.color(event.card) == 'red') return true;
@@ -3373,7 +3373,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_angyang: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: ['shaBefore', 'juedouBefore'] },
                 filter: function (event, player) {
                   if (event.card.name == 'juedou') return true;
@@ -3400,7 +3400,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: 'jlsg_angyang2'
               },
               jlsg_angyang2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { target: ['shaBefore', 'juedouBefore'] },
                 filter: function (event, player) {
                   if (event.card.name == 'juedou') return true;
@@ -3426,7 +3426,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_weifeng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseBegin' },
                 filter: function (event, player) {
                   return player.countCards('h') < player.hp && player.countCards('h') > 0;
@@ -3456,7 +3456,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xieli: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 zhuSkill: true,
                 trigger: { player: 'chooseToCompareBegin' },
                 filter: function (event, player) {
@@ -3531,7 +3531,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jushou: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseEnd' },
                 check: function (event, player) {
                   var num = 0;
@@ -3558,7 +3558,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 inherit: 'yicong'
               },
               jlsg_muma: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'loseAfter' },
                 forced: true,
                 filter: function (event, player) {
@@ -3579,7 +3579,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_suiji: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseDiscardBegin' },
                 filter: function (event, player) {
                   return event.player != player;
@@ -3632,7 +3632,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_fengyi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { target: 'useCardToBefore' },
                 filter: function (event, player) {
                   return get.type(event.card) == 'trick' && event.targets.length == 1;
@@ -3654,7 +3654,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yalv: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: ['damageEnd', 'phaseUseBegin'] },
                 frequent: true,
                 content: function () {
@@ -3676,7 +3676,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xiemu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseBegin' },
                 direct: true,
                 content: function () {
@@ -3718,7 +3718,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_xiemu2: {
                 trigger: { global: 'phaseEnd' },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 filter: function (event, player) {
                   return event.player.hasSkill('jlsg_xiemu3');
                 },
@@ -3736,7 +3736,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_xiemu3: {},
               jlsg_zhejie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseDiscardEnd' },
                 filter: function (event, player) {
                   return event.player != player && player.countCards('h') > 0;
@@ -3778,7 +3778,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_fengya: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'damageBegin3' },
                 frequent: true,
                 filter: function (event) {
@@ -3814,7 +3814,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yijian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseUseBefore' },
                 direct: true,
                 content: function () {
@@ -3862,7 +3862,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_feijun: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseUseBegin' },
                 forced: true,
                 content: function () {
@@ -3894,7 +3894,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_muniu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'loseAfter' },
                 filter: function (event, player) {
                   if (_status.currentPhase != player) return false;
@@ -3964,7 +3964,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_liuma: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 usable: 1,
                 enable: 'phaseUse',
                 filterCard: function (card) {
@@ -4015,7 +4015,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_baozheng: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseEnd' },
                 forced: true,
                 priority: 10,
@@ -4063,7 +4063,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_lingnu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseEnd' },
                 forced: true,
                 priority: 9,
@@ -4110,7 +4110,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhongyong: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseBeginStart' },
                 check: function (event, player) {
                   return (!player.hasJudge('lebu') || !player.hasJudge('bingliang')) && (player.hp >= 2 || player.hasCard('tao', 'h')) &&
@@ -4202,7 +4202,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_bozhan: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'shaMiss', target: 'shaMiss' },
                 forced: true,
                 content: function () {
@@ -4210,7 +4210,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_qingxi: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'shaBegin' },
                 forced: true,
                 filter: function (event, player) {
@@ -4221,7 +4221,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_danshou: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   target: "shaBegin",
                 },
@@ -4243,7 +4243,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_yonglie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'damageEnd' },
                 filter: function (event, player) {
                   return event.card && event.card.name == 'sha' && event.notLink() && get.distance(player, event.player, 'attack') <= 1 && event.source && event.source.isAlive();
@@ -4264,7 +4264,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_hengshi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseDiscardBegin' },
                 frequent: true,
                 filter: function (event, player) {
@@ -4293,7 +4293,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhijiao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseEnd' },
                 unique: true,
                 direct: true,
@@ -4404,7 +4404,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jiwux: {
-                audio: "ext:民间极略:3",
+                audio: "ext:极略:3",
                 trigger: { player: 'phaseUseBegin' },
                 filter: function (event, player) {
                   return player.countCards('h', 'sha') > 0;
@@ -4533,7 +4533,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 // }
               },
               jlsg_daoshi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseEnd' },
                 filter: function (event, player) {
                   return event.player.countCards('e') > 0;
@@ -4566,7 +4566,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_lirang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   if (event.player.countCards('h') == 0) return false;
@@ -4656,7 +4656,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   backup: function (links, player) {
                     return {
-                      audio: "ext:民间极略:2",
+                      audio: "ext:极略:2",
                       filterCard: function () {
                         return false
                       },
@@ -4688,7 +4688,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xianshi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageBegin3' },
                 filter: function (event, player) {
                   return (event.source != undefined);
@@ -4729,11 +4729,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_chengxiang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 inherit: 'chengxiang',
               },
               jlsg_renxin: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'dying' },
                 priority: 6,
                 filter: function (event, player) {
@@ -4759,7 +4759,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_midao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -4830,7 +4830,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yishe: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -4864,7 +4864,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_pudu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 unique: true,
                 enable: 'phaseUse',
                 skillAnimation: true,
@@ -4980,7 +4980,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zongqing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseDrawBegin' },
                 check: function (event, player) {
                   if (player.isDamaged() && player.countCards('h', { color: 'red' })) return 2;
@@ -5058,7 +5058,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_bugua: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'judgeBefore' },
                 content: function () {
                   'step 0'
@@ -5130,7 +5130,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_bugua2', 'jlsg_bugua3'],
               },
               jlsg_bugua2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { global: 'judgeAfter' },
                 filter: function (event, player) {
                   return (get.color(event.result.card) == 'red');
@@ -5148,7 +5148,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_bugua3: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { global: 'judgeAfter' },
                 filter: function (event, player) {
                   return (get.color(event.result.card) == 'black') && event.player.countCards('he');
@@ -5166,7 +5166,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhaoxin: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageEnd' },
                 filter: function (event, player) {
                   var suits = ['heart', 'club', 'spade', 'diamond'];
@@ -5191,7 +5191,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhihe: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 enable: 'phaseUse',
                 filter: function (event, player) {
@@ -5249,7 +5249,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_caijie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseBegin' },
                 check: function (event, player) {
                   var cards = player.get('h');
@@ -5284,7 +5284,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jilei: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'damageEnd' },
                 check: function (event, player) {
                   return get.attitude(player, event.source) < 0;
@@ -5333,7 +5333,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_yanliang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   return player.countCards('he');
@@ -5390,7 +5390,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_duzhi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'recoverEnd' },
                 direct: true,
                 content: function () {
@@ -5447,7 +5447,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                 },
                 group: "jlsg_lieyi1",
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   player: ["useCard1"],
                 },
@@ -5465,7 +5465,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (card.name == 'shan') return 'jiu';
                   },
                 },
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: {
                   player: ["useCard1"],
                 },
@@ -5478,7 +5478,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_baoli: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 enable: 'phaseUse',
                 filterTarget: function (card, player, target) {
@@ -5495,7 +5495,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_huanbing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { target: 'shaBefore' },
                 // filter: function (event, player) {
                 //   if (get.itemtype(event.card) != 'card') return false;
@@ -5530,7 +5530,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: 'jlsg_huanbing2'
               },
               jlsg_huanbing2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseBegin' },
                 filter: function (event, player) {
                   return player.storage.jlsg_huanbing.length;
@@ -5603,7 +5603,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   usable: 1,
               //   filterCard: true,
               //   selectCard: 2,
-              //   audio: "ext:民间极略:1",
+              //   audio: "ext:极略:1",
               //   position: 'h',
               //   check: function (card) {
               //     return 7 - get.value(card);
@@ -5726,7 +5726,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huaqiang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 enable: 'phaseUse',
                 filter: function (event, player) {
@@ -5765,7 +5765,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_chaohuang: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 usable: 1,
                 enable: 'phaseUse',
                 filterTarget: function (card, player, target) {
@@ -5793,7 +5793,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_zhishi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: "phaseUse",
                 usable: 1,
@@ -5855,7 +5855,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huilian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 usable: 1,
                 enable: 'phaseUse',
                 filterTarget: function (card, player, target) {
@@ -5888,7 +5888,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_wenliang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'judgeAfter' },
                 frequent: true,
                 filter: function (event, player) {
@@ -5899,7 +5899,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_qianhuan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: ['phaseBegin', 'enterGame'],
                   global: 'gameDrawBegin',
@@ -6254,7 +6254,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_jinglun: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'useCard' },
                 frequent: true,
                 nodelay: true,
@@ -6288,7 +6288,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_ruzong: {
                 srlose: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return player.countCards('h', 'wuxie') > 0;
@@ -6322,7 +6322,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   backup: function (links, player) {
                     return {
                       filterCard: { name: 'wuxie' },
-                      audio: "ext:民间极略:4",
+                      audio: "ext:极略:4",
                       popname: true,
                       ai1: function (card) {
                         return 8 - ai.get.value(card);
@@ -6346,7 +6346,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_ruzong_sha', 'jlsg_ruzong_shan', 'jlsg_ruzong_tao'],
                 subSkill: {
                   sha: {
-                    audio: "ext:民间极略:4",
+                    audio: "ext:极略:4",
                     enable: ['chooseToRespond', 'chooseToUse'],
                     filterCard: { name: 'wuxie' },
                     viewAs: { name: 'sha' },
@@ -6369,7 +6369,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   },
                   shan: {
-                    audio: "ext:民间极略:4",
+                    audio: "ext:极略:4",
                     enable: ['chooseToRespond', 'chooseToUse'],
                     filterCard: { name: 'wuxie' },
                     viewAs: { name: 'shan' },
@@ -6392,7 +6392,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   },
                   tao: {
-                    audio: "ext:民间极略:4",
+                    audio: "ext:极略:4",
                     enable: ['chooseToUse'],
                     filterCard: { name: 'wuxie' },
                     viewAs: { name: 'tao' },
@@ -6417,7 +6417,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_leiji: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: ["useCard", "respond"], },
                 mark: true,
                 marktext: "祭",
@@ -6473,7 +6473,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shanxi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'judgeEnd' },
                 forced: true,
                 filter: function (event, player) {
@@ -6547,7 +6547,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guhuo: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   return player != event.player && event.player.countCards('h') && player.countCards('h') && !event.player.hasSkill("jlsg_chanyuan");
@@ -6744,7 +6744,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_gongshen: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 filterCard: true,
                 selectCard: 3,
@@ -6784,7 +6784,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jianyue: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseEnd' },
                 filter: function (event, player) {
                   if (ui.discardPile.hasChildNodes() == false) return false;
@@ -6815,7 +6815,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_pengri: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 selectTarget: -1,
                 usable: 1,
@@ -6858,7 +6858,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_danmou: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageAfter' },
                 filter: function (event) {
                   return event.source && event.player && event.player.isAlive() && event.source.isAlive() && event.source != event.player;
@@ -6897,7 +6897,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_fushe: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseUseBegin' },
                 filter: function (event, player) {
                   return get.distance(player, event.player, 'attack') <= 1 && event.player != player;
@@ -7019,7 +7019,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_ziguo: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -7068,7 +7068,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shangdao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseZhunbeiBegin' },
                 filter: function (event, player) {
                   return event.player.countCards('h') > player.countCards('h');
@@ -7081,7 +7081,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_hengjiang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseDiscardBegin' },
                 filter: function (event, player) {
                   return player.countCards('h') >= player.maxHp;
@@ -7212,7 +7212,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_zhuanshan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: ['phaseBegin', 'phaseEnd'] },
                 direct: true,
                 content: function () {
@@ -7292,7 +7292,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhenlie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { target: 'useCardToBefore' },
                 filter: function (event, player) {
                   return event.player != player && event.card && (event.card.name == 'sha' || get.type(event.card, 'trick') == 'trick');
@@ -7370,7 +7370,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_miji: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: ['phaseBegin', 'phaseEnd'] },
                 filter: function (event, player, name) {
                   if (name == 'phaseBegin') {
@@ -7805,11 +7805,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           };
           if (lib.device || lib.node) {
             for (var i in jlsg_sk.character) {
-              jlsg_sk.character[i][4].push('ext:民间极略/' + i + '.jpg');
+              jlsg_sk.character[i][4].push('ext:极略/' + i + '.jpg');
             }
           } else {
             for (var i in jlsg_sk.character) {
-              jlsg_sk.character[i][4].push('db:extension-民间极略:' + i + '.jpg');
+              jlsg_sk.character[i][4].push('db:extension-极略:' + i + '.jpg');
             }
           }
           return jlsg_sk;
@@ -7866,7 +7866,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 silent: true,
                 filter: function (event, player) {
                   // if (player == game.me) return false;
-                  if (!lib.config.extension_民间极略_srlose) return false;
+                  if (!lib.config.extension_极略_srlose) return false;
 
                   if (get.itemtype(player) != 'player') return false;
                   var names = [];
@@ -7942,7 +7942,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_langxing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 trigger: { player: 'phaseDrawBefore' },
                 check: function (event, player) {
@@ -7963,7 +7963,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_langxing2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: 'phaseUse',
                 viewAs: { name: 'juedou' },
                 filterCard: function (card, player) {
@@ -7982,7 +7982,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_hubu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'damageEnd', source: 'damageEnd' },
                 filter: function (event) {
@@ -8023,7 +8023,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger: {
                   player: "judgeAfter",
                 },
-                audio: 'ext:民间极略:true',
+                audio: 'ext:极略:true',
                 forced: true,
                 filter: function (event, player) {
                   return (get.color(event.result.card) == 'black');
@@ -8038,7 +8038,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger: {
                   player: "judgeAfter",
                 },
-                audio: 'ext:民间极略:true',
+                audio: 'ext:极略:true',
                 forced: true,
                 filter: function (event, player) {
                   return (get.color(event.result.card) == 'red');
@@ -8050,7 +8050,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_shuangxiong: {
-                //audio:"ext:民间极略:2",
+                //audio:"ext:极略:2",
                 trigger: {
                   player: ["juedouBefore"],
                   target: ["juedouBefore"],
@@ -8066,7 +8066,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_shuangxiong1: {
                 enable: ["chooseToRespond"],
                 filterCard: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 position: "he",
                 viewAs: { name: "sha", },
                 viewAsFilter: function (player) {
@@ -8089,7 +8089,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_wuwei: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseDrawBegin' },
                 priority: -1,
@@ -8159,7 +8159,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yansha: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { player: 'phaseDrawBefore' },
                 check: function (event, player) {
@@ -8201,7 +8201,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yansha2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { global: 'shaBegin' },
                 filter: function (event, player) {
                   return player.storage.jlsg_yansha2.length > 0 && event.player.countCards('he') > 0;
@@ -8426,7 +8426,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               // jlsg_lingbo: {
-              //   audio: "ext:民间极略:1",
+              //   audio: "ext:极略:1",
               //   srlose: true,
               //   group: ['jlsg_lingbo1', 'jlsg_lingbo2'],
               // },
@@ -8499,7 +8499,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   },
               // },
               // jlsg_liuyun: {
-              //   audio: "ext:民间极略:2",
+              //   audio: "ext:极略:2",
               //   srlose: true,
               //   enable: 'phaseUse',
               //   usable: 1,
@@ -8554,11 +8554,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   },
               // },
               // jlsg_qingcheng_yang: {
-              //   audio: "ext:民间极略:1",
+              //   audio: "ext:极略:1",
               //   group: ['jlsg_qingcheng_yang1', 'jlsg_qingcheng_yang2'],
               // },
               // jlsg_qingcheng_yang1: {
-              //   audio: "ext:民间极略:true",
+              //   audio: "ext:极略:true",
               //   enable: ['chooseToUse', 'chooseToRespond'],
               //   filterCard: function () {
               //     return false;
@@ -8630,7 +8630,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
               // },
               // jlsg_qingcheng_yang2: {
-              //   audio: "ext:民间极略:true",
+              //   audio: "ext:极略:true",
               //   enable: ["chooseToUse", "chooseToRespond"],
               //   filterCard: function () {
               //     return false;
@@ -8662,11 +8662,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   }
               // },
               // jlsg_qingcheng_yin: {
-              //   audio: "ext:民间极略:1",
+              //   audio: "ext:极略:1",
               //   group: ['jlsg_qingcheng_yin1', 'jlsg_qingcheng_yin2'],
               // },
               // jlsg_qingcheng_yin1: {
-              //   audio: "ext:民间极略:true",
+              //   audio: "ext:极略:true",
               //   enable: ['chooseToUse', 'chooseToRespond'],
               //   filterCard: function () {
               //     return false;
@@ -8738,7 +8738,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
               // },
               // jlsg_qingcheng_yin2: {
-              //   audio: "ext:民间极略:true",
+              //   audio: "ext:极略:true",
               //   enable: ["chooseToUse", "chooseToRespond"],
               //   filterCard: function () {
               //     return false;
@@ -8770,7 +8770,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   }
               // },
               jlsg_aozhan: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 marktext: '战',
                 frequent: true,
@@ -8796,7 +8796,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_aozhan2']
               },
               jlsg_aozhan2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -8844,7 +8844,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_huxiao: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { source: 'damageBegin1' },
                 filter: function (event, player) {
@@ -8877,7 +8877,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_huxiao: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { source: 'damageBegin1' },
                 filter: function (event, player) {
@@ -8930,7 +8930,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guicai: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'judge' },
                 check: function (event, player) {
@@ -8997,7 +8997,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_langgu: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { player: 'damageEnd' },
                 check: function (event, player) {
@@ -9032,7 +9032,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_langgu2']
               },
               jlsg_langgu2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { source: 'damageEnd' },
                 check: function (event, player) {
                   return get.attitude(player, event.player) <= 0;
@@ -9069,7 +9069,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_zhuizun: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 enable: 'chooseToUse',
                 mark: true,
@@ -9147,7 +9147,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_tianshang: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 unique: true,
                 trigger: { player: 'dieBegin' },
@@ -9173,7 +9173,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (player.hasSkill('jlsg_huiqu')) {
                       target.addSkill('jlsg_huiqu');
                     } else {
-                      if (lib.config["extension_民间极略_oldCharacterReplace"]) {
+                      if (lib.config["extension_极略_oldCharacterReplace"]) {
                         target.addSkill('jlsg_old_yiji');
                       } else {
                         target.addSkill('jlsg_yiji');
@@ -9188,12 +9188,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_yiji: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 inherit: 'yiji'
               },
               jlsg_old_yiji: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: {
                   player: "damageEnd",
@@ -9286,7 +9286,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huiqu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseBeginStart' },
                 direct: true,
@@ -9428,7 +9428,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_jiwu: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -9472,7 +9472,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 subSkill: {
                   buff1: {
-                    audio: "ext:民间极略:true",
+                    audio: "ext:极略:true",
                     trigger: { source: 'damageBegin' },
                     filter: function (event) {
                       return event.card && event.card.name == 'sha' && event.notLink();
@@ -9483,7 +9483,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   },
                   buff2: {
-                    //audio:"ext:民间极略:true",
+                    //audio:"ext:极略:true",
                     trigger: { player: 'useCardAfter', global: 'phaseAfter' },
                     priority: 2,
                     filter: function (event) {
@@ -9532,7 +9532,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_sheji: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { global: 'damageEnd' },
                 filter: function (event, player) {
@@ -9583,7 +9583,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_sheji2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: { type: 'equip' },
                 viewAs: { name: 'sha' },
@@ -9609,7 +9609,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xingyi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 srlose: true,
@@ -9644,7 +9644,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guagu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'dying' },
                 priority: 6,
@@ -9685,7 +9685,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_wuqin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseEnd' },
                 filter: function (event, player) {
@@ -9721,7 +9721,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_lijian: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -9769,7 +9769,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_manwu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -9805,7 +9805,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_baiyue: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 trigger: { player: 'phaseEnd' },
                 filter: function (event, player) {
@@ -9870,7 +9870,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yinmeng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 marktext: "盟",
@@ -10001,7 +10001,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xianger: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: {
                   global: "phaseBegin",
@@ -10071,7 +10071,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_juelie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -10109,7 +10109,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xiwu: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { player: 'shaMiss' },
                 priority: -1,
@@ -10124,7 +10124,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_fangxin: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: 'chooseToUse',
                 discard: false,
@@ -10183,7 +10183,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 check: function (event, player) {
                   return get.attitude(player, event.player) > 0;
                 },
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event, player) {
                   if (event.type == 'dying') {
                     return event.filterCard({ name: 'tao' }, player) && ((!player.hasJudge('lebu') && player.countCards('he', { suit: 'diamond' })) || (!player.hasJudge('bingliang') && player.countCards('he', { suit: 'club' })));
@@ -10234,7 +10234,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xiyu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseBegin' },
                 direct: true,
@@ -10326,7 +10326,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhouyan: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 usable: 1,
                 enable: 'phaseUse',
@@ -10396,7 +10396,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhaxiang: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 enable: 'phaseUse',
                 filterCard: true,
@@ -10500,7 +10500,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_zhaxiang: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: "phaseUse",
                 usable: 1,
                 srlose: true,
@@ -10533,7 +10533,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shixue: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'shaBegin' },
                 frequent: true,
@@ -10551,7 +10551,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guoshi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 trigger: { global: 'phaseEnd' },
                 filter: function (event, player) {
@@ -10635,7 +10635,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guoshi2: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseBegin' },
                 prompt: '是否发动【国士】观看牌顶的牌？',
                 frequent: true,
@@ -10810,7 +10810,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yingcai: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { player: 'phaseDrawBegin' },
                 check: function () {
@@ -10851,7 +10851,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_yingcai: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseDrawBegin' },
                 check: function () {
@@ -10883,7 +10883,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_weibao: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -10949,7 +10949,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_choulve: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -11026,7 +11026,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_jiexi: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 enable: "phaseUse",
                 filterTarget: function (card, player, target) {
@@ -11090,7 +11090,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_youxia: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -11125,7 +11125,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jiexi: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 usable: 1,
                 enable: 'phaseUse',
@@ -11231,7 +11231,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_youxia: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: 'phaseUse',
                 filterTarget: function (card, target, player) {
@@ -11272,7 +11272,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   global: "useCardToPlayered",
                 },
                 srlose: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 filter: function (event, player) {
                   if (event.player == player) return false;
                   if (event.getParent().triggeredTargets3.length > 1) return false;
@@ -11311,7 +11311,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_dailao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 group: "jlsg_dailao2",
                 srlose: true,
                 enable: ["chooseToUse", "chooseToRespond"],
@@ -11379,7 +11379,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_dailao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 srlose: true,
                 enable: 'phaseUse',
@@ -11429,7 +11429,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_youdi: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 enable: ['chooseToRespond', 'chooseToUse'],
                 filterCard: function () {
@@ -11476,7 +11476,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_ruya: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 srlose: true,
                 trigger: { player: 'loseAfter' },
                 frequent: true,
@@ -11505,7 +11505,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_youdi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: ['chooseToUse', 'chooseToRespond'],
                 filterCard: function () {
@@ -11554,7 +11554,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_ruya: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'loseEnd' },
                 frequent: true,
@@ -11582,7 +11582,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_quanheng: {
                 srlose: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -11619,7 +11619,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return {
                       filterCard: true,
                       selectCard: [1, Infinity],
-                      audio: "ext:民间极略:1",
+                      audio: "ext:极略:1",
                       popname: true,
                       ai1: function (card) {
                         if (ui.selected.cards.length > 0) return -1;
@@ -11694,7 +11694,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xionglve: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 marktext: '略',
                 trigger: { player: 'phaseDrawBegin' },
@@ -11730,7 +11730,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_xionglve2'],
               },
               jlsg_xionglve2: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return player.storage.jlsg_xionglve.length > 0;
@@ -11920,7 +11920,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                                 return false
                               },
                               selectCard: -1,
-                              audio: "ext:民间极略:1",
+                              audio: "ext:极略:1",
                               popname: true,
                               viewAs: { name: links[0][2] },
                               onuse: function (result, player) {
@@ -11986,7 +11986,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_fuzheng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 unique: true,
                 zhuSkill: true,
                 group: ['jlsg_fuzheng2'],
@@ -12102,7 +12102,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_tuwei: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'useCardToAfter' },
                 filter: function (event, player) {
@@ -12154,7 +12154,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xujin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseDrawBefore' },
                 content: function () {
@@ -12237,7 +12237,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_paoxiao: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { source: 'damageAfter' },
                 filter: function (event, player) {
@@ -12260,7 +12260,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_benxi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'shaBegin' },
                 forced: true,
@@ -12285,7 +12285,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yaozhan: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -12339,7 +12339,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_wenjiu: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -12380,7 +12380,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_wenjiu2: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'shaBegin' },
                 filter: function (event, player) {
                   return player.storage.jlsg_wenjiu.length;
@@ -12430,7 +12430,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shuixi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'phaseBegin' },
                 filter: function (event, player) {
@@ -12490,7 +12490,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_sanfen: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -12531,7 +12531,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_guanxing: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: ['phaseBegin', 'phaseEnd'] },
                 frequent: true,
@@ -12728,7 +12728,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_weiwo: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'damageBegin' },
                 filter: function (event, player) {
@@ -12770,7 +12770,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shouji: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -12855,7 +12855,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_hemou: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
@@ -12997,7 +12997,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_qicai: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { player: 'loseEnd' },
                 frequent: true,
@@ -13032,7 +13032,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_rende: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'phaseEnd' },
                 filter: function (event, player) {
@@ -13077,7 +13077,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_chouxi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 usable: 1,
                 srlose: true,
                 enable: 'phaseUse',
@@ -13156,7 +13156,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_yongbing: {
                 unique: true,
-                audio: 'ext:民间极略:true',
+                audio: 'ext:极略:true',
                 zhuSkill: true,
                 global: 'jlsg_yongbing2'
               },
@@ -13199,7 +13199,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhaoxiang: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 trigger: { global: 'shaBegin' },
                 filter: function (event, player) {
@@ -13275,7 +13275,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhishi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 srlose: true,
                 enable: 'phaseUse',
                 usable: 1,
@@ -13314,7 +13314,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_jianxiong: {
                 unique: true,
-                audio: 'ext:民间极略:true',
+                audio: 'ext:极略:true',
                 global: 'jlsg_jianxiong2',
                 zhuSkill: true,
               },
@@ -13363,7 +13363,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //     global: ["useCardBegin", "respondBegin"],
               //   },
               //   direct: true,
-              //   audio: "ext:民间极略:1",
+              //   audio: "ext:极略:1",
               //   srlose: true,
               //   filter: function (event, player) {
               //     return event.skill == 'jlsg_zhonghou_phaseUse_backup' || event.skill == 'jlsg_zhonghou_sha' || event.skill == 'jlsg_zhonghou_shan' || event.skill == 'jlsg_zhonghou_tao';
@@ -13419,7 +13419,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   global: ["jlsg_zhonghou_phaseUse", "jlsg_zhonghou_sha", "jlsg_zhonghou_shan", "jlsg_zhonghou_tao"],
               //   subSkill: {
               //     phaseUse: {
-              //       audio: "ext:民间极略:2",
+              //       audio: "ext:极略:2",
               //       usable: 1,
               //       enable: "phaseUse",
               //       filter: function (event, player) {
@@ -13485,7 +13485,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //               return false;
               //             },
               //             selectCard: -1,
-              //             //audio:"ext:民间极略:true",
+              //             //audio:"ext:极略:true",
               //             //usable:1,
               //             viewAs: { name: links[0][2] }
               //           }
@@ -13503,7 +13503,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //       },
               //     },
               //     sha: {
-              //       audio: "ext:民间极略:2",
+              //       audio: "ext:极略:2",
               //       enable: ["chooseToUse", "chooseToRespond"],
               //       filterCard: function () {
               //         return false;
@@ -13541,7 +13541,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //       },
               //     },
               //     shan: {
-              //       audio: "ext:民间极略:2",
+              //       audio: "ext:极略:2",
               //       enable: ["chooseToRespond", "chooseToUse"],
               //       filterCard: function () {
               //         return false;
@@ -13562,7 +13562,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //       ai: {},
               //     },
               //     tao: {
-              //       audio: "ext:民间极略:2",
+              //       audio: "ext:极略:2",
               //       enable: "chooseToUse",
               //       filter: function (event, player) {
               //         if (event.parent.name == 'phaseUse') return false;
@@ -13763,7 +13763,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_ganglie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseUseBegin' },
                 srlose: true,
                 check: function (event, player) {
@@ -13790,7 +13790,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   },
                   phaseEnd: {
-                    audio: "ext:民间极略:2",
+                    audio: "ext:极略:2",
                     trigger: { player: 'phaseEnd' },
                     forced: true,
                     filter: function (event, player) {
@@ -14078,11 +14078,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
           if (lib.device || lib.node) {
             for (var i in jlsg_sr.character) {
-              jlsg_sr.character[i][4].push('ext:民间极略/' + i + '.jpg');
+              jlsg_sr.character[i][4].push('ext:极略/' + i + '.jpg');
             }
           } else {
             for (var i in jlsg_sr.character) {
-              jlsg_sr.character[i][4].push('db:extension-民间极略:' + i + '.jpg');
+              jlsg_sr.character[i][4].push('db:extension-极略:' + i + '.jpg');
             }
           }
           return jlsg_sr;
@@ -14125,7 +14125,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             characterIntro: {},
             skill: {
               jlsg_chanxian: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 unique: true,
@@ -14194,7 +14194,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_qimen: {
                 group: ['jlsg_qimen2'],
                 mark: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 unique: true,
                 init: function (player) {
                   player.storage.jlsg_qimen = 4;
@@ -14207,7 +14207,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_qimen2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: {
                   player: ["changeHp", "enterGame"],
                   global: 'gameDrawBegin'
@@ -14267,7 +14267,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player: "phaseBegin",
                 },
                 direct: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 unique: true,
                 mark: true,
                 marktext: "遁",
@@ -14325,7 +14325,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_qimen_2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: ["changeHp"],
                 },
@@ -14382,7 +14382,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player: ["damageBegin4", "loseHpBegin4"],
                 },
                 forced: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 //priority:-999999,
                 filter: function (event) {
                   return event.num > 1;
@@ -14393,11 +14393,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
 
               jlsg_guixin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 group: ['jlsg_guixin1', 'jlsg_guixin2'],
               },
               jlsg_guixin1: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'damageEnd' },
                 filter: function (event, player) {
                   return game.countPlayer() > 4;
@@ -14465,7 +14465,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_guixin2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'damageEnd' },
                 filter: function (event, player) {
                   return game.countPlayer() <= 4;
@@ -14540,7 +14540,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_huju: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   return event.player != player;
@@ -14553,7 +14553,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_huju2'],
               },
               jlsg_huju2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'phaseBegin' },
                 filter: function (event, player) {
                   var num = player.countCards('h');
@@ -14584,7 +14584,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_hufu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -14604,7 +14604,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_yanmie: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return player.countCards('he', { suit: 'spade' }) > 0;
@@ -14646,7 +14646,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shunshi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { target: 'useCardToBegin' },
                 filter: function (event, player) {
                   return event.player != player && get.type(event.card) == 'basic';
@@ -14692,7 +14692,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_junwang: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseUseBegin' },
                 forced: true,
                 filter: function (event, player) {
@@ -14715,7 +14715,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jizhao: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: "phaseUse",
                 filterCard: true,
                 selectCard: [1, Infinity],
@@ -14767,7 +14767,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_jizhao_zhao: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   player: "phaseEnd",
                 },
@@ -14788,7 +14788,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_xingchen: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'gameDrawAfter', player: 'phaseBegin' },
                 forced: true,
                 check: function (event, player) {
@@ -14837,7 +14837,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_xingchen2: {
                 trigger: { player: 'phaseDrawAfter' },
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 direct: true,
                 filter: function (event, player) {
                   return player.storage.jlsg_xingchen && player.storage.jlsg_xingchen.length;
@@ -14880,7 +14880,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_kuangfeng: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseBegin' },
                 direct: true,
                 filter: function (event, player) {
@@ -14967,7 +14967,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 filter: function (event, player) {
                   return player.storage.jlsg_xingchen && player.storage.jlsg_xingchen.length;
                 },
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 content: function () {
                   "step 0"
                   player.chooseTarget('选择角色获得大雾标记',
@@ -15056,7 +15056,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jilve: {
-                audio: "ext:民间极略:3",
+                audio: "ext:极略:3",
                 enable: 'phaseUse',
                 filter: function (event, player) {
                   return !player.hasSkill('jlsg_jilve2');
@@ -15088,7 +15088,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_jilve2: {},
               jlsg_tongtian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 srlose: true,
                 enable: 'phaseUse',
                 unique: true,
@@ -15190,14 +15190,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tongtian_wu: {
                 unique: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
 
                 mark: true,
                 marktext: "吴",
                 intro: {
                   content: "出牌阶段1次，你可以弃置任意张牌，然后摸等量的牌。",
                 },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: "phaseUse",
                 usable: 1,
                 position: "he",
@@ -15225,7 +15225,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 intro: {
                   content: "准备阶段，你可以观看牌堆顶的X张牌，并将其以任意顺序置于牌堆项或牌堆底（X为存活角色数且至多为5）",
                 },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseZhunbeiBegin' },
                 content: function () {
                   "step 0"
@@ -15416,7 +15416,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 intro: {
                   content: "锁定技，你的回合内，除你以外，不处于濒死状态的角色不能使用【桃】。",
                 },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 locked: true,
                 trigger: { global: 'dying' },
                 priority: 15,
@@ -15442,7 +15442,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_jieyan: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'useCardToBefore' },
                 direct: true,
                 filter: function (event, player) {
@@ -15475,7 +15475,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jieyan_buff: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { player: 'damageBegin' },
                 forced: true,
                 filter: function (event) {
@@ -15498,7 +15498,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_fenying: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: "damageAfter" },
                 direct: true,
                 filter: function (event, player) {
@@ -15533,7 +15533,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
               jlsg_kuangbao: {
                 group: ['jlsg_kuangbao1'],
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 forced: true,
                 init: function (player) {
                   player.logSkill('jlsg_kuangbao');
@@ -15550,7 +15550,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_kuangbao1: {
                 trigger: { source: 'damageEnd', player: 'damageEnd' },
                 forced: true,
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 filter: function (event) {
                   return event.num > 0;
                 },
@@ -15562,7 +15562,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_wumou: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'useCard' },
                 forced: true,
                 filter: function (event) {
@@ -15595,7 +15595,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_wuqian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -15643,7 +15643,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shenfen: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
@@ -15710,7 +15710,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (card.name == 'sha' || card.name == 'tao') return false;
                   },
                 },
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'chooseToUse',
                 filter: function (event, player) {
                   return player.countCards('h', { name: ['sha', 'tao'] }) > 0;
@@ -15732,7 +15732,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_suohun: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'damageBegin' },
                 filter: function (event, player) {
                   return event.source && event.source != player;
@@ -15767,7 +15767,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_suohun2: {
                 skillAnimation: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'dyingBegin' },
                 priority: 10,
                 forced: true,
@@ -15813,7 +15813,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_juejing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'phaseEnd' },
                 filter: function (event, player) {
                   return player.hp >= 1;
@@ -15829,7 +15829,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_longhun: {
-                audio: "ext:民间极略:4",
+                audio: "ext:极略:4",
                 group: ["jlsg_longhun1", "jlsg_longhun2", "jlsg_longhun3", "jlsg_longhun4"],
                 ai: {
                   skillTagFilter: function (player, tag) {
@@ -15866,7 +15866,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_longhun1: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse'],
                 prompt: function () {
                   return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张红桃牌当作桃使用';
@@ -15888,7 +15888,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_longhun2: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 prompt: function () {
                   return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张方片当作杀使用或打出';
@@ -15910,7 +15910,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_longhun3: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 prompt: function () {
                   return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张黑桃牌当作无懈可击使用';
@@ -15932,7 +15932,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_longhun4: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 enable: ['chooseToUse', 'chooseToRespond'],
                 prompt: function () {
                   return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张梅花牌当作闪使用或打出';
@@ -15952,7 +15952,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_nizhan: {
                 group: "jlsg_Zhu_buff",
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'damageBegin2' },
                 filter: function (event) {
                   return event.card && (event.card.name == 'sha' || event.card.name == 'juedou') && event.notLink();
@@ -16000,7 +16000,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_cuifeng: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseEnd' },
                 forced: true,
                 filter: function (player) {
@@ -16038,7 +16038,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_weizhen: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseBegin' },
                 filter: function (event, player) {
                   var num = 0;
@@ -16079,7 +16079,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhiming: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseBegin' },
                 filter: function (event, player) {
                   return event.player != player && event.player.countCards('h') && player.countCards('h');
@@ -16159,7 +16159,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_suyin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'loseEnd' },
                 direct: true,
                 filter: function (event, player) {
@@ -16190,7 +16190,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_dianjie: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: ['phaseDrawBefore', 'phaseUseBefore'] },
                 prompt: function (event, player) {
                   if (event.name == 'phaseDraw') {
@@ -16248,7 +16248,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_old_shendao: {
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 trigger: { global: 'judge' },
                 direct: true,
                 content: function () {
@@ -16328,7 +16328,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_dianjie: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: ["useCard", "respond"],
                 },
@@ -16375,7 +16375,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_dianjie2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: {
                   player: "phaseUseBefore",
                 },
@@ -16432,7 +16432,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger: {
                   global: "judge",
                 },
-                audio: "ext:民间极略:true",
+                audio: "ext:极略:true",
                 check: function (event, player) {
                   var judge = event.judge(event.player.judging[0]);
                   if (_status.currentPhase != player) return 1;
@@ -16517,7 +16517,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_leihun: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: {
                   player: "damageBegin4",
                 },
@@ -16544,7 +16544,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_shelie: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseDrawBegin' },
                 forced: true,
                 content: function () {
@@ -16587,7 +16587,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_gongxin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -16665,7 +16665,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianqi: {
                 usable: 1,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 chooseButton: {
                   dialog: function () {
@@ -16775,7 +16775,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianqi2: {
                 enable: "chooseToUse",
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event, player) {
                   return _status.event.dying != player && event.parent.name != 'phaseUse';
                 },
@@ -16889,7 +16889,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianqi3: {
                 enable: ['chooseToUse', 'chooseToRespond'],
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event, player) {
                   return _status.event.dying != player && event.parent.name != 'phaseUse';
                 },
@@ -16978,7 +16978,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianqi4: {
                 enable: ["chooseToUse"],
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event, player) {
                   return _status.event.dying != player && event.parent.name != 'phaseUse';
                 },
@@ -17036,7 +17036,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianqi5: {
                 enable: ['chooseToRespond', 'chooseToUse'],
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 filter: function (event, player) {
                   return _status.event.dying != player && event.parent.name != 'phaseUse';
                 },
@@ -17085,7 +17085,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_tianji: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'phaseUseBegin' },
                 frequent: true,
                 filter: function (event, player) {
@@ -17231,7 +17231,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xianzhu: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'recoverAfter' },
                 check: function (event, player) {
                   return get.attitude(player, event.player) > 0;
@@ -17243,7 +17243,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: 'jlsg_xianzhu2'
               },
               jlsg_xianzhu2: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { global: 'loseEnd' },
                 check: function (event, player) {
                   return get.attitude(player, event.player) > 0;
@@ -17264,7 +17264,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               jlsg_liangyuan: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 skillAnimation: true,
                 unique: true,
@@ -17311,7 +17311,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_tianzi: {
                 srlose: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseDrawBefore' },
                 check: function (card) {
                   return game.countPlayer() > 2;
@@ -17343,7 +17343,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_meixin: {
-                audio: "ext:民间极略:4",
+                audio: "ext:极略:4",
                 enable: 'phaseUse',
                 usable: 1,
                 filterCard: true,
@@ -17410,7 +17410,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_shayi: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'phaseUseBegin' },
                 filter: function (event, player) {
                   return player.countCards('h') > 0;
@@ -17436,7 +17436,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 subSkill: {
                   buff: {
-                    audio: 'ext:民间极略:2',
+                    audio: 'ext:极略:2',
                     enable: ['chooseToRespond', 'chooseToUse'],
                     filterCard: function (card) {
                       return get.color(card) == 'black';
@@ -17460,7 +17460,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_zhenhun: {
-                audio: "ext:民间极略:4",
+                audio: "ext:极略:4",
                 enable: 'phaseUse',
                 usable: 1,
                 filterTarget: function (card, player, target) {
@@ -17541,7 +17541,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_yinshi: {
                 forced: true,
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'damageBegin' },
                 filter: function (event) {
                   return event.num > 0;
@@ -17564,7 +17564,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
 
               jlsg_zhitian: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { player: 'phaseBegin' },
                 forced: true,
                 unique: true,
@@ -17624,7 +17624,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
               },
               jlsg_zhiji: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 usable: 1,
                 enable: 'phaseUse',
                 filter: function (event, player) {
@@ -17647,7 +17647,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 group: ['jlsg_zhiji_damage'],
                 subSkill: {
                   damage: {
-                    audio: 'ext:民间极略:1',
+                    audio: 'ext:极略:1',
                     trigger: { player: 'damageEnd' },
                     check: function () {
                       return 1
@@ -17688,7 +17688,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_jishi: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 usable: 1,
                 enable: 'phaseUse',
                 filter: function (event, player) {
@@ -17746,7 +17746,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_xuanxin: {
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 trigger: { global: 'damageEnd' },
                 usable: 3,
                 group: ["jlsg_xuanxin_重置"],
@@ -17828,7 +17828,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
 
               jlsg_lvezhen: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'shaBegin' },
                 filter: function (event, player) {
                   return event.target.countCards('he');
@@ -17853,7 +17853,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_youlong: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 mark: true,
                 marktext: "<font color=yellow>牌</font>",
@@ -17881,7 +17881,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_danqing: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (card, player, target) {
@@ -17931,7 +17931,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               jlsg_zhonghun: {
                 unique: true,
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 trigger: { player: 'dieBegin' },
                 direct: true,
                 content: function () {
@@ -17951,7 +17951,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsg_qinyin: {
-                audio: "ext:民间极略:2",
+                audio: "ext:极略:2",
                 direct: true,
                 trigger: {
                   player: "phaseDiscardBegin",
@@ -18031,7 +18031,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 mark: true,
                 forceDie: true,
                 enable: "phaseUse",
-                audio: "ext:民间极略:1",
+                audio: "ext:极略:1",
                 animationColor: "metal",
                 skillAnimation: "legend",
                 filter: function (event, player) {
@@ -18289,11 +18289,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
           if (lib.device || lib.node) {
             for (var i in jlsg_soul.character) {
-              jlsg_soul.character[i][4].push('ext:民间极略/' + i + '.jpg');
+              jlsg_soul.character[i][4].push('ext:极略/' + i + '.jpg');
             }
           } else {
             for (var i in jlsg_soul.character) {
-              jlsg_soul.character[i][4].push('db:extension-民间极略:' + i + '.jpg');
+              jlsg_soul.character[i][4].push('db:extension-极略:' + i + '.jpg');
             }
           }
           return jlsg_soul;
@@ -19244,15 +19244,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 加回技能的自动触发<br>
 2021.02.04更新2<br>
 &ensp; SR吕布：极武现在能正确的为装备区中牌转化的杀添加额外目标。<br>
+&ensp; 可能在下个版本修复吕玲绮。<br>
 因为极略三国版本较多，2020年中分为民间极略和极略全扩。<br>
 我从2020年10月开始继续更新极略全扩，之后迁移到民间极略上继续更新。<br>
-本版本会保留民间极略中SC部分（玩家自创）与旧将部分（大鱼黑历史）<br>
-但是仅提供有限的支持。由于兼容民间极略和极略全扩所有内容和两个分支的fix，<br>
+本版本会剔除民间极略中过时部分，例如剔除了"禁用各类变态（弱鸡）武将"的选项。<br>
+同时保留原先的SC部分（玩家自创）与旧将部分（大鱼黑历史）<br>
+但是仅提供有限的支持。由于兼容民间极略和极略全扩所有内容和两个分支的fix，且之前的作者统统消失，<br>
 恕我狂妄在此次更新中将拓展包名更新为“极略”。过去的用户需要卸载老包重新导入。<br>
 本拓展初衷是让极略赶上时代，自用自娱，因此没有把本人的大名加入作者栏。特此声明。————xiaoas<br>
 考虑到在新群发布了拓展，下方给出过去重要的新功能。<br>
 2021.01.31之前全局改动总结<br>
-2021.01.31之前改动以bug修复为主<br>
+&ensp; 2021.01.31之前改动以bug修复为主<br>
 &ensp; SR陆逊临时削弱为2血<br>
 &ensp; 使得SR技能丢失在所有模式生效<br>
 2021.01.31更新<br>
@@ -19261,9 +19263,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 新增了srlose：玩家不再获得可以不失去SR技能的特权，但是可以关闭SR技能失去。<br>
 &ensp; 下一次更新预计会在一周内发出。<br>
 2021.01.31紧急修复<br>
-&ensp;修复无法导入拓展的问题<br>
-&ensp;增加了火伤害的ai与冰伤害的兼容。<br>
-&ensp;增添了changelog界面，因为好像大家都不看changelog<br>
+&ensp; 修复无法导入拓展的问题<br>
+&ensp; 增加了火伤害的ai与冰伤害的兼容。<br>
+&ensp; 增添了changelog界面，因为好像大家都不看changelog<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
