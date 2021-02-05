@@ -1795,7 +1795,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 								},
 								content: function () {
 									"step 0"
-									player.chooseCard("是否对" + get.translation(trigger.player) + "发动藏书？<p>交给" + get.translation(trigger.player) + "1张基本牌，令" + get.translation(trigger.card) + "无效并获得之</p>", { type: "basic" }).ai = function (card) {
+									var prompt = "是否对" + get.translation(trigger.player) + "发动藏书？<p>交给" + get.translation(trigger.player) + "一张基本牌，令" + get.translation(trigger.card) + "无效并获得之</p>";
+									player.chooseCard(prompt, { type: "basic" }).ai = function (card) {
 										if (get.attitude(player, trigger.player) < 0)
 											return 10 - get.value(card);
 										return 0;
@@ -1805,6 +1806,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 										player.logSkill("jlsg_cangshu", trigger.player);
 										player.$give(result.cards, trigger.player);
 										trigger.player.gain(result.cards, player);
+										game.delay();
 									}
 									else {
 										event.finish();
