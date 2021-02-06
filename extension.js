@@ -18793,6 +18793,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 下调SK左慈嘲讽。<br>
 2021.02.06更新<br>
 &ensp; 修复SR赵云 突围<br>
+&ensp; 修复武将配音<br>
 &ensp; 移除了SC武将包<br>
 &ensp; 增加了极略七杀卡包<br>
 &ensp; 优化极略七杀卡包宝物贴图位置<br>
