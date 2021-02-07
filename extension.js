@@ -17135,9 +17135,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               jlsgsy_baonusunhao: {
-                audio: ['baonusunhao'],
+                audio: "ext:极略:1",
                 skillAnimation: true,
-                animationStr: '当个好皇帝有什么意思！！！',
+                animationStr: '当个好皇帝有什么意思!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -17511,7 +17511,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonusimayi: {
                 audio: ['baonusima'],
                 skillAnimation: true,
-                animationStr: '老夫，没时间陪你们了！',
+                animationStr: '老夫没时间陪你们了!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -17852,7 +17852,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonudongzhuo: {
                 audio: ['baonud'],
                 skillAnimation: true,
-                animationStr: '哈哈哈～,统统杀光',
+                animationStr: '统统杀光',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -17983,7 +17983,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonucaifuren: {
                 audio: ['baonuc'],
                 skillAnimation: true,
-                animationStr: '别想逃出我的手掌心！',
+                animationStr: '别想逃出我的手掌心!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -18189,7 +18189,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonuzhangjiao: {
                 audio: ['baonu'],
                 skillAnimation: true,
-                animationStr: '招神劾鬼，统摄天地！',
+                animationStr: '招神劾鬼, 统摄天地!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -18515,7 +18515,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonuweiyan: {
                 audio: ['baonuw'],
                 skillAnimation: true,
-                animationStr: '老子岂能受你们摆布！',
+                animationStr: '老子岂能受你们摆布!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -18720,7 +18720,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_baonuzhangrang: {
                 audio: ['baonuzhangrang'],
                 skillAnimation: true,
-                animationStr: '明帝，都得叫我一声爹呢！',
+                animationStr: '明帝, 都得叫我一声爹呢!',
                 trigger: { player: 'changeHp' },
                 forced: true,
                 priority: 100,
@@ -20663,6 +20663,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; SK张宝 咒缚 与其他武将统一，不再能使锁定技失效。<br>
 &ensp; 增加了极略三英武将 三英武将目前缺少配音。<br>
 &ensp; 重制了所有极略三英武将的贴图。<br>
+&ensp; 添加了所有极略三英武将的觉醒语音。<br>
 &ensp; 更新了SK神孙尚香贴图。<br>
 `
       ,
