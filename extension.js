@@ -10297,7 +10297,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       viewAs: { name: links[0][2] },
                       onuse: function (result, player) {
                         player.logSkill('jlsg_quanheng');
-                        if (lib.skill.jlsg_quanheng_backup.viewAs.name == 'wuzhong') {
+                        if (this.viewAs.name == 'wuzhong') {
                           player.storage.jlsg_quanheng_wuzhong_takeEffect = false;
                           player.addSkill('jlsg_quanheng_wuxie');
                         }
@@ -12834,32 +12834,31 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             name: 'jlsg_soul',
             connect: true,
             character: {
-              jlsgsoul_zuoci: ['male', 'qun', 3, ['jlsg_qimen', 'jlsg_jinji', 'jlsg_xuhuan'], []],
-              // jlsgsoul_caocao: ['male', 'wei', 3, ['jlsg_guixin', 'jlsg_feiying_new'], ['zhu', ]],
-              jlsgsoul_caocao: ['male', 'shen', 3, ['jlsg_guixin', 'jlsg_feiying_new'], ['zhu',]],
-              jlsgsoul_sunquan: ['male', 'wu', 4, ['jlsg_huju'], ['zhu',]],
-              jlsgsoul_jiaxu: ['male', 'wei', 3, ['jlsg_yanmie', 'jlsg_shunshi'], []],
-              jlsgsoul_liubei: ['male', 'shu', 4, ['jlsg_junwang', 'jlsg_jizhao'], ['zhu',]],
-              jlsgsoul_zhugeliang: ['male', 'shu', 3, ['jlsg_xingchen', 'jlsg_kuangfeng', 'jlsg_dawu'], []],
-              jlsgsoul_simayi: ['male', 'wei', 3, ['jlsg_jilve', 'jlsg_tongtian'], ['nei',]],
-              jlsgsoul_luxun: ['male', 'wu', 3, ['jlsg_jieyan', 'jlsg_fenying'], []],
-              jlsgsoul_lvbu: ['male', 'qun', 5, ['jlsg_kuangbao', 'jlsg_wumou', 'jlsg_wuqian', 'jlsg_shenfen'], []],
-              jlsgsoul_guanyu: ['male', 'shu', 5, ['jlsg_wushen', 'jlsg_suohun'], []],
-              jlsgsoul_zhaoyun: ['male', 'shu', 2, ['jlsg_juejing', 'jlsg_longhun'], []],
-              jlsgsoul_zhangliao: ['male', 'wei', 5, ['jlsg_nizhan', 'jlsg_cuifeng', 'jlsg_weizhen'], []],
-              jlsgsoul_huangyueying: ['female', 'shu', 3, ['jlsg_zhiming', 'jlsg_suyin'], []],
-              jlsgsoul_zhangjiao: ['male', 'qun', 3, ['jlsg_dianjie', 'jlsg_shendao', 'jlsg_leihun'], ['fan',]],
-              jlsgsoul_lvmeng: ['male', 'wu', 3, ['jlsg_shelie', 'jlsg_gongxin'], []],
-              jlsgsoul_guojia: ['male', 'wei', 3, ['jlsg_tianqi', 'jlsg_tianji'], ['zhu',]],
-              jlsgsoul_diaochan: ['female', 'qun', 3, ['jlsg_tianzi', 'jlsg_meixin'], []],
-              jlsgsoul_zhangfei: ['male', 'shu', 4, ['jlsg_shayi', 'jlsg_zhenhun'], []],
-              jlsgsoul_simahui: ['male', 'qun', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['zhu',]],
-              jlsgsoul_sunshangxiang: ['female', 'shu', 3, ['jlsg_xianzhu', 'jlsg_liangyuan'], ['zhong',]],
-              jlsgsoul_ganning: ['male', 'wu', 4, ['jlsg_lvezhen', 'jlsg_youlong'], []],
-              jlsgsoul_xiahoudun: ['male', 'wei', 4, ['jlsg_danqing', 'jlsg_zhonghun'], []],
-              jlsgsoul_dianwei: ['male', 'wei', 6, ['jlsg_zhiji'], []],
-              jlsgsoul_huatuo: ['male', 'qun', 3, ['jlsg_jishi', 'jlsg_xuanxin'], ['zhong',]],
-              jlsgsoul_zhouyu: ['male', 'wu', 4, ['jlsg_qinyin', 'jlsg_yeyan'], []],
+              jlsgsoul_zuoci: ['male', 'shen', 3, ['jlsg_qimen', 'jlsg_jinji', 'jlsg_xuhuan'], ['qun']],
+              jlsgsoul_caocao: ['male', 'shen', 3, ['jlsg_guixin', 'jlsg_feiying_new'], ['zhu','wei']],
+              jlsgsoul_sunquan: ['male', 'shen', 4, ['jlsg_huju'], ['zhu','wu']],
+              jlsgsoul_jiaxu: ['male', 'shen', 3, ['jlsg_yanmie', 'jlsg_shunshi'], ['wei']],
+              jlsgsoul_liubei: ['male', 'shen', 4, ['jlsg_junwang', 'jlsg_jizhao'], ['zhu','shu']],
+              jlsgsoul_zhugeliang: ['male', 'shen', 3, ['jlsg_xingchen', 'jlsg_kuangfeng', 'jlsg_dawu'], ['shu']],
+              jlsgsoul_simayi: ['male', 'shen', 3, ['jlsg_jilve', 'jlsg_tongtian'], ['nei','wei']],
+              jlsgsoul_luxun: ['male', 'shen', 3, ['jlsg_jieyan', 'jlsg_fenying'], ['wu']],
+              jlsgsoul_lvbu: ['male', 'shen', 5, ['jlsg_kuangbao', 'jlsg_wumou', 'jlsg_wuqian', 'jlsg_shenfen'], ['qun']],
+              jlsgsoul_guanyu: ['male', 'shen', 5, ['jlsg_wushen', 'jlsg_suohun'], ['shu']],
+              jlsgsoul_zhaoyun: ['male', 'shen', 2, ['jlsg_juejing', 'jlsg_longhun'], ['shu']],
+              jlsgsoul_zhangliao: ['male', 'shen', 5, ['jlsg_nizhan', 'jlsg_cuifeng', 'jlsg_weizhen'], ['wei']],
+              jlsgsoul_huangyueying: ['female', 'shen', 3, ['jlsg_zhiming', 'jlsg_suyin'], ['shu']],
+              jlsgsoul_zhangjiao: ['male', 'shen', 3, ['jlsg_dianjie', 'jlsg_shendao', 'jlsg_leihun'], ['fan','qun']],
+              jlsgsoul_lvmeng: ['male', 'shen', 3, ['jlsg_shelie', 'jlsg_gongxin'], ['wu']],
+              jlsgsoul_guojia: ['male', 'shen', 3, ['jlsg_tianqi', 'jlsg_tianji'], ['zhu','wei']],
+              jlsgsoul_diaochan: ['female', 'shen', 3, ['jlsg_tianzi', 'jlsg_meixin'], ['qun']],
+              jlsgsoul_zhangfei: ['male', 'shen', 4, ['jlsg_shayi', 'jlsg_zhenhun'], ['shu']],
+              jlsgsoul_simahui: ['male', 'shen', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['zhu','qun']],
+              jlsgsoul_sunshangxiang: ['female', 'shen', 3, ['jlsg_xianzhu', 'jlsg_liangyuan'], ['zhong','shu']],
+              jlsgsoul_ganning: ['male', 'shen', 4, ['jlsg_lvezhen', 'jlsg_youlong'], ['wu']],
+              jlsgsoul_xiahoudun: ['male', 'shen', 4, ['jlsg_danqing', 'jlsg_zhonghun'], ['wei']],
+              jlsgsoul_dianwei: ['male', 'shen', 6, ['jlsg_zhiji'], ['wei']],
+              jlsgsoul_huatuo: ['male', 'shen', 3, ['jlsg_jishi', 'jlsg_xuanxin'], ['zhong','qun']],
+              jlsgsoul_zhouyu: ['male', 'shen', 4, ['jlsg_qinyin', 'jlsg_yeyan'], ['wu']],
             },
             characterIntro: {},
             skill: {
@@ -17309,16 +17308,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player.judge(ui.special);
                   'step 1'
                   var mapping = {
-                    spade: 'jlsgsy_qiangxi',
-                    heart: 'jlsgsy_qicai',
-                    club: 'jlsgsy_luanji',
-                    diamond: 'jlsgsy_quanheng',
+                    spade: ['jlsgsy_qiangxi', 'qiangxi'],
+                    heart: ['jlsgsy_qicai', 'jlsg_qicai'],
+                    club: ['jlsgsy_luanji', 'luanji'],
+                    diamond: ['jlsgsy_quanheng', 'jlsg_quanheng'],
                   }
-                  var skillStr = mapping[get.suit(result.card)];
-                  if (skillStr) {
-                    game.trySkillAudio(skillStr, player);
-                    player.addTempSkill(skillStr);
-                    game.log(player, `获得了技能【${lib.translate[skillStr]}】`);
+                  var skillStrs = mapping[get.suit(result.card)];
+                  if (skillStrs) {
+                    game.trySkillAudio(skillStrs[0], player);
+                    player.addTempSkill(skillStrs[1]);
+                    game.log(player, `获得了技能【${lib.translate[skillStrs[1]]}】`);
                   }
                   player.gain(result.card);
                   player.$gain2(result.card);
@@ -18609,7 +18608,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsgsy_quanheng: '权衡',
 
               jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定1名角色（不得是此牌的使用者）为目标，否则对你无效',
-              jlsgsy_chanxian_info: '出牌节阶段限1次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择1项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
+              jlsgsy_chanxian_info: '出牌阶段限1次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
               jlsgsy_canlue_info: '你每从其他角色处获得1张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置1张牌',
               jlsgsy_zhongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用1张【酒】',
               jlsgsy_linnue_info: '出牌阶段，你每使用【杀】对目标角色造成1次伤害，可以进行1次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
@@ -20448,15 +20447,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       forumURL: "",
       version: "2.1.0208",
       changelog: `\
-2021.02.06更新<br>
-&ensp; 修复SR赵云 突围<br>
-&ensp; 修复武将配音<br>
-&ensp; 移除了SC武将包<br>
-&ensp; 增加了极略七杀卡包<br>
-&ensp; 优化极略七杀卡包宝物贴图位置<br>
-2021.02.06 fix1<br>
-&ensp; 七杀卡包可以被关闭了<br>
-&ensp; 简化拓展简介。<br>
+2021.02.09更新<br>
+&ensp; 修复三英神司马懿 权衡<br>
+&ensp; 修复三英神司马懿 权衡配音<br>
+&ensp; 更改魂裂包神将为神势力<br>
+历史：<br>
 2021.02.07更新<br>
 &ensp; 优化七杀包。七杀包现在在“卡牌”页面中关闭。<br>
 &ensp; 七杀包 水淹七军 无法正确触发。<br>
