@@ -20472,6 +20472,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 添加七杀 水淹七军 发动音效。<br>
 &ensp; 修复SR夏侯惇 忠候濒死自救。<br>
 2021.02.08更新<br>
+&ensp; 增加了导入成功的机率（理论上）。<br>
 &ensp; 优化三英神司马懿 博略 音效。<br>
 &ensp; 添加四个包所有角色阵亡音效。<br>
 &ensp; 修复SK神司马懿 通天 配音。<br>
