@@ -47,7 +47,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           return player.name.includes('jlsg');
         },
         content: function () {
-          game.playAudio('..', 'extension', _status.extension, 'die', trigger.player.name);
+          game.playAudio('..', 'extension', '极略', 'die', trigger.player.name);
+          // trigger.audioed = true;
         },
       };
       // TODO: 司马师
@@ -62,17 +63,30 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
         }
       };
+      let supressDieAudio = function (name) {
+        var cfile = lib.character[name];
+        if (cfile) {
+          if (cfile[4] === undefined) {
+            cfile[4] = 'die_audio';
+          } else {
+            cfile[4].add('die_audio');
+          }
+        }
+      };
       for (const i of Object.keys(lib.characterPack['jlsg_sr'])) {
         trivialSolveCharacterReplace(i);
+        supressDieAudio(i);
       }
       for (const i of Object.keys(lib.characterPack['jlsg_sk'])) {
         trivialSolveCharacterReplace(i);
+        supressDieAudio(i);
       }
       let soulShenMapping = {};
       for (const i of Object.keys(lib.characterPack['jlsg_soul'])) {
-        if (lib.character[i][4].indexOf("forbidai") < 0) {
-          lib.character[i][4].push("forbidai");
-        }
+        supressDieAudio(i);
+      }
+      for (const i of Object.keys(lib.characterPack['jlsg_sy'])) {
+        supressDieAudio(i);
       }
       if (config.jlsg_identity_music_image && get.mode() != 'boss') {
         lib.arenaReady.push(function () {
@@ -20035,7 +20049,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.1.02010",
+      version: "2.1.02010fix1",
       changelog: `\
 2021.02.08fix1<br>
 &ensp; 修复三英神司马懿 权衡<br>
@@ -20057,6 +20071,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 增加SK吕玲绮 杀效果展示 可能有点丑<br>
 2021.02.10更新<br>
 &ensp; 优化SK吕玲绮 戟舞杀的效果移除<br>
+&ensp; 修复 阵亡配音可能无法播放。<br>
 历史：<br>
 2021.02.07更新<br>
 &ensp; 优化七杀包。七杀包现在在“卡牌”页面中关闭。<br>
