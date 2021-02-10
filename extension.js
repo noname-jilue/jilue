@@ -67,7 +67,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         var cfile = lib.character[name];
         if (cfile) {
           if (cfile[4] === undefined) {
-            cfile[4] = 'die_audio';
+            cfile[4] = ['die_audio'];
           } else {
             cfile[4].add('die_audio');
           }
