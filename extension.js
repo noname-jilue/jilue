@@ -20060,7 +20060,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.1.02011",
+      version: "2.2.02012",
       changelog: `\
 2021.02.12更新<br>
 &ensp; 修复许诸的同将替换。<br>
