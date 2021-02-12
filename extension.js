@@ -24,7 +24,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           var str2 = lib.translate[str];
           if (lib.translate[str + '_ab']) str2 = lib.translate[str + '_ab'];
           if (!str2) return '';
-          var str3 = str2.replace(/^(\s|[☆A-Z])*/u, "");
+          var str3 = str2.replace(/^(\s|[☆A-Z])*/, "");
           if (str3 != "") {
             str2 = str3;
           }
@@ -52,7 +52,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         },
       };
       // TODO: 司马师
-      let trivialSolveCharacterReplace = function (name) {
+      var trivialSolveCharacterReplace = function (name) {
         var shortname = name.substring(name.lastIndexOf('_') + 1);
         if (shortname && lib.character[shortname]) {
           if (!lib.characterReplace[shortname]) {
@@ -63,7 +63,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
         }
       };
-      let supressDieAudio = function (name) {
+      var supressDieAudio = function (name) {
         var cfile = lib.character[name];
         if (cfile) {
           if (cfile[4] === undefined) {
@@ -73,20 +73,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
         }
       };
-      for (const i of Object.keys(lib.characterPack['jlsg_sr'])) {
+      for (var i of Object.keys(lib.characterPack['jlsg_sr'])) {
         trivialSolveCharacterReplace(i);
         supressDieAudio(i);
       }
-      for (const i of Object.keys(lib.characterPack['jlsg_sk'])) {
+      for (var i of Object.keys(lib.characterPack['jlsg_sk'])) {
         trivialSolveCharacterReplace(i);
         supressDieAudio(i);
       }
-      let soulShenMapping = {};
-      for (const i of Object.keys(lib.characterPack['jlsg_soul'])) {
+      var soulShenMapping = {};
+      for (var i of Object.keys(lib.characterPack['jlsg_soul'])) {
         supressDieAudio(i);
       }
-      for (const i of Object.keys(lib.characterPack['jlsg_sy'])) {
+      for (var i of Object.keys(lib.characterPack['jlsg_sy'])) {
         supressDieAudio(i);
+        if (!lib.config.forbidai_user.contains(i))
+          lib.config.forbidai.remove(i);
       }
       if (config.jlsg_identity_music_image && get.mode() != 'boss') {
         lib.arenaReady.push(function () {
@@ -3376,7 +3378,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         delete trigger.card.isJiwu;
                       }
                       if (trigger.card.cards) {
-                        for (card of trigger.card.cards) {
+                        for (var card of trigger.card.cards) {
                           if (card.isJiwu) {
                             card.isJiwu._card = card;
                             card.isJiwu[1] = false;
@@ -3387,7 +3389,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         }
                       }
                     } else if (trigger.cards) {
-                      for (card of trigger.cards) {
+                      for (var card of trigger.cards) {
                         if (card.isJiwu) {
                           card.isJiwu._card = card;
                           card.isJiwu[1] = false;
@@ -6396,7 +6398,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yonglie_info: '当你攻击范围内的一名角色受到【杀】造成的伤害后，你可以失去1点体力，然后对伤害来源造成1点伤害。',
             jlsg_hengshi_info: '弃牌阶段开始时，你可以摸等同于手牌数的牌。',
             jlsg_zhijiao_info: '限定技，回合结束阶段开始时，你可以令一名其他角色获得你的本回合因弃置而进入弃牌堆的牌。',
-            jlsg_jiwux_info: '出牌阶段开始时，你可以展示一张【杀】，令其获得以下效果之一（进入牌堆后失效）：1、此【杀】不计入次数限制；2、此【杀】无距离限制，且可以额外指定1个目标；3、此【杀】的伤害值+1。',
+            jlsg_jiwux_info: '出牌阶段开始时，你可以展示一张【杀】，令其获得以下效果之一（离开手牌区后失效）：1、此【杀】不计入次数限制；2、此【杀】无距离限制，且可以额外指定1个目标；3、此【杀】的伤害值+1。',
             jlsg_daoshi_info: '一名角色的回合结束阶段开始时，若其装备区有牌，其可以摸一张牌，然后将其装备区的一张牌交给你。',
             jlsg_lirang_info: '一名角色的回合开始阶段结束时，其可以将一张与所有「礼」花色均不同的手牌置于你的武将牌上作为「礼」，然后摸一张牌。你可以将2张「礼」当【桃】使用。',
             jlsg_xianshi_info: '每当你受到一次伤害时，可以令伤害来源选择一项：展示所有手牌并弃置其中一张；或令此伤害-1.',
@@ -6531,7 +6533,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsr_xiahoudun: ['male', 'wei', 4, ['jlsg_zhonghou', 'jlsg_ganglie'], []],
             // jlsgsr_zhenji: ['female', 'wei', 3, ['jlsg_liuyun', 'jlsg_lingbo', 'jlsg_qingcheng_zhu'], []],
             jlsgsr_zhenji: ['female', 'wei', 3, ['jlsg_liuyun', 'jlsg_lingbo', 'jlsg_qingcheng'], []],
-            jlsgsr_xuchu: ['male', 'wei', 4, ['jlsg_aozhan', 'jlsg_huxiao'], []],
+            jlsgsr_xuzhu: ['male', 'wei', 4, ['jlsg_aozhan', 'jlsg_huxiao'], []],
             jlsgsr_simayi: ['male', 'wei', 3, ['jlsg_guicai', 'jlsg_langgu', 'jlsg_zhuizun'], []],
             jlsgsr_guojia: ['male', 'wei', 3, ['jlsg_tianshang', 'jlsg_yiji', 'jlsg_huiqu'], []],
             jlsgsr_caocao: ['male', 'wei', 4, ['jlsg_zhaoxiang', 'jlsg_zhishi', 'jlsg_jianxiong'], ['zhu',]],
@@ -8586,7 +8588,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player) {
                 return player.storage.jlsg_baiyue.length;
               },
-              forced: true,
+              directHit: true,
               content: function () {
                 'step 0'
                 player.chooseCardButton('是否发动【拜月】？', player.storage.jlsg_baiyue, true).ai = function (button) {
@@ -8594,12 +8596,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 1'
                 if (result.bool) {
-                  //player.logSkill('jlsg_baiyue');
+                  player.logSkill('jlsg_baiyue');
                   player.storage.jlsg_baiyue.remove(result.buttons[0].link);
                   player.gain(result.buttons[0].link);
                   player.$gain(result.buttons[0].link);
                 }
-                delete player.storage.jlsg_baiyue;
                 player.storage.jlsg_baiyue = [];
               },
               group: ['jlsg_baiyue_countGeneral'],
@@ -8609,7 +8610,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   forced: true,
                   popup: false,
                   filter: function (event, player) {
-                    //if(player!=_status.currentPhase) return false;
+                    if(_status.currentPhase != player) return false;
                     //if(event.player==player) return false;
                     if (event.cards) {
                       for (var i = 0; i < event.cards.length; i++) {
@@ -12654,7 +12655,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsr_zhangliao: 'SR张辽',
             jlsgsr_xiahoudun: 'SR夏侯惇',
             jlsgsr_zhenji: 'SR甄姬',
-            jlsgsr_xuchu: 'SR许褚',
+            jlsgsr_xuzhu: 'SR许褚',
             jlsgsr_simayi: 'SR司马懿',
             jlsgsr_guojia: 'SR郭嘉',
             jlsgsr_caocao: 'SR曹操',
@@ -12889,7 +12890,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wuqin_info: '回合结束阶段结束时，你可以弃置一张基本牌，然后选择一项：摸两张牌，或进行一个额外的出牌阶段。',
             jlsg_lijian_info: '出牌阶段限一次，你可以弃一张牌并选择两名其他男性角色。若如此做，视为其中一名男性角色对另一名男性角色使用一张【决斗】(该【决斗】不可被【无懈可击】响应)。',
             jlsg_manwu_info: '出牌阶段限一次，你可以展示一名男性角色的一张手牌，若此牌为方片，将之置于该角色的判定区内，视为【乐不思蜀】；若不为方片，你获得之。',
-            jlsg_baiyue_info: '锁定技，回合结束阶段开始时，你获得本回合的角色进入弃牌堆的一张牌。',
+            jlsg_baiyue_info: '回合结束阶段开始时，你可以获得本回合其他角色进入弃牌堆的一张牌。',
             jlsg_ganglie_info: '出牌阶段开始时，你可以失去1点体力，若如此做，你本回合下一次造成的伤害+1。且本回合你每造成1点伤害，回合结束时你便摸一张牌',
           },
         };
@@ -12907,7 +12908,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             } else if (i == 'jlsgsr_caocao') {
               jlsg_sr.character[i][3] = ['jlsg_zhaoxiang', 'jlsg_old_zhishi', 'jlsg_jianxiong'];
               jlsg_sr.translate[i] = 'SR旧曹操';
-            } else if (i == 'jlsgsr_xuchu') {
+            } else if (i == 'jlsgsr_xuzhu') {
               jlsg_sr.character[i][3] = ['jlsg_aozhan', 'jlsg_old_huxiao'];
               jlsg_sr.translate[i] = 'SR旧许褚';
             } else if (i == 'jlsgsr_ganning') {
@@ -12941,10 +12942,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           connect: true,
           character: {
             jlsgsoul_zuoci: ['male', 'shen', 3, ['jlsg_qimen', 'jlsg_jinji', 'jlsg_xuhuan'], ['qun']],
-            jlsgsoul_caocao: ['male', 'shen', 3, ['jlsg_guixin', 'jlsg_feiying'], ['zhu', 'wei']],
-            jlsgsoul_sunquan: ['male', 'shen', 4, ['jlsg_huju'], ['zhu', 'wu']],
+            jlsgsoul_caocao: ['male', 'shen', 3, ['jlsg_guixin', 'jlsg_feiying'], ['wei']],
+            jlsgsoul_sunquan: ['male', 'shen', 4, ['jlsg_huju'], ['wu']],
             jlsgsoul_jiaxu: ['male', 'shen', 3, ['jlsg_yanmie', 'jlsg_shunshi'], ['wei']],
-            jlsgsoul_liubei: ['male', 'shen', 4, ['jlsg_junwang', 'jlsg_jizhao'], ['zhu', 'shu']],
+            jlsgsoul_liubei: ['male', 'shen', 4, ['jlsg_junwang', 'jlsg_jizhao'], ['shu']],
             jlsgsoul_zhugeliang: ['male', 'shen', 3, ['jlsg_qixing', 'jlsg_kuangfeng', 'jlsg_dawu'], ['shu']],
             jlsgsoul_simayi: ['male', 'shen', 3, ['jlsg_jilve', 'jlsg_tongtian'], ['nei', 'wei']],
             jlsgsoul_luxun: ['male', 'shen', 3, ['jlsg_jieyan', 'jlsg_fenying'], ['wu']],
@@ -12955,10 +12956,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsoul_huangyueying: ['female', 'shen', 3, ['jlsg_zhiming', 'jlsg_suyin'], ['shu']],
             jlsgsoul_zhangjiao: ['male', 'shen', 3, ['jlsg_dianjie', 'jlsg_shendao', 'jlsg_leihun'], ['fan', 'qun']],
             jlsgsoul_lvmeng: ['male', 'shen', 3, ['jlsg_shelie', 'jlsg_gongxin'], ['wu']],
-            jlsgsoul_guojia: ['male', 'shen', 3, ['jlsg_tianqi', 'jlsg_tianji'], ['zhu', 'wei']],
+            jlsgsoul_guojia: ['male', 'shen', 3, ['jlsg_tianqi', 'jlsg_tianji'], ['wei']],
             jlsgsoul_diaochan: ['female', 'shen', 3, ['jlsg_tianzi', 'jlsg_meixin'], ['qun']],
             jlsgsoul_zhangfei: ['male', 'shen', 4, ['jlsg_shayi', 'jlsg_zhenhun'], ['shu']],
-            jlsgsoul_simahui: ['male', 'shen', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['zhu', 'qun']],
+            jlsgsoul_simahui: ['male', 'shen', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['qun']],
             jlsgsoul_sunshangxiang: ['female', 'shen', 3, ['jlsg_xianzhu', 'jlsg_liangyuan'], ['zhong', 'shu']],
             jlsgsoul_ganning: ['male', 'shen', 4, ['jlsg_lvezhen', 'jlsg_youlong'], ['wu']],
             jlsgsoul_xiahoudun: ['male', 'shen', 4, ['jlsg_danjing', 'jlsg_zhonghun'], ['wei']],
@@ -16808,14 +16809,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_xuhuan_info: "锁定技，当你受到伤害/失去体力时，只受到/失去1点伤害/体力，防止多余伤害/体力。",
           },
         };
-        // if (config.oldCharacterReplace) {
-        //   for (var i in jlsg_soul.character) {
-        //     if (i == 'jlsgsoul_zhangjiao') {
-        //       jlsg_soul.character[i][3] = ['jlsg_old_dianjie', 'jlsg_old_shendao', 'jlsg_leihun'];
-        //       jlsg_soul.translate[i] = 'SK神张角';
-        //     }
-        //   }
-        // }
         if (lib.device || lib.node) {
           for (var i in jlsg_soul.character) {
             jlsg_soul.character[i][4].push('ext:极略/' + i + '.jpg');
@@ -18310,6 +18303,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseToDiscard('h', '木牛流马：请弃置一张基本牌，否则失去1点体力', function (card) {
                   return get.type(card) == 'basic';
                 }).set('ai', function (card) {
+                  if(card.name=='tao') return -10;
+                  if(card.name=='jiu'&&player.hp==1) return -10;
                   if (player.hp == 1) return 15 - ai.get.value(card);
                   return 8 - ai.get.value(card);
                 });
@@ -18355,6 +18350,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseToDiscard('h', '太平要术：请弃置一张红色牌，否则失去1点体力', function (card) {
                   return get.color(card) == 'red';
                 }).set('ai', function (card) {
+                  if(card.name=='tao') return -10;
+						      if(card.name=='jiu'&&player.hp==1) return -10;
                   if (player.hp == 1) return 15 - ai.get.value(card);
                   return 8 - ai.get.value(card);
                 });
@@ -18498,6 +18495,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: true,
               fullskin: true,
               type: 'delay',
+              range: { attack: 1 },
               filterTarget: function (card, player, target) {
                 return (lib.filter.judge(card, player, target) && player != target);
               },
@@ -18551,13 +18549,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 } else {
                   target.chooseControl('获得你两张牌', '对你造成伤害', ui.create.dialog('请选择一项', 'hidden')).set('ai', function () {
                     debugger;
-                    var player = _status.event.target;
-                    if (player.num('h', 'tao') || player.num('h', 'jiu')) return '对你造成伤害';
-                    if (player.hp == 1) return '获得你两张牌';
-                    // if (player.num('h') > 3) return '获得你两张牌';
-                    // if (player.hasSkillTag('nofire')) return '对你造成伤害';
-                    // if (player.hasSkillTag('nodamage')) return '对你造成伤害';
-                    // if (player.hasSkillTag('notrick')) return '对你造成伤害';
+                    if (get.attitude(target, player) > 5) return '获得你两张牌';
+                    if (get.damageEffect(target, player, target,'fire') > 0) return '对你造成伤害';
+                    if (target.countCards('h', 'tao')) return '对你造成伤害';
+                    if (target.countCards('h', 'jiu') && target.hp == 1) return '对你造成伤害';
+                    if (target.hp == 1) return '获得你两张牌';
+                    // if (target.num('h') > 3) return '获得你两张牌';
+                    // if (target.hasSkillTag('nofire')) return '对你造成伤害';
+                    // if (target.hasSkillTag('nodamage')) return '对你造成伤害';
+                    // if (target.hasSkillTag('notrick')) return '对你造成伤害';
                     return '对你造成伤害';
                   }).set('target', target);
                 }
@@ -18699,13 +18699,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_mei: {
+
               audio: true,
               fullskin: true,
               type: 'basic',
               enable: true,
               savable: function (event, player) {
-                if (_status.event.dying == player) return false;
-                return true;
+                return _status.event.dying != player;
               },
               selectTarget: function () {
                 if (_status.event.type == 'dying') return -1;
@@ -18792,6 +18792,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           skill: {
             jlsgqs_kongmingdeng: {
+              equipSkill:true,
               popname: true,
               enable: ['chooseToUse', 'chooseToRespond'],
               filterCard: function (card) {
@@ -18832,15 +18833,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_muniu: {
+              equipSkill:true,
               enable: 'phaseUse',
               usable: 1,
-              prompt: '请选择1名角色交给其一张牌然后你摸一张牌',
+              prompt: '请选择一名角色交给其一张牌然后你摸一张牌',
               filterTarget: function (card, player, target) {
                 return player != target;
               },
+              filter:function(event,player){
+                return player.countCards('h') != 0;
+              },
               filterCard: true,
               discard: false,
-              lose: false,
+              lose: true,
               check: function (card) {
                 return 6 - ai.get.value(card);
               },
@@ -18864,6 +18869,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_yuxi: {
+              equipSkill:true,
               trigger: { player: 'phaseBegin' },
               forced: true,
               content: function () {
@@ -18876,6 +18882,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             _jlsgqs_yuxi2: {
+              equipSkill:true,
               trigger: { player: 'shaHit' },
               filter: function (event, player) {
                 if (player != event.player) return false;
@@ -18906,6 +18913,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_xiujian: {
+              equipSkill:true,
               trigger: { player: 'phaseBegin' },
               direct: true,
               filter: function (event, player) {
@@ -18939,6 +18947,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_qixingbaodao: {
+              equipSkill:true,
               trigger: { player: 'shaMiss' },
               filter: function (event, player) {
                 return event.target && event.target.countCards('e');
@@ -18967,6 +18976,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_dunjiatianshu: {
+              equipSkill:true,
               mod: {
                 globalTo: function (from, to, distance) {
                   var e1 = to.get('e', '3');
@@ -18986,9 +18996,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_taipingyaoshu: {
+              equipSkill:true,
               enable: 'phaseUse',
               usable: 1,
-              prompt: '请选择1名角色令其摸一张牌',
+              prompt: '请选择一名角色令其摸一张牌',
               filterTarget: true,
               content: function () {
                 target.draw();
@@ -19039,15 +19050,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgqs_qingmeizhujiu: '青梅煮酒',
             jlsgqs_qingmeizhujiu_info: '出牌阶段对一名其他角色使用，该角色展示一张手牌，然后你可以弃置一张大于此牌的手牌并回复一点体力，或者弃置一张不大于此牌的手牌令其回复一点体力',
             jlsgqs_shuiyanqijun: '水淹七军',
-            jlsgqs_shuiyanqijun_info: '出牌阶段，对一名其他角色使用。若判定结果不为方片，则该角色出牌阶段开始时须弃置一半数量的手牌（向上取整）',
+            jlsgqs_shuiyanqijun_info: '出牌阶段，对对你攻击范围内的一名其他角色使用。若判定结果不为方片，则该角色出牌阶段开始时须弃置一半数量的手牌（向上取整）',
             jlsgqs_yuqingguzong: '欲擒故纵',
-            jlsgqs_yuqingguzong_info: '出牌阶段，对你攻击范围内的一名其他角色使用。你令该角色摸1张牌，然后其选择一项：令你获得其两张手牌，或受到1点火焰伤害',
+            jlsgqs_yuqingguzong_info: '出牌阶段，一名其他角色使用。你令该角色摸1张牌，然后其选择一项：令你获得其两张手牌，或受到1点火焰伤害',
             jlsgqs_caochuanjiejian: '草船借箭',
             jlsgqs_caochuanjiejian_info: '出牌阶段，对除你以外的所有角色使用。每名目标角色须依次选择一项：对你使用一张【杀】；或令你获得其1张牌。',
             jlsgqs_wangmeizhike: '望梅止渴',
             jlsgqs_wangmeizhike_info: '出牌阶段，对所有人使用。每名角色按下列规则依次结算：若体力值为1，则回复1点体力；若体力值大于1，则摸两张牌',
             jlsgqs_mei: '梅',
-            jlsgqs_mei_info: '出牌阶段，对一名角色使用，目标角色若体力值大于1，则摸两张牌；否则回复一点体力。一名角色处于处于濒死状态时，对其使用，其回复1点体力，若因此脱离濒死状态，该角色摸1张牌。',
+            jlsgqs_mei_info: '出牌阶段，对一名角色使用，目标角色若体力值大于1，则摸两张牌；否则回复一点体力。一名其他角色处于处于濒死状态时，对其使用，其回复1点体力，若因此脱离濒死状态，该角色摸1张牌。',
           },
           list: [
             ["heart", 5, "sha", "fire"],
@@ -19097,9 +19108,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             ["club", 12, "wuxie"],
           ]
         };
-        const extname = _status.extension;
-        for (const cardName in jlsg_qs.card) {
-          const card = jlsg_qs.card[cardName];
+        var extname = _status.extension;
+        for (var cardName in jlsg_qs.card) {
+          var card = jlsg_qs.card[cardName];
           if (card.fullskin) {
             if (_status.evaluatingExtension) {
               card.image = `db:extension-${extname}:${cardName}.png`;
@@ -19123,7 +19134,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           return false;
         }
       });
-      let jlsg = {
+      var jlsg = {
         ai: {
           skill: {
             lose_equip: 'xiaoji|xuanfeng',
@@ -20049,8 +20060,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.1.02010fix1",
+      version: "2.1.02011",
       changelog: `\
+2021.02.12更新<br>
+&ensp; 修复许诸的同将替换。<br>
+&ensp; 修复七杀 梅 描述。<br>
+&ensp; 优化七杀 木牛流马 AI。<br>
+&ensp; 优化七杀 太平要术 AI。<br>
+&ensp; 优化七杀 欲擒故纵 AI。<br>
+&ensp; 优化七杀 欲擒故纵 AI。<br>
+&ensp; 修复SR貂蝉 拜月 描述&效果。<br>
+2021.02.11更新<br>
+&ensp; 修复七杀 水淹七军 使用距离。<br>
+&ensp; 现在拓展会复写游戏对极略三英boss的禁止AI设置。来允许玩家能随机到极略三英boss。<br>
+&ensp; 如果不希望三英武将出现在常规模式，请手动打开极略三英包的AI禁选！。<br>
+&ensp; 修改吕玲绮 戟舞 描述漏洞。<br>
+2021.02.10fix1<br>
+&ensp; 增加对旧版webview的兼容性。<br>
+&ensp; 你可能需要升级手机的webview版本才能正确导入未来的极略拓展。<br>
+&ensp; SK吕玲绮的杀效果展示可能无法在旧版的webview上出现。<br>
+历史：<br>
 2021.02.08fix1<br>
 &ensp; 修复三英神司马懿 权衡<br>
 &ensp; 修复三英神司马懿 权衡配音<br>
@@ -20072,40 +20101,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 2021.02.10更新<br>
 &ensp; 优化SK吕玲绮 戟舞杀的效果移除<br>
 &ensp; 修复 阵亡配音可能无法播放。<br>
-历史：<br>
-2021.02.07更新<br>
-&ensp; 优化七杀包。七杀包现在在“卡牌”页面中关闭。<br>
-&ensp; 七杀包 水淹七军 无法正确触发。<br>
-&ensp; SR陆逊体力上限回滚为3。<br>
-&ensp; SK曹冲 仁心 优化AI<br>
-&ensp; SK张宝 咒缚 优化发动时机 大幅优化AI 优化UX。<br>
-&ensp; SK张宝 咒缚 与其他武将统一，不再能使锁定技失效。<br>
-&ensp; 增加了极略三英武将 三英武将目前缺少配音。<br>
-&ensp; 重制了所有极略三英武将的贴图。<br>
-&ensp; 添加了所有极略三英武将的觉醒语音。<br>
-&ensp; 更新了SK神孙尚香贴图。<br>
-&ensp; 添加了七杀包打出卡牌的语音。<br>
-&ensp; 添加七杀 水淹七军 发动音效。<br>
-&ensp; 修复SR夏侯惇 忠候濒死自救。<br>
-2021.02.08更新<br>
-&ensp; 增加了导入成功的机率（理论上）。<br>
-&ensp; 优化三英神司马懿 博略 音效。<br>
-&ensp; 添加四个包所有角色阵亡音效。<br>
-&ensp; 修复SK神司马懿 通天 配音。<br>
-&ensp; 增加三英神董卓 纵欲 凌虐 暴政 横行技能配音。<br>
-&ensp; 增加三英神张角 布教 太平 妖惑 三治技能配音。<br>
-&ensp; 增加三英神魏延 恃傲 反骨 狂袭技能配音。<br>
-&ensp; 优化三英神魏延 恃傲 发动条件。<br>
-&ensp; 增加三英神孙皓 明政 嗜杀 荒淫 归命技能配音。<br>
-&ensp; 优化SK神周瑜 琴音 配音映射。<br>
-&ensp; 修复SK神孙权 虎踞 配音映射。添加虎踞觉醒配音。<br>
-&ensp; 添加SK糜竺 商道 配音。<br>
-&ensp; 添加SK全琮 邀名 配音 修复配音映射。<br>
-&ensp; 修复SK全琮人名。<br>
-&ensp; 添加SK神典韦 掷戟 配音。<br>
-&ensp; 添加SK神孙尚香 贤助 良缘 配音。<br>
-&ensp; 添加SK关兴 勇继 武志 配音。<br>
-&ensp; 添加三英神蔡夫人 诋毁 乱嗣 祸心 配音。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
