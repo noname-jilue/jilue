@@ -8227,7 +8227,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 0'
                 if (cards[0]) {
                   player.discard(player.getCards('h').remove(cards[0]));
-                } else {
+                } else if (player.countCards('h') == 0) {
                   player.draw();
                 }
                 'step 1'
@@ -8365,6 +8365,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               enable: ['chooseToUse', 'chooseToRespond'],
               filterCard: { type: 'equip' },
               viewAs: { name: 'sha' },
+              viewAsFilter:function(player){
+                return player.countCards('he',{ type: 'equip' }) != 0;
+              },
               position: 'he',
               prompt: '将一张装备牌当【杀】使用或打出',
               check: function (card) {
@@ -20062,6 +20065,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       forumURL: "",
       version: "2.2.02012",
       changelog: `\
+2021.02.13更新<br>
+&ensp; 优化SR吕布 射戟询问。<br>
+&ensp; 修复SR吕布 极武摸牌。<br>
+历史：<br>
 2021.02.12更新<br>
 &ensp; 修复许诸的同将替换。<br>
 &ensp; 修复七杀 梅 描述。<br>
@@ -20079,28 +20086,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 增加对旧版webview的兼容性。<br>
 &ensp; 你可能需要升级手机的webview版本才能正确导入未来的极略拓展。<br>
 &ensp; SK吕玲绮的杀效果展示可能无法在旧版的webview上出现。<br>
-历史：<br>
-2021.02.08fix1<br>
-&ensp; 修复三英神司马懿 权衡<br>
-&ensp; 修复三英神司马懿 权衡配音<br>
-&ensp; 更改魂裂包神将为神势力<br>
-2021.02.09更新<br>
-&ensp; 合并优化了三英武将觉醒的代码。<br>
-&ensp; 添加了三英武将在双将模式中觉醒的支持。<br>
-&ensp; 回滚SK神曹操 SK神貂蝉 SK神黄月英 SK神华佗 SK神吕布 SK神夏侯惇。<br>
-&ensp; 修改SK神贾诩 顺世 优化AI。<br>
-&ensp; 修复SK神司马懿 通天 描述。优化衍生技能代码。<br>
-&ensp; 修复SK神司马懿 完杀 优化通天选卡逻辑&标记UI。<br>
-&ensp; 修复SK神夏侯惇 啖睛配音， 优化配音映射与UX。<br>
-&ensp; 优化SK神诸葛亮 技能描述。修复技能名称为“七星”<br>
-&ensp; 优化SR吕布 戟舞&射戟<br>
-&ensp; 修复SK孔融 礼让 描述<br>
-&ensp; 优化SK于吉 蛊惑 描述<br>
-&ensp; 优化七杀 欲擒故纵 AI<br>
-&ensp; 增加SK吕玲绮 杀效果展示 可能有点丑<br>
-2021.02.10更新<br>
-&ensp; 优化SK吕玲绮 戟舞杀的效果移除<br>
-&ensp; 修复 阵亡配音可能无法播放。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
