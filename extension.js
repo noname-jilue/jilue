@@ -198,6 +198,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_guanyu: ['male', 'wei', 4, ['jlsg_wusheng', 'jlsg_danqi'], []],
             jlsgsk_zhangbao: ['male', 'qun', 3, ['jlsg_zhoufu', 'jlsg_yingbing'], []],
             jlsgsk_guanxing: ["male", 'shu', 4, ["jlsg_yongji", "jlsg_wuzhi"], []],
+            jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
           },
           characterIntro: {},
           skill: {
@@ -6187,6 +6188,43 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (card) player.gain(card, 'gain2', 'log');
               }
             },
+            jlsg_hubu: {
+              audio: "ext:极略:1",
+              trigger: { player: 'damageEnd', source: 'damageEnd' },
+              filter: function (event) {
+                return event.card && event.card.name == 'sha'; // && event.notLink();
+              },
+              direct: true,
+              content: function () {
+                'step 0'
+                player.chooseTarget('是否发动【虎步】？', function (card, player, target) {
+                  return player != target && player.canUse('juedou', target);
+                }).ai = function (target) {
+                  return get.effect(target, { name: 'juedou' }, player, target);
+                }
+                'step 1'
+                if (result.bool) {
+                  event.target = result.targets[0];
+                  event.target.judge(function (card) {
+                    if (get.suit(card) == 'spade') return 1;
+                    return -0.5;
+                  });
+                }
+                else {
+                  event.finish();
+                }
+                'step 2'
+                if (result.judge < 0) {
+                  lib.skill.global.remove('_wuxie');
+                  player.useCard({ name: 'juedou' }, event.target);
+                }
+                else {
+                  event.finish();
+                }
+                'step 3'
+                lib.skill.global.push('_wuxie');
+              }
+            },
           },
           translate: {
             jlsg_sk: "SK武将",
@@ -6508,6 +6546,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhengyi_info: "你出牌阶段出牌时，若你的手牌数等于你的体力值+1，你可以视为使用任意一张基本牌，然后弃一张牌；你的回合外，当你需要使用或打出一张基本牌时，若你的手牌数等于你的体力值-1，则你可以摸一张牌并视为使用或打出了此牌。",
             jlsg_kuangfu: "狂斧",
             jlsg_kuangfu_info: "当你使用【杀】对目标角色造成伤害后，你可以获得其装备区里的一张牌。",
+            jlsg_hubu: "虎步",
+            jlsg_hubu_info: '你每使用【杀】造成一次伤害后或受到一次其他角色使用【杀】造成的伤害后，可以令除你外的任意角色进行一次判定；若结果不为黑桃，则视为你对其使用一张【决斗】（此【决斗】不能被【无懈可击】响应）。',
           },
         };
         if (lib.device || lib.node) {
@@ -6555,7 +6595,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsr_lvbu: ['male', 'qun', 4, ['jlsg_jiwu', 'jlsg_sheji'], []],
             jlsgsr_huatuo: ['male', 'qun', 3, ['jlsg_xingyi', 'jlsg_guagu', 'jlsg_wuqin'], []],
             jlsgsr_diaochan: ['female', 'qun', 3, ['jlsg_lijian', 'jlsg_manwu', 'jlsg_baiyue'], []],
-            jlsgsr_shuangxiong: ['male', 'qun', 4, ['jlsg_hubu', 'jlsg_langxing', 'jlsg_shuangxiong'], []],
           },
           characterIntro: {},
           skill: {
@@ -6645,153 +6684,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     event.goto(2);
                   }
                 }
-              },
-            },
-            jlsg_langxing: {
-              audio: "ext:极略:2",
-              srlose: true,
-              trigger: { player: 'phaseDrawBefore' },
-              check: function (event, player) {
-                if (!game.hasPlayer(function (cur) {
-                  return get.attitude(player, cur) < 0;
-                })) return false;
-                if (player.countCards('h') > (player.hp + 1)) return true;
-                if (player.countCards('h') > 3) return true;
-                return false;
-              },
-              content: function () {
-                "step 0"
-                trigger.cancel();
-                player.judge(ui.special);
-                "step 1"
-                player.addTempSkill('jlsg_langxing2', 'phaseAfter');
-                player.storage.jlsg_langxing2 = get.color(result.card);
-              }
-            },
-            jlsg_langxing2: {
-              audio: "ext:极略:true",
-              enable: 'phaseUse',
-              viewAs: { name: 'juedou' },
-              filterCard: function (card, player) {
-                return get.color(card) != player.storage.jlsg_langxing2;
-              },
-              prompt: function () {
-                var player = _status.event.player;
-                var str = '将一张' + (player.storage.jlsg_langxing2 != 'red' ? '红' : '黑') + '色手牌当做【决斗】使用';
-                return str;
-              },
-              check: function (card) {
-                return 6 - get.value(card);
-              },
-              ai: {
-                order: 5,
-              }
-            },
-            jlsg_hubu: {
-              audio: "ext:极略:1",
-              srlose: true,
-              trigger: { player: 'damageEnd', source: 'damageEnd' },
-              filter: function (event) {
-                return event.card && event.card.name == 'sha' && event.notLink();
-              },
-              direct: true,
-              content: function () {
-                'step 0'
-                var next = player.chooseTarget('是否发动【虎步】？', function (card, player, target) {
-                  return player != target && player.canUse('juedou', target);
-                });
-                next.ai = function (target) {
-                  return get.effect(target, { name: 'juedou' }, player, target);
-                };
-                'step 1'
-                if (result.bool) {
-                  player.logSkill('jlsg_hubu', result.targets[0]);
-                  event.target = result.targets[0];
-                  event.target.judge(function (card) {
-                    if (get.suit(card) != 'spade') return 1;
-                    return -0.5;
-                  });
-                } else {
-                  event.finish();
-                }
-                'step 2'
-                if (result.bool) {
-                  lib.skill.global.remove('_wuxie');
-                  player.useCard({ name: 'juedou' }, event.target);
-                } else {
-                  event.finish();
-                }
-                'step 3'
-                lib.skill.global.push('_wuxie');
-              }
-            },
-            jlsg_shuangxiong_sha: {
-              trigger: {
-                player: "judgeAfter",
-              },
-              audio: 'ext:极略:true',
-              forced: true,
-              filter: function (event, player) {
-                return (get.color(event.result.card) == 'black');
-              },
-              content: function () {
-                var card = get.cardPile('sha');
-                if (card) player.gain(card, 'gain2', 'log');
-                else player.chat('牌堆里已经没有杀了');
-              },
-            },
-            jlsg_shuangxiong_shan: {
-              trigger: {
-                player: "judgeAfter",
-              },
-              audio: 'ext:极略:true',
-              forced: true,
-              filter: function (event, player) {
-                return (get.color(event.result.card) == 'red');
-              },
-              content: function () {
-                var card = get.cardPile('shan');
-                if (card) player.gain(card, 'gain2', 'log');
-                else player.chat('牌堆里已经没有闪了');
-              },
-            },
-            jlsg_shuangxiong: {
-              //audio:"ext:极略:2",
-              trigger: {
-                player: ["juedouBefore"],
-                target: ["juedouBefore"],
-              },
-              forced: true,
-              silent: true,
-              group: ["jlsg_shuangxiong_sha", "jlsg_shuangxiong_shan"],
-              content: function () {
-                if (trigger.player == player) player.addTempSkill('jlsg_shuangxiong1', { player: 'juedouAfter' });
-                if (trigger.target == player) player.addTempSkill('jlsg_shuangxiong1', { target: 'juedouAfter' });
-              },
-            },
-            jlsg_shuangxiong1: {
-              enable: ["chooseToRespond"],
-              filterCard: true,
-              audio: "ext:极略:2",
-              position: "he",
-              viewAs: { name: "sha", },
-              viewAsFilter: function (player) {
-                if (player.countCards('he') <= 0) return false;
-              },
-              prompt: "将任意一张牌当【杀】打出",
-              check: function (card) {
-                if (_status.event.player.hp <= 1) return 7 - get.value(card);
-                return 6 - get.value(card);
-              },
-              ai: {
-                skillTagFilter: function (player) {
-                  if (player.countCards('he') <= 0) return false;
-                },
-                respondSha: true,
-                order: function () {
-                  if (_status.event.player.hasSkillTag('presha', true, null, true)) return 10.1;
-                  return 3.1;
-                },
               },
             },
             jlsg_wuwei: {
@@ -12786,13 +12678,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_lijian: '离间',
             jlsg_manwu: '曼舞',
             jlsg_baiyue: '拜月',
-            jlsg_hubu: "虎步",
-            jlsg_langxing: "狼行",
-            jlsg_langxing2: "狼行·决斗",
-            jlsg_shuangxiong: "双雄",
-            jlsg_shuangxiong1: "双雄·出杀",
-            jlsg_shuangxiong_sha: "双雄·摸杀",
-            jlsg_shuangxiong_shan: "双雄·摸闪",
             jlsg_old_zhishi: '治世',
             jlsg_old_youxia: '游侠',
             jlsg_old_jiexi: '劫袭',
@@ -12809,9 +12694,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_old_dailao_info: '出牌阶段限一次，你可以令一名其他角色与你各摸一张牌或各弃置一张牌，然后你与其依次将武将牌翻面。',
             jlsg_old_youdi_info: '若你的武将牌背面朝上，你可以将其翻面来视为你使用一张【闪】。每当你使用【闪】响应一名角色使用的【杀】时，你可以额外弃置任意数量的手牌，然后该角色弃置等量的牌。',
             jlsg_old_ruya_info: '当你失去最后的手牌时，你可以翻面并将手牌补至你体力上限的张数。',
-            jlsg_shuangxiong_info: "你处于决斗状态时，你可以将任意一张牌当【杀】打出；当你的判定牌生效时：若为黑色，你从牌堆里摸一张【杀】；若为红色，你从牌堆里摸一张【闪】。",
-            jlsg_hubu_info: "你每使用【杀】造成一次伤害后或受到一次其他角色使用【杀】造成的伤害后，可以令除你外的任意角色进行一次判定；若结果不为黑桃，则视为你对其使用一张【决斗】（此【决斗】不能被【无懈可击】响应）。",
-            jlsg_langxing_info: "摸牌阶段开始时，你可以选择放弃摸牌并进行一次判定，此回合可以将任意一张与该判定牌不同颜色的手牌当【决斗】使用。",
             jlsg_wuwei_info: '摸牌阶段，你可以放弃摸牌，改为亮出牌堆顶的3张牌，其中每有一张基本牌，你便可视为对一名其他角色使用一张杀(每阶段对每名角色限一次)。然后将这些基本牌置入弃牌堆，其余收入手牌。',
             jlsg_yansha_info: '摸牌阶段，你可以少摸一张牌。若如此做，本回合弃牌阶段开始时，你可以将一张手牌置于武将牌上，称为「掩」。当一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
             jlsg_yansha2_info: '一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
@@ -20063,11 +19945,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.02012",
+      version: "2.2.02013",
       changelog: `\
 2021.02.13更新<br>
 &ensp; 优化SR吕布 射戟询问。<br>
 &ensp; 修复SR吕布 极武摸牌。<br>
+&ensp; 移除DIYSR颜良文丑 加回SK颜良。<br>
 历史：<br>
 2021.02.12更新<br>
 &ensp; 修复许诸的同将替换。<br>
