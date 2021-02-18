@@ -19954,6 +19954,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK神赵云 技能名<br>
 &ensp; 重新采用极略全扩中的高清图，替换了全部武将立绘<br>
 &ensp; 去除了原图的水印，重新裁剪了部分原图，同时使用mozJPEG压缩以控制立绘的大小。<br>
+&ensp; 修正了七杀包 七星宝刀、玉玺、木牛流马的贴图。<br>
 2021.02.13更新<br>
 &ensp; 优化SR吕布 射戟询问。<br>
 &ensp; 修复SR吕布 极武摸牌。<br>
