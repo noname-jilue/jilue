@@ -5993,11 +5993,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_zhenlie: {
               audio: "ext:极略:1",
-              trigger: { target: 'useCardToBefore' },
+              trigger: { target: 'useCardToTargeted' },
               filter: function (event, player) {
                 return event.player != player && event.card && (event.card.name == 'sha' || get.type(event.card, 'trick') == 'trick');
               },
               check: function (event, player) {
+                if(event.getParent().excluded.contains(player)) return false;
                 if (get.attitude(player, event.player) > 0) {
                   return false;
                 }
@@ -6021,7 +6022,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 0"
                 player.loseHp();
                 "step 1"
-                trigger.cancel();
+                trigger.getParent().excluded.add(player);
                 "step 2"
                 if (player.countCards('he')) {
                   player.chooseToDiscard('你可以弃置一张牌，令' + get.translation(trigger.player) + '展示所有手牌并弃置与之花色相同的牌，若不如此做，其失去1点体力', 'he').set('ai', function (card) {
@@ -10046,7 +10047,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               direct: true,
               content: function () {
-                player.discardPlayerCard(trigger.target, 'he', true);
+                player.discardPlayerCard(trigger.target, 'he');
               }
             },
             jlsg_old_dailao: {
@@ -12333,20 +12334,29 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               filter: function (event, player) {
                 if (player.isDying()) return false;
-                if (event.skill == 'jlsg_zhonghou_phaseUse_backup' && !player.hasSkill('zh_mark')) return true;
-                if (event.skill == 'jlsg_zhonghou_sha' && !player.hasSkill('zh_mark')) return true;
-                if (event.skill == 'jlsg_zhonghou_shan' && !player.hasSkill('zh_mark')) return true;
-                if (event.skill == 'jlsg_zhonghou_tao' && !player.hasSkill('zh_mark')) return true;
+                if (player.hasSkill('zh_mark')) return false;
+                if (event.skill == 'jlsg_zhonghou_phaseUse_backup') return true;
+                if (event.skill == 'jlsg_zhonghou_sha') return true;
+                if (event.skill == 'jlsg_zhonghou_shan') return true;
+                if (event.skill == 'jlsg_zhonghou_tao') return true;
+                return false;
               },
               content: function () {
                 'step 0'
+                debugger;
                 player.addTempSkill('zh_mark');
                 var list = game.filterPlayer();
                 for (var i = 0; i < list.length; i++) {
                   if (list[i] != player && !list[i].hasSkill('zh_mark')) {
                     list[i].addTempSkill('zh_mark');
-                    player.line(list[i], 'green');
+                    // player.line(list[i], 'green');
                   }
+                }
+                if (trigger.player == player) {
+                  // player.logSkill("jlsg_zhonghou");
+                  player.loseHp();
+                  event.finish();
+                  return;
                 }
                 game.log(trigger.player, '向', player, '请求使用一张', trigger.card);
                 player.chooseBool('是否失去1点体力视为' + get.translation(trigger.player) + '使用一张' + get.translation(trigger.card) + '？', function () {
@@ -12367,19 +12377,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return false;
                 });
                 'step 1'
+                debugger;
                 if (result.bool) {
                   player.loseHp();
                   event.finish();
                 }
                 else {
-                  var str = '拒绝';
-                  if (Math.random() < 1) {
-                    str = '丑拒'
-                  }
-                  else {
-                    str = '蠢拒';
-                  }
-                  game.log(player, str + '了', trigger.player);
+                  var str = Math.random() < 0.5 ? '丑拒了' : '蠢拒了';
+                  game.log(player, str, trigger.player);
                   if (trigger.name == 'respond') {
                     if (trigger.parent.result) {
                       trigger.parent.result.bool = false;
@@ -12731,8 +12736,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_sanfen_info: '出牌阶段限一次，你可以选择两名其他角色，其中一名你选择的角色须对另一名角色使用一张【杀】，然后另一名角色须对你使用一张【杀】，你弃置不如此做者一张牌。（使用杀有距离限制）',
             jlsg_guanxing_info: '回合开始/结束阶段开始时，你可以观看牌堆顶的X张牌（X为存活角色的数量，且最多为3），将其中任意数量的牌以任意顺序置于牌堆顶，其余以任意顺序置于牌堆底。',
             jlsg_weiwo_info: '锁定技，当你有手牌时，你防止受到的属性伤害；当你没有手牌时，你防止受到的非属性伤害。',
-            jlsg_shouji_info: '出牌阶段限1次，你可以弃置一张牌并选择两名角色，然后根据你弃置牌的花色，视为其中一名角色对另一名角色使用一张牌：黑桃【决斗】，梅花【过河拆桥】，红桃【顺手牵羊】，方片【火攻】。',
-            jlsg_hemou_info: '其他角色的出牌阶段开始时，你可以将一张手牌正面朝上交给该角色，该角色本阶段限1次，可将一张与之相同花色的手牌按下列规则使用：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
+            jlsg_shouji_info: '出牌阶段限1次，你可以弃置一张牌并选择两名角色，然后根据你弃置牌的花色，视为其中一名角色对另一名角色使用一张牌：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
+            jlsg_hemou_info: '其他角色的出牌阶段开始时，你可以将一张手牌正面朝上交给该角色，该角色本阶段限一次，可将一张与之相同花色的手牌按下列规则使用：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
             jlsg_qicai_info: '每当你失去一次手牌时，你可以进行判定，若结果为红色，你摸一张牌。',
             jlsg_rende_info: '任一角色的回合结束阶段结束时，你可以将任意数量的手牌交给该角色，然后该角色进行1个额外的出牌阶段。',
             jlsg_chouxi_info: '出牌阶段限1次，你可以弃置一张手牌并展示牌堆顶的2张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
@@ -12758,9 +12763,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_youxia_info: '出牌阶段，若你的武将牌正面朝上，你可以将你的武将牌翻面，然后从一至两名其他角色处各获得一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【决斗】的目标。',
             jlsg_old_youxia_info: '出牌阶段限1次，你可以将你的武将牌翻面，然后从1至2名其他角色的区域各弃置一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【兵粮寸断】的目标。',
 
-            // 语文都tm不会还搁着出技能 爬
             jlsg_huailing_info: '若你的武将牌背面朝上，其他角色使用一张锦囊牌指定大于一个目标时，你可以令一名其他角色不受到该牌的效果，然后你将武将牌正面朝上；锁定技，若你的武将牌背面朝上，你不能成为【决斗】和【过河拆桥】的目标。',
-            jlsg_dailao_info: '你可以将武将牌背面朝上并摸一张牌，视为对一名其他角色使用一张【杀】，然后弃置该目标的一张牌。',
+            jlsg_dailao_info: '若你的武将牌正面朝上，你可以将武将牌翻面并摸一张牌视为使用或打出一张【杀】，你以此法使用的杀结算完成后可以弃置目标角色的一张牌。',
             jlsg_youdi_info: '若你的武将牌背面朝上，你可以将其翻面来视为你使用一张【闪】。每当你使用【闪】响应一名角色使用的【杀】时，你可以弃置至多X张牌，然后该角色弃置等量的牌（X为该角色的牌数）。',
             jlsg_ruya_info: '当你失去最后的手牌时，你可以翻面并将手牌补至你体力上限的张数。',
             jlsg_quanheng_info: '出牌阶段限一次，你可以将至少一张手牌当【无中生有】或【杀】使用，若你以此法使用的牌被【无懈可击】或【闪】响应时，你摸等量的牌。',
@@ -14020,13 +14024,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               forced: true,
               audio: "ext:极略:true",
               filter: function (event) {
-                return event.num > 0;
+                return event.num != 0;
               },
               content: function () {
-                //player.logSkill('jlsg_kuangbao');
-                player.storage.jlsg_kuangbao += trigger.num;
-                player.markSkill('jlsg_kuangbao');
-                player.syncStorage('jlsg_kuangbao');
+                player.addMark('jlsg_kuangbao', trigger.num);
               },
             },
             jlsg_wumou: {
@@ -14069,8 +14070,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                player.storage.jlsg_kuangbao -= 2;
-                player.syncStorage('jlsg_kuangbao');
+                player.removeMark('jlsg_kuangbao', 2);
                 'step 1'
                 player.addTempSkill('wushuang', 'phaseAfter');
                 player.addTempSkill('jlsg_wuqian_buff', 'phaseAfter');
@@ -14082,11 +14082,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   popup: false,
                   audio: false,
                   filter: function (event) {
-                    return event.num > 0 && event.parent.skill == 'wushuang';
+                    return event.num != 0;
                   },
                   content: function () {
-                    player.storage.jlsg_kuangbao++;
-                    player.syncStorage('jlsg_kuangbao');
+                    player.addMark('jlsg_kuangbao');
                   }
                 }
               },
@@ -16575,10 +16574,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_suohun2: '索魂',
             jlsg_juejing: '绝境',
             jlsg_longhun: '龙魂',
-            jlsg_longhun_1: '龙魂·桃',
-            jlsg_longhun_2: '龙魂·杀',
-            jlsg_longhun_3: '龙魂·无懈',
-            jlsg_longhun_4: '龙魂·闪',
+            jlsg_longhun1: '龙魂·桃',
+            jlsg_longhun2: '龙魂·杀',
+            jlsg_longhun3: '龙魂·无懈',
+            jlsg_longhun4: '龙魂·闪',
             jlsg_nizhan: '逆战',
             jlsg_cuifeng: '摧锋',
             jlsg_weizhen: '威震',
@@ -19945,8 +19944,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.02013",
+      version: "2.2.0218",
       changelog: `\
+2021.02.18更新<br>
+&ensp; 优化SR陆逊 代劳描述。<br>
+&ensp; 修复SR黄月英 授计 描述。<br>
+&ensp; 修复SK神吕布 无前 无法正确使标记获得加成。<br>
+&ensp; 修复SK王异 贞烈<br>
+&ensp; 修复SK神赵云 技能名<br>
+&ensp; 重新采用极略全扩中的高清图，替换了全部武将立绘<br>
+&ensp; 去除了原图的水印，重新裁剪了部分原图，同时使用mozJPEG压缩以控制立绘的大小。<br>
 2021.02.13更新<br>
 &ensp; 优化SR吕布 射戟询问。<br>
 &ensp; 修复SR吕布 极武摸牌。<br>
