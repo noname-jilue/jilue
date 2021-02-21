@@ -122,13 +122,23 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
     }, 
     precontent: function (config) {
       if (!config.enable) { return; }
+      if (navigator.userAgent.indexOf('HUAWEI') != -1) {
+        alert("极略：部分华为手机无法使用极略拓展。无法导入请尝试万能导入。导入消失请不要咨询作者。");
+      }
+      try {
+        let a = 1;
+        const b = 1;
+      } catch (error) {
+        alert("极略怕是无法在你的设备上正确运行。请更新webview","极略");
+        console.error(error, navigator.userAgent);
+      }
       if (this.package.changelog) {
         game.showExtensionChangeLog(this.package.changelog);
       }
       // lib.init.js(lib.assetURL +'extension/极略/jlsg_martial.js');
       // lib.config.all.mode.add('jlsg_martial');
       if (config.debug) {
-        lib.config.characters = ["jlsg_sk", "jlsg_sr", "jlsg_soul"];
+        lib.config.characters = ["jlsg_sk", "jlsg_sr", "jlsg_soul", "jlsg_sy"];
       }
       game.import('character', function () { // SK
         var jlsg_sk = {
@@ -3350,6 +3360,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   trigger: { source: 'damageBegin' },
                   forced: true,
                   filter: function (event, player) {
+                    if (!event.card) return false;
                     var criterion = event.card.name == "sha" && (event.card.isJiwu && event.card.isJiwu[3] ||
                       event.card.cards && event.card.cards.length == 1 && event.card.cards[0].isJiwu && event.card.cards[0].isJiwu[3]);
                     return criterion && event.notLink();
@@ -7621,7 +7632,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   }).set('judging', trigger.player.judging[0]);
                 "step 1"
-                console.log(result);
                 if (result.bool) {
                   event.cards = result.cards;
                 } else {
@@ -8565,77 +8575,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 //target.$phaseJudge(event.card);
                 target.showCards(event.card);
                 player.chooseCard(get.translation(target) + '展示的牌是' + get.translation(event.card) + ',请选择你展示的牌', true).ai = function (card) {
-                  if (get.suit(event.card) == 'diamond') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'heart';
-                    } else {
-                      return get.suit(card) != 'diamond';
-                    }
-                  }
-                  if (get.suit(event.card) == 'diamond') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'club';
-                    } else {
-                      return get.suit(card) != 'spade';
-                    }
-                  }
-                  if (get.suit(event.card) == 'heart') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'diamond';
-                    } else {
-                      return get.suit(card) != 'heart';
-                    }
-                  }
-                  if (get.suit(event.card) == 'heart') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'spade';
-                    } else {
-                      return get.suit(card) != 'club';
-                    }
-                  }
-                  if (get.suit(event.card) == 'spade') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'club';
-                    } else {
-                      return get.suit(card) != 'spade';
-                    }
-                  }
-                  if (get.suit(event.card) == 'spade') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'heart';
-                    } else {
-                      return get.suit(card) != 'diamond';
-                    }
-                  }
-                  if (get.suit(event.card) == 'club') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'diamond';
-                    } else {
-                      return get.suit(card) != 'club';
-                    }
-                  }
-                  if (get.suit(event.card) == 'club') {
-                    if (get.attitude(player, target) > 0) {
-                      return get.suit(card) == 'spade';
-                    } else {
-                      return get.suit(card) != 'heart';
-                    }
-                  }
+                  if (ai.get.attitude(player, target) > 0) return (get.type(event.card, 'trick') == get.type(card, 'trick'));
+                  return (get.type(event.card, 'trick') != get.type(card, 'trick'));
                 }
                 'step 2'
                 player.showCards(result.cards[0]);
-                var bool = false;
-                if (get.suit(event.card) == 'diamond' && get.suit(result.cards[0]) == 'heart') bool = true;
-                if (get.suit(event.card) == 'diamond' && get.suit(result.cards[0]) == 'club') bool = true;
-                if (get.suit(event.card) == 'heart' && get.suit(result.cards[0]) == 'diamond') bool = true;
-                if (get.suit(event.card) == 'heart' && get.suit(result.cards[0]) == 'spade') bool = true;
-                if (get.suit(event.card) == 'spade' && get.suit(result.cards[0]) == 'club') bool = true;
-                if (get.suit(event.card) == 'spade' && get.suit(result.cards[0]) == 'heart') bool = true;
-                if (get.suit(event.card) == 'club' && get.suit(result.cards[0]) == 'diamond') bool = true;
-                if (get.suit(event.card) == 'club' && get.suit(result.cards[0]) == 'spade') bool = true;
-                if (bool == true) {
+                if (get.type(result.cards[0], 'trick') == get.type(event.card, 'trick')) {
                   game.asyncDraw([player, target]);
-                } else {
+                }
+                else {
                   target.discard(event.card);
                 }
               },
@@ -8644,16 +8592,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 result: {
                   player: 0.5,
                   target: function (player, target) {
-                    var hs = player.get('h');
-                    var suit = ['heart', 'diamond', 'club', 'spade'];
-                    var num = 0;
-                    for (var i = 0; i < hs.length; i++) {
-                      if (suit.contains(get.suit(hs[i]))) {
-                        suit.remove(get.suit(hs[i]));
-                        num++;
-                      }
-                    }
-                    var m = num / 4;
+                    var suits = player.getCards('h').map(card=>get.type(card, 'trick'));
+                    var num = new Set(suits).size;
+                    var m = num / 3;
                     if (get.attitude(player, target) > 0 && Math.random() < m) return 1;
                     if (get.attitude(player, target) < 0 && Math.random() < m) return -1;
                     return 0;
@@ -13896,6 +13837,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player, name) {
                 return _status.currentPhase == player && event.player != player;
               },
+              content:function(){}
             },
             jlsg_tongtian_qun2: {
               mod: {
@@ -14992,12 +14934,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_shelie: {
               audio: "ext:极略:1",
-              trigger: { player: 'phaseDrawBegin' },
+              trigger: { player: 'phaseDrawBegin1' },
               forced: true,
               content: function () {
                 'step 0'
-                trigger.cancel();
-
+                trigger.cancel(null,null,'notrigger');
                 event.cards = [];
                 event.num = 1;
                 event.getResultString = function (str) {
@@ -15013,23 +14954,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 };
                 'step 1'
                 player.chooseControl('基本牌', '锦囊牌', '装备牌', function () {
-                  var random = Math.random();
-                  if (random < 0.4) return '锦囊牌';
-                  if (random < 0.8 && random >= 0.4) return '基本牌';
+                  var randomResult = Math.random();
+                  if (randomResult < 0.4) return '锦囊牌';
+                  if (randomResult < 0.8) return '基本牌';
                   return '装备牌';
                 }).set('prompt', '请选择想要获得的第' + get.cnNumber(event.num, true) + '张牌的类型');
                 'step 2'
                 event.control = event.getResultString(result.control);
-                var card = jlsg.findCardInCardPile(function (card) {
-                  return get.type(card) == event.control;
+                var card = get.cardPile2(function (card) {
+                  return get.type(card, 'trick') == event.control && !event.cards.contains(card);
                 });
-                ui.cardPile.removeChild(card);
-                event.cards.push(card);
+                if (card) {
+                  event.cards.push(card);
+                }
                 if (event.num < 4) {
                   event.num++;
                   event.goto(1);
                 } else {
-                  player.gain(event.cards, 'draw');
+                  if (event.cards.length) {
+                    player.gain(event.cards, 'gain2');
+                  }
                 }
               }
             },
@@ -17351,7 +17295,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 0"
                 event.num = trigger.num;
                 "step 1"
-                player.chooseTarget('选择1名目标令其获得1枚平印记', function (card, player, target) {
+                player.chooseTarget('选择一名目标令其获得1枚平印记', function (card, player, target) {
                   return player != target
                 }).ai = function (target) {
                   return -ai.get.attitude(player, target);
@@ -17626,7 +17570,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (!event.target.num('h')) return '选项一';
                   if (event.target.num('h') && event.target.isAlive()) return '选项二';
                   return '选项一';
-                }).set('prompt', '诋毁<br><br><div class="text">选项一: 自己摸一张牌</div><br><div class="text">选项二：弃置受到伤害角色的1张牌</div></br>');
+                }).set('prompt', '诋毁<br><br><div class="text">选项一: 自己摸一张牌</div><br><div class="text">选项二：弃置受到伤害角色的一张牌</div></br>');
                 "step 2"
                 if (result.control == '选项一') {
                   player.draw();
@@ -17945,7 +17889,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 1"
                 target.gain(cards[0], player);
                 event.player = player;
-                target.chooseCard('交给' + get.translation(player) + '1张大于' + get.number(cards[0]) + '的牌然后弃置1张牌或者对' + get.translation(player) + '以外的1名角色造成1点伤害', function (card) {
+                target.chooseCard('交给' + get.translation(player) + '一张大于' + get.number(cards[0]) + '的牌然后弃置一张牌或者对' + get.translation(player) + '以外的一名角色造成1点伤害', function (card) {
                   return get.number(card) > get.number(cards[0]);
                 }).ai = function (card, player) {
                   return 7 - ai.get.value(card);
@@ -17963,7 +17907,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     target.damage(event.target);
                     event.finish();
                   }
-                  target.chooseTarget('请选择1名目标', function (card, player, target) {
+                  target.chooseTarget('请选择一名目标', function (card, player, target) {
                     return event.player != target;
                   }, true).ai = function (target) {
                     return -ai.get.attitude(player, target);
@@ -17998,7 +17942,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 "step 0"
                 event.player = player;
-                trigger.player.chooseTarget('乱政：请选择1名额外目标否则' + get.translation(trigger.card) + '无效', function (card, player, target) {
+                trigger.player.chooseTarget('乱政：请选择一名额外目标否则' + get.translation(trigger.card) + '无效', function (card, player, target) {
                   return player != target && event.player != target;
                 }).ai = function (target) {
                   if (trigger.card.name == 'sha') {
@@ -18090,27 +18034,27 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_luanji: '乱击',
             jlsgsy_quanheng: '权衡',
 
-            jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定1名角色（不得是此牌的使用者）为目标，否则对你无效',
+            jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
             jlsgsy_chanxian_info: '出牌阶段限1次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
-            jlsgsy_canlue_info: '你每从其他角色处获得1张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置1张牌',
-            jlsgsy_zhongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用1张【酒】',
+            jlsgsy_canlue_info: '你每从其他角色处获得一张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置一张牌',
+            jlsgsy_zhongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用一张【酒】',
             jlsgsy_linnue_info: '出牌阶段，你每使用【杀】对目标角色造成1次伤害，可以进行1次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
-            jlsgsy_baozheng_info: '锁定技，其他角色摸牌阶段结束时，若该角色手牌数大于你，须执行下列1项：给你1张方块牌或受到你造成的1点伤害',
-            jlsgsy_nishi_info: '锁定技，摸牌阶段，你摸x张牌(x为你的当前体力值且至多为4)',
+            jlsgsy_baozheng_info: '锁定技，其他角色摸牌阶段结束时，若该角色手牌数大于你，须选择一项：交给你一张方块牌；或受到你造成的1点伤害。',
+            jlsgsy_nishi_info: '锁定技，摸牌阶段，你摸X张牌(X为你的当前体力值且至多为4)',
             jlsgsy_hengxing_info: '当其他角色使用【杀】指定你为目标时，你可以弃置x张牌(x为你当前体力值)，则该【杀】对你无效',
             jlsgsy_baonudongzhuo_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒董卓并立即开始你的回合',
             jlsgsy_baonuzhangrang_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张让并立即开始你的回合',
-            jlsgsy_bujiao_info: '锁定技，其他角色出牌阶段开始时，该角色须交给你1张手牌，然后摸1张牌',
-            jlsgsy_taiping_info: '每当你受到1点伤害后，你可以令1名其他角色获得1枚‘平’标记，其他角色每有1枚‘平’标记，手牌上限便-1，1名角色回合结束后，弃置其拥有的所有‘平’标记',
-            jlsgsy_sanzhi_info: '出牌阶段限1次，你可以弃置任意类型不同的牌各1张并对等量的其他角色各造成1点伤害',
-            jlsgsy_yaohuo_info: '出牌阶段限1次，你可以指定1名有手牌的其他角色弃置与其手牌等量的牌，然后选择1项：1、获得其所有手牌；2、令其失去所有技能你获得之(你不能获得主公技，限定技，觉醒技)直到回合结束',
+            jlsgsy_bujiao_info: '锁定技，其他角色出牌阶段开始时，该角色须交给你一张手牌，然后摸一张牌',
+            jlsgsy_taiping_info: '每当你受到1点伤害后，你可以令一名其他角色获得1枚‘平’标记，其他角色每有1枚‘平’标记，手牌上限便-1，一名角色回合结束后，弃置其拥有的所有‘平’标记',
+            jlsgsy_sanzhi_info: '出牌阶段限1次，你可以弃置任意类型不同的牌各一张并对等量的其他角色各造成1点伤害',
+            jlsgsy_yaohuo_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色弃置与其手牌等量的牌，然后选择1项：1、获得其所有手牌；2、令其失去所有技能你获得之(你不能获得主公技，限定技，觉醒技)直到回合结束',
             jlsgsy_baonuzhangjiao_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张角并立即开始你的回合',
-            jlsgsy_dihui_info: '出牌阶段限1次，你可令场上(除你外)体力值最多的(或之一)的1名角色对另1名角色造成1点伤害，然后你可以执行下列1项：摸1张牌或者弃置受到伤害角色的1张牌',
+            jlsgsy_dihui_info: '出牌阶段限1次，你可令场上(除你外)体力值最多的(或之一)的一名角色对另一名角色造成1点伤害，然后你可以执行下列1项：摸一张牌或者弃置受到伤害角色的一张牌',
             jlsgsy_luansi_info: '出牌阶段限1次，你可以令两名有手牌的其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
             jlsgsy_huoxin_info: '你每造成或受到一次伤害，你可令该角色交给你一张装备区内的装备牌 ，否则其失去一点体力',
             jlsgsy_baonucaifuren_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒蔡夫人并立即开始你的回合',
-            jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用1张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的1名其他角色使用1张【杀】',
-            jlsgsy_kuangxi_info: '出牌阶段，当你使用非延时锦囊牌指定其他角色为目标后，你可以终止此牌的结算，改为视为对这些目标依次使用1张【杀】(不计入出牌阶段的使用限制)',
+            jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用一张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的一名其他角色使用一张【杀】',
+            jlsgsy_kuangxi_info: '出牌阶段，当你使用非延时锦囊牌指定其他角色为目标后，你可以终止此牌的结算，改为视为对这些目标依次使用一张【杀】(不计入出牌阶段的使用限制)',
             jlsgsy_baonuweiyan_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒魏延并立即开始你的回合',
             jlsgsy_fangu_info: '锁定技，每当你受到1次伤害后，当前回合结束，你执行1个额外回合',
 
@@ -18129,7 +18073,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_tianyou2: '天佑',
             jlsgsy_tianyou_info: '回合结束阶段开始时，你可以把牌堆顶的一张牌置于你的武将牌上，称为【佑】。直到你的下个回合开始时，将之置入弃牌堆。当你的武将牌上有牌时，你不能成为与【佑】颜色相同牌的目标',
             jlsgsy_mingzheng: '明政',
-            jlsgsy_mingzheng_info: '锁定技，任意角色摸牌阶段摸牌时，额外摸1张牌，当你受到1次伤害后，失去该技能，并获得技能【嗜杀】（锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀）',
+            jlsgsy_mingzheng_info: '锁定技，任意角色摸牌阶段摸牌时，额外摸一张牌，当你受到1次伤害后，失去该技能，并获得技能【嗜杀】（锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀）',
             jlsgsy_shisha: '嗜杀',
             jlsgsy_shisha_info: '锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀',
             jlsgsy_baonusunhao: '暴怒',
@@ -18936,13 +18880,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgqs_shuiyanqijun: '水淹七军',
             jlsgqs_shuiyanqijun_info: '出牌阶段，对对你攻击范围内的一名其他角色使用。若判定结果不为方片，则该角色出牌阶段开始时须弃置一半数量的手牌（向上取整）',
             jlsgqs_yuqingguzong: '欲擒故纵',
-            jlsgqs_yuqingguzong_info: '出牌阶段，一名其他角色使用。你令该角色摸1张牌，然后其选择一项：令你获得其两张手牌，或受到1点火焰伤害',
+            jlsgqs_yuqingguzong_info: '出牌阶段，一名其他角色使用。你令该角色摸一张牌，然后其选择一项：令你获得其两张手牌，或受到1点火焰伤害',
             jlsgqs_caochuanjiejian: '草船借箭',
-            jlsgqs_caochuanjiejian_info: '出牌阶段，对除你以外的所有角色使用。每名目标角色须依次选择一项：对你使用一张【杀】；或令你获得其1张牌。',
+            jlsgqs_caochuanjiejian_info: '出牌阶段，对除你以外的所有角色使用。每名目标角色须依次选择一项：对你使用一张【杀】；或令你获得其一张牌。',
             jlsgqs_wangmeizhike: '望梅止渴',
             jlsgqs_wangmeizhike_info: '出牌阶段，对所有人使用。每名角色按下列规则依次结算：若体力值为1，则回复1点体力；若体力值大于1，则摸两张牌',
             jlsgqs_mei: '梅',
-            jlsgqs_mei_info: '出牌阶段，对一名角色使用，目标角色若体力值大于1，则摸两张牌；否则回复一点体力。一名其他角色处于处于濒死状态时，对其使用，其回复1点体力，若因此脱离濒死状态，该角色摸1张牌。',
+            jlsgqs_mei_info: '出牌阶段，对一名角色使用，目标角色若体力值大于1，则摸两张牌；否则回复一点体力。一名其他角色处于处于濒死状态时，对其使用，其回复1点体力，若因此脱离濒死状态，该角色摸一张牌。',
           },
           list: [
             ["heart", 5, "sha", "fire"],
@@ -19925,7 +19869,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         "<li>修改SC赵云的贴图（原图太违和。。）" +
         "<li>身为强迫症一枚，调度代码的结构和位置（原代码歪七竖八，不成体统，有失体面。本人受不了这刺激，故而所览之处，代码均已扶正！）" +
         "<br><font color=Green>很多改动都忘了。。。到此为止吧。。。</font>" +
-        "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已"
+        "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已" + 
+        "<br><br><font color=Blue>后言2：</font>以上都是遗留了 SC包已经被我鲨了(●'◡'●) ——xiaoas"
     }, package: {
       character: {
         character: {},
@@ -19944,8 +19889,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0218",
+      version: "2.2.0221",
       changelog: `\
+2021.02.21更新<br>
+&ensp; 加入了设备能否正确运行极略的判断。<br>
+&ensp; 当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
+&ensp; 修复SK神司马懿 通天完杀 bug<br>
+&ensp; 修复SR孙尚香 姻盟 优化AI<br>
+&ensp; 优化SK三英神董卓纵欲 暴政 技能描述<br>
+&ensp; 修复SK神吕蒙 涉猎<br>
+&ensp; 修复SK吕玲绮 造成伤害bug<br>
+&ensp; PS: 拓展可以搬运，既然之前的原作者们没给license，想搬就搬好了。<br>
+历史：<br>
 2021.02.18更新<br>
 &ensp; 优化SR陆逊 代劳描述。<br>
 &ensp; 修复SR黄月英 授计 描述。<br>
@@ -19959,24 +19914,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 优化SR吕布 射戟询问。<br>
 &ensp; 修复SR吕布 极武摸牌。<br>
 &ensp; 移除DIYSR颜良文丑 加回SK颜良。<br>
-历史：<br>
-2021.02.12更新<br>
-&ensp; 修复许诸的同将替换。<br>
-&ensp; 修复七杀 梅 描述。<br>
-&ensp; 优化七杀 木牛流马 AI。<br>
-&ensp; 优化七杀 太平要术 AI。<br>
-&ensp; 优化七杀 欲擒故纵 AI。<br>
-&ensp; 优化七杀 欲擒故纵 AI。<br>
-&ensp; 修复SR貂蝉 拜月 描述&效果。<br>
-2021.02.11更新<br>
-&ensp; 修复七杀 水淹七军 使用距离。<br>
-&ensp; 现在拓展会复写游戏对极略三英boss的禁止AI设置。来允许玩家能随机到极略三英boss。<br>
-&ensp; 如果不希望三英武将出现在常规模式，请手动打开极略三英包的AI禁选！。<br>
-&ensp; 修改吕玲绮 戟舞 描述漏洞。<br>
-2021.02.10fix1<br>
-&ensp; 增加对旧版webview的兼容性。<br>
-&ensp; 你可能需要升级手机的webview版本才能正确导入未来的极略拓展。<br>
-&ensp; SK吕玲绮的杀效果展示可能无法在旧版的webview上出现。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
