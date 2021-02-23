@@ -4379,7 +4379,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 trigger.cancel();
-                console.log(trigger);
                 player.$gain2(trigger.cards);
                 trigger.player.lose(trigger.cards, ui.special, 'tostorage'); // might not be necessary
                 player.storage.jlsg_huanbing = player.storage.jlsg_huanbing.concat(trigger.cards);
@@ -6145,7 +6144,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               forced: true,
               filter: function (event, player) {
                 var phase = event.getParent('phaseUse');
-                return event.card.name == 'sha' && phase && phase.player == player;
+                return event.card && event.card.name == 'sha' && phase && phase.player == player;
               },
               content: function () {
                 player.draw(player.getDamagedHp());
@@ -8386,16 +8385,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 1'
                 if (result.bool) {
-                  player.chooseBool('摸2张牌，或进行1个额外的出牌阶段。').ai = function () {
-                    if (player.countCards('h') > 2) return false;
-                    if (jlsg.needKongcheng(player, true)) return false;
-                    return true;
-                  }
+                  player.chooseControlList([
+                    "摸两张牌",
+                    "额外出牌阶段"
+                  ],true).set('ai',function(event,player){
+                    if (player.num('h') > 2) return 1;
+                    if (sgs.needKongcheng(player, true)) return 1;
+                    return 0;
+                  });
                 } else {
                   event.finish();
                 }
                 'step 2'
-                if (result.bool) {
+                player.logSkill("jlsg_wuqin");
+                if (result.index == 0) {
                   player.draw(2);
                 } else {
                   player.getStat().card = {};
@@ -12268,6 +12271,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //     },
             //   }
             // },
+            zh_mark: {
+              unique: true
+            },
             jlsg_zhonghou: {
               audio: "ext:极略:1",
               trigger: { global: ['useCardBegin', 'respondBegin'] },
@@ -12284,7 +12290,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                debugger;
                 player.addTempSkill('zh_mark');
                 var list = game.filterPlayer();
                 for (var i = 0; i < list.length; i++) {
@@ -12318,7 +12323,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return false;
                 });
                 'step 1'
-                debugger;
                 if (result.bool) {
                   player.loseHp();
                   event.finish();
@@ -18100,7 +18104,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         return jlsg_sy;
       });
 
-      game.import('card', () => {
+      game.import('card', () => { // 七杀
         var jlsg_qs = {
           name: "jlsg_qs",
           // connect: true,
@@ -18245,7 +18249,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return _status.event.player.num('h') > 1;
               },
               filterTarget: function (card, player, target) {
-                return target.num('h') > 0 && player != target;
+                return target.countCards('h') != 0 && player != target;
               },
               content: function () {
                 "step 0"
@@ -18376,7 +18380,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.finish();
                 } else {
                   target.chooseControl('获得你两张牌', '对你造成伤害', ui.create.dialog('请选择一项', 'hidden')).set('ai', function () {
-                    debugger;
                     if (get.attitude(target, player) > 5) return '获得你两张牌';
                     if (get.damageEffect(target, player, target,'fire') > 0) return '对你造成伤害';
                     if (target.countCards('h', 'tao')) return '对你造成伤害';
@@ -18876,7 +18879,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             _jlsgqs_yuxi2_info: '一名角色使用【杀】对你造成伤害时，可获得你装备区中的【玉玺】',
             jlsgqs_yuxi_info: '锁定技，你的手牌上限+2，回合开始阶段开始时，你摸一张牌；一名角色使用【杀】对你造成伤害时，可获得你装备区中的【玉玺】',
             jlsgqs_qingmeizhujiu: '青梅煮酒',
-            jlsgqs_qingmeizhujiu_info: '出牌阶段对一名其他角色使用，该角色展示一张手牌，然后你可以弃置一张大于此牌的手牌并回复一点体力，或者弃置一张不大于此牌的手牌令其回复一点体力',
+            jlsgqs_qingmeizhujiu_info: '出牌阶段对一名有手牌的其他角色使用，该角色展示一张手牌，然后你可以弃置一张大于此牌的手牌并回复一点体力，或者弃置一张不大于此牌的手牌令其回复一点体力',
             jlsgqs_shuiyanqijun: '水淹七军',
             jlsgqs_shuiyanqijun_info: '出牌阶段，对对你攻击范围内的一名其他角色使用。若判定结果不为方片，则该角色出牌阶段开始时须弃置一半数量的手牌（向上取整）',
             jlsgqs_yuqingguzong: '欲擒故纵',
@@ -18953,6 +18956,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
         return jlsg_qs;
       });
+      // jlsg library
       lib.arenaReady.push(function () {
         lib.element.player.hasSkills = function (skills) {
           var skill = skills.split("|");
@@ -19889,18 +19893,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0221",
+      version: "2.2.0222",
       changelog: `\
 2021.02.21更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
-&ensp; 当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
+&ensp; ————当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
 &ensp; 修复SK神司马懿 通天完杀 bug<br>
 &ensp; 修复SR孙尚香 姻盟 优化AI<br>
 &ensp; 优化SK三英神董卓纵欲 暴政 技能描述<br>
 &ensp; 修复SK神吕蒙 涉猎<br>
 &ensp; 修复SK吕玲绮 造成伤害bug<br>
-&ensp; PS: 拓展可以搬运，既然之前的原作者们没给license，想搬就搬好了。<br>
-历史：<br>
+&ensp; 优化SR华佗 五禽 询问，修复配音<br>
+&ensp; 修复SK关兴 勇继<br>
+&ensp; 修复七杀青梅煮酒 描述<br>
+<span style="font-size: large;">历史：</span><br>
 2021.02.18更新<br>
 &ensp; 优化SR陆逊 代劳描述。<br>
 &ensp; 修复SR黄月英 授计 描述。<br>
