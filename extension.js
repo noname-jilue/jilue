@@ -1642,7 +1642,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { target: 'shaMiss' },
               filter: function (event, player) {
-                return get.distance(player, event.player, 'attack') <= 1;
+                return event.player.inRangeOf(player);
               },
               direct: true,
               content: function () {
@@ -2053,7 +2053,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { global: 'shaBegin' },
               filter: function (event, player) {
-                return get.distance(player, event.target, 'attack') <= 1 && event.target != player && event.player != player && event.target.countCards('e');
+                return event.target != player && event.target.inRangeOf(player) && event.target.countCards('e');
               },
               check: function (event, player) {
                 if (player.countCards('h', 'shan') && get.effect(event.target, { name: 'sha' }, event.player, player) < 0) {
@@ -2314,21 +2314,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { player: 'phaseEnd' },
               check: function (event, player) {
-                var num = 0;
-                for (var i = 0; i < game.players.length; i++) {
-                  if (get.distance(game.players[i], player, 'attack') <= 1 && game.players[i] != player)
-                    num++;
-                }
+                var num = game.filterPlayer(p=>p != player && player.inRangeOf(p)).length;
                 if (player.isTurnedOver()) return true;
                 if (num > 2) return 1;
                 return 0;
               },
               content: function () {
                 'step 0'
-                var num = 0;
-                for (var i = 0; i < game.players.length; i++) {
-                  if (get.distance(game.players[i], player, 'attack') <= 1 && game.players[i] != player) num++;
-                }
+                var num = game.filterPlayer(p=>p != player && player.inRangeOf(p)).length;
                 player.draw(Math.min(5, num + 1));
                 player.turnOver();
               }
@@ -3026,7 +3019,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { global: 'damageEnd' },
               filter: function (event, player) {
-                return event.card && event.card.name == 'sha' && event.notLink() && get.distance(player, event.player, 'attack') <= 1 && event.source && event.source.isAlive();
+                return event.card && event.card.name == 'sha' && event.notLink() && event.player.inRangeOf(player) && event.source && event.source.isAlive();
               },
               check: function (event, player) {
                 if (player.hp > 2) return get.attitude(player, event.source) < 0;
@@ -4639,7 +4632,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               usable: 1,
               enable: 'phaseUse',
               filterTarget: function (card, player, target) {
-                return get.distance(player, target, 'attack') <= 1 && player.canUse({ name: 'sha' }, target);
+                return target.inRangeOf(player) && player.canUse({ name: 'sha' }, target, false);
               },
               delay: false,
               line: false,
@@ -4654,7 +4647,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 result: {
                   target: function (player, target) {
                     var ts = game.filterPlayer(function (cur) {
-                      return get.distance(player, cur, 'attack') <= 1 && player.canUse({ name: 'sha' }, cur) && get.effect(cur, { name: 'sha' }, player, player) > 0;
+                      return cur.inRangeOf(player) && player.canUse({ name: 'sha' }, cur, false) && get.effect(cur, { name: 'sha' }, player, player) > 0;
                     });
                     if (ts.length <= 1 || player.hp <= 1) return 0;
                     return get.effect(target, { name: 'sha' }, player, target);
@@ -5532,18 +5525,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               line: 'fire',
               // filter: function (event, player) {
               //   return game.hasPlayer(function (target) {
-              //     return get.distance(target, player, 'attack') <= 1 && player != target;
+              //     return player.inRangeOf(target) && player != target;
               //   });
               // },
               filterTarget: function (card, player, target) {
-                return get.distance(target, player, 'attack') <= 1 && player != target;
+                return player != target && player.inRangeOf(target);
               },
               multitarget: true,
               multiline: true,
               content: function () {
                 'step 0'
                 player.draw(2);
-                'setp 1'
+                'step 1'
                 target.chooseToUse('是否对' + get.translation(player) + '使用一张【杀】？', { name: 'sha' }, player, -1);
               },
               ai: {
@@ -5554,7 +5547,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     shotter.remove(player);
                     var sha = 0;
                     for (var shot in shotter) {
-                      if (get.distance(shot, player, 'attack') <= 1 && !jlsg.isKongcheng(shot) && !jlsg.isFriend(shot, player)) {
+                      if (player.inRangeOf(shot) && !jlsg.isKongcheng(shot) && !jlsg.isFriend(shot, player)) {
                         sha++;
                       }
                     }
@@ -5610,7 +5603,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               trigger: { global: 'phaseUseBegin' },
               filter: function (event, player) {
-                return get.distance(player, event.player, 'attack') <= 1 && event.player != player;
+                return event.player.inRangeOf(player) && event.player != player;
               },
               logTarget: 'player',
               check: function (event, player) {
@@ -5721,7 +5714,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               ai: {
                 threaten: function (player, target) {
-                  if (get.distance(player, target, 'attack') <= 1) {
+                  if (target.inRangeOf(player)) {
                     return 2.5;
                   }
                   return 1.3;
@@ -6147,7 +6140,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return event.card && event.card.name == 'sha' && phase && phase.player == player;
               },
               content: function () {
-                player.draw(player.getDamagedHp());
+                var num = Math.min(3, player.getDamagedHp());
+                player.draw(num);
                 // player.getStat().card.sha--;
                 if (!player.hasSkill('jlsg_yongjiBuff')) {
                   player.storage.jlsg_yongjiBuff = 1;
@@ -8390,7 +8384,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     "额外出牌阶段"
                   ],true).set('ai',function(event,player){
                     if (player.num('h') > 2) return 1;
-                    if (sgs.needKongcheng(player, true)) return 1;
+                    if (jlsg.needKongcheng(player, true)) return 1;
                     return 0;
                   });
                 } else {
@@ -9027,7 +9021,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               check: function (card) {
                 var player = _status.event.player;
                 if (player.countCards('h', 'sha') > player.getCardUsable('sha') || !game.hasPlayer(function (current) {
-                  return player.canUse('sha', current) && get.distance(player, current, 'attack') <= 1 && player.hasCard('sha', 'h') && player.hasCard(function (cardx) {
+                  return player.canUse('sha', current) && current.inRangeOf(player) && player.hasCard('sha', 'h') && player.hasCard(function (cardx) {
                     return get.effect(current, cardx, player, player) > 0 && cardx.name == 'sha';
                   }, 'h');
                 })) {
@@ -11894,7 +11888,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 // console.log(trigger);
-                if (get.distance(player, trigger.player, 'attack') > 1 && get.distance(player, trigger.target, 'attack') > 1) {
+                if (!trigger.player.inRangeOf(player) && !trigger.target.inRangeOf(player)) {
                   var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player))
                   next.ai = function () {
                     if (jlsg.isFriend(player, trigger.player)) {
@@ -11910,7 +11904,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   };
                   next.logSkill = ['jlsg_zhaoxiang', trigger.player];
                 } else {
-                  var next = player.chooseToDiscard(get.prompt('jlsg_zhaoxiang', trigger.player))
+                  var next = player.chooseToDiscard(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function (card) {
                     if (jlsg.isFriend(player, trigger.player)) {
                       if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return 6 - get.value(card);
@@ -12109,7 +12103,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //       enable: "phaseUse",
             //       filter: function (event, player) {
             //         return game.hasPlayer(function (target) {
-            //           return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou');
+            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
             //         });
             //       },
             //       chooseButton: {
@@ -12203,7 +12197,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //       filter: function (event, player) {
             //         if (event.parent.name == 'phaseUse') return false;
             //         return game.hasPlayer(function (target) {
-            //           return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou');
+            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
             //         });
             //       },
             //       ai: {
@@ -12241,7 +12235,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //       filter: function (event, player) {
             //         if (event.parent.name == 'phaseUse') return false;
             //         return game.hasPlayer(function (target) {
-            //           return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou');
+            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
             //         });
             //       },
             //       ai: {},
@@ -12252,7 +12246,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //       filter: function (event, player) {
             //         if (event.parent.name == 'phaseUse') return false;
             //         return game.hasPlayer(function (target) {
-            //           return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou');
+            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
             //         });
             //       },
             //       check: function (event, player) {
@@ -12354,7 +12348,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   enable: 'phaseUse',
                   filter: function (event, player) {
                     return game.hasPlayer(function (target) {
-                      return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
+                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
                     });
                   },
                   chooseButton: {
@@ -12410,7 +12404,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   filter: function (event, player) {
                     if (event.parent.name == 'phaseUse') return false;
                     return game.hasPlayer(function (target) {
-                      return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
+                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
                     });
                   },
                   ai: {
@@ -12427,7 +12421,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   filter: function (event, player) {
                     if (event.parent.name == 'phaseUse') return false;
                     return game.hasPlayer(function (target) {
-                      return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
+                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
                     });
                   },
                   ai: {
@@ -12441,7 +12435,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   filter: function (event, player) {
                     if (event.parent.name == 'phaseUse') return false;
                     return game.hasPlayer(function (target) {
-                      return get.distance(target, player, 'attack') <= 1 && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
+                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
                     });
                   },
                   filterCard: function () { return false; },
@@ -14970,6 +14964,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 });
                 if (card) {
                   event.cards.push(card);
+                } else {
+                  player.chat('无牌可得了吗');
+                  game.log(`但是牌堆里面已经没有${result.control}了！`);
                 }
                 if (event.num < 4) {
                   event.num++;
@@ -19343,7 +19340,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
           var jlsgsk_zhuran = jlsg.findPlayerBySkillName('jlsg_yonglie');
           if (jlsgsk_zhuran && jlsg.isGoodHp(jlsgsk_zhuran)) {
-            if (get.distance(jlsgsk_zhuran, player, 'attack') <= 1 && jlsg.isFriend(player, jlsgsk_zhuran)) defense += 0.5;
+            if (player.inRangeOf(jlsgsk_zhuran) && jlsg.isFriend(player, jlsgsk_zhuran)) defense += 0.5;
           }
           var jlsgsr_zhangliao = jlsg.findPlayerBySkillName('jlsg_yansha');
           if (jlsgsr_zhangliao && jlsgsr_zhangliao.storage.jlsg_yansha2 && jlsgsr_zhangliao.storage.jlsg_yansha2.length) {
@@ -19906,6 +19903,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 优化SR华佗 五禽 询问，修复配音<br>
 &ensp; 修复SK关兴 勇继<br>
 &ensp; 修复七杀青梅煮酒 描述<br>
+&ensp; 修复SK关兴 勇继 摸牌<br>
+&ensp; 优化SK神吕蒙 涉猎 提示<br>
+&ensp; 优化所有距离结算<br>
 <span style="font-size: large;">历史：</span><br>
 2021.02.18更新<br>
 &ensp; 优化SR陆逊 代劳描述。<br>
