@@ -19890,9 +19890,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0222",
+      version: "2.2.0225",
       changelog: `\
-2021.02.21更新<br>
+2021.02.25更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
 &ensp; ————当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
 &ensp; 修复SK神司马懿 通天完杀 bug<br>
