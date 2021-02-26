@@ -118,8 +118,271 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           ui.background.setBackgroundImage("extension/极略/jlsg_boss_music_image.jpg");
         });
       }
-      // lib.characterReplace['caocao'].push('jlsgsr_caocao');
-    }, 
+      // prepare rank & rarity data
+      if (lib.rank) {
+        var retrieveFromTierMaker = function () {
+          var result = $(".tier.sort").map(function () {
+            var res = $(this).children().map(function () { return $(this).css("background-image").match(/jlsg\w+(?=jpg)/); });
+            return res;
+          });
+          result = result.toArray().map(ss=>ss.toArray());
+          var ranks = ['s', 'ap', 'a', 'am', 'bp', 'b', 'bm', 'c', 'd'];
+          var A = {};
+          for (var i = 0; i != result.length; ++i) {
+            A[ranks[i]] = result[i];
+          }
+          return JSON.stringify(A);
+        };
+        var rank = {
+          s: [
+            'jlsgsoul_diaochan',
+            'jlsgsoul_guojia',
+            'jlsgsoul_huangyueying',
+            'jlsgsk_zuoci',
+            'jlsgsoul_huatuo',
+            'jlsgsoul_jiaxu',
+            'jlsgsoul_simahui',
+            'jlsgsoul_simayi',
+            'jlsgsoul_sunquan',
+            'jlsgsoul_zhangliao',
+            'jlsgsr_huangyueying',
+          ],
+          ap: [
+            'jlsgsoul_caocao',
+            'jlsgsoul_dianwei',
+            'jlsgsoul_guanyu',
+            'jlsgsoul_liubei',
+            'jlsgsoul_zhugeliang',
+            'jlsgsoul_lvmeng',
+            'jlsgsoul_luxun',
+            'jlsgsoul_sunshangxiang',
+            'jlsgsoul_zhaoyun',
+            'jlsgsr_zhenji',
+            'jlsgsr_sunshangxiang',
+            'jlsgsr_lvmeng',
+            'jlsgsr_luxun',
+            'jlsgsr_daqiao',
+            'jlsgsk_dongzhuo',
+            'jlsgsk_guonvwang',
+            'jlsgsk_zhangning',
+          ],
+          a: [
+            'jlsgsoul_zhouyu',
+            'jlsgsoul_zuoci',
+            'jlsgsr_zhaoyun',
+            'jlsgsr_simayi',
+            'jlsgsr_guojia',
+            'jlsgsr_diaochan',
+            'jlsgsk_chengyu',
+            'jlsgsk_dongyun',
+            'jlsgsk_yujin',
+            'jlsgsk_simazhao',
+          ],
+          am: [
+            'jlsgsoul_lvbu',
+            'jlsgsoul_xiahoudun',
+            'jlsgsr_zhugeliang',
+            'jlsgsr_zhangliao',
+            'jlsgsr_liubei',
+            'jlsgsr_huatuo',
+            'jlsgsk_kongrong',
+            'jlsgsk_lukang',
+            'jlsgsk_miheng',
+            'jlsgsk_sunqian',
+            'jlsgsk_xianglang',
+            'jlsgsk_guanlu',
+            'jlsgsk_zhanglu',
+            'jlsgsk_yangxiu',
+          ],
+          bp: [
+            'jlsgsoul_ganning',
+            'jlsgsr_zhouyu',
+            'jlsgsr_sunquan',
+            'jlsgsr_machao',
+            'jlsgsr_ganning',
+            'jlsgsr_caocao',
+            'jlsgsk_chendao',
+            'jlsgsk_guanxing',
+            'jlsgsk_huangyueying',
+            'jlsgsk_zumao',
+            'jlsgsk_zhugejin',
+            'jlsgsk_maliang',
+            'jlsgsk_sunluyu',
+            'jlsgsk_mizhu',
+            'jlsgsr_xiahoudun',
+            'jlsgsr_lvbu',
+            'jlsgsk_zhangren',
+            'jlsgsk_zhangbu',
+            'jlsgsk_heqi',
+          ],
+          b: [
+            'jlsgsoul_zhangfei',
+            'jlsgsoul_zhangjiao',
+            'jlsgsr_zhangfei',
+            'jlsgsr_guanyu',
+            'jlsgsk_buzhi',
+            'jlsgsk_caochong',
+            'jlsgsk_dengzhi',
+            'jlsgsk_dingfeng',
+            'jlsgsk_dongxi',
+            'jlsgsk_guanyu',
+            'jlsgsk_feiyi',
+            'jlsgsk_hejin',
+            'jlsgsk_jiping',
+            'jlsgsk_jiangqin',
+            'jlsgsk_luji',
+            'jlsgsk_zhuran',
+            'jlsgsk_wangyi',
+            'jlsgsk_luzhi',
+            'jlsgsk_sunhao',
+            'jlsgsk_zhoucang',
+            'jlsgsk_zhangxiu',
+            'jlsgsk_quancong',
+            'jlsgsk_simashi',
+            'jlsgsk_tianfeng',
+            'jlsgsk_wenchou',
+            'jlsgsk_xuyou',
+            'jlsgsk_yanliang',
+            'jlsgsk_wangping',
+            'jlsgsk_zhangbao',
+            'jlsgsr_xuzhu',
+          ],
+          bm: [
+            'jlsgsr_huanggai',
+            'jlsgsk_caoren',
+            'jlsgsk_bianfuren',
+            'jlsgsk_huaxiong',
+            'jlsgsk_liyan',
+            'jlsgsk_lvlingqi',
+            'jlsgsk_sunce',
+            'jlsgsk_yuji',
+            'jlsgsk_zangba',
+          ],
+          c: [
+            'jlsgsk_gongsunzan',
+            'jlsgsk_panfeng',
+            'jlsgsk_mateng',
+          ],
+          d: [ ],
+          rarity: {
+            legend: [ // 传说
+  
+            ],
+            epic: [ // 史诗
+              "jlsgsk_zhangning",
+              "jlsgsk_dongyun",
+              "jlsgsk_tianfeng",
+              "jlsgsk_jiangqin",
+              "jlsgsk_zuoci",
+              "jlsgsk_heqi",
+              "jlsgsk_guanxing",
+              "jlsgsk_sunqian",
+              "jlsgsk_zhangbao",
+              "jlsgsk_dongzhuo",
+              "jlsgsk_zhanglu",
+              "jlsgsk_quancong",
+              "jlsgsk_chengyu",
+  
+            ],
+            rare: [
+              "jlsgsk_simashi",
+              "jlsgsk_xianglang",
+              "jlsgsk_luji",
+              "jlsgsk_bianfuren",
+              "jlsgsk_mateng",
+              "jlsgsk_feiyi",
+              "jlsgsk_dongxi",
+              "jlsgsk_yujin",
+              "jlsgsk_panfeng",
+              "jlsgsk_zhangbu",
+              "jlsgsk_maliang",
+              "jlsgsk_chendao",
+              "jlsgsk_zhuran",
+              "jlsgsk_lukang",
+              "jlsgsk_kongrong",
+              "jlsgsk_caochong",
+              "jlsgsk_simazhao",
+              "jlsgsk_yangxiu",
+              "jlsgsk_sunhao",
+              "jlsgsk_zhugejin",
+              "jlsgsk_zhangxiu",
+              "jlsgsk_sunluyu",
+              "jlsgsk_luzhi",
+              "jlsgsk_yuji",
+              "jlsgsk_guonvwang",
+              "jlsgsk_zhangren",
+              "jlsgsk_mizhu",
+              "jlsgsk_zangba",
+              "jlsgsk_hejin",
+              "jlsgsk_wangyi",
+              "jlsgsk_guanyu",
+              "jlsgsk_yanliang"
+            ],
+            junk: [ // 平凡
+              'jlsgsk_xuyou',
+              'jlsgsk_wangping',
+              "jlsgsk_caoren",
+              "jlsgsk_huaxiong",
+              "jlsgsk_sunce",
+              "jlsgsk_dengzhi",
+              "jlsgsk_zumao",
+              "jlsgsk_gongsunzan",
+              "jlsgsk_buzhi",
+              "jlsgsk_jiping",
+              "jlsgsk_miheng",
+              "jlsgsk_liyan",
+              "jlsgsk_huangyueying",
+              "jlsgsk_zhoucang",
+              "jlsgsk_dingfeng",
+              "jlsgsk_lvlingqi",
+              "jlsgsk_guanlu",
+              'jlsgsr_machao',
+            ],
+          },
+        };
+        // soul characters reside in the highest rarity rank
+        for (var name of Object.keys(lib.characterPack['jlsg_soul'])) {
+          if (!Object.keys(rank.rarity).some(rarity => rank.rarity[rarity].contains(name))) {
+            rank.rarity.legend.push(name);
+          }
+        }
+        // sr characters drop a rank if srlose is enabled
+        for (var name of Object.keys(lib.characterPack['jlsg_sr'])) {
+          if (!Object.keys(rank.rarity).some(rarity => rank.rarity[rarity].contains(name))) {
+            rank.rarity.rare.push(name);
+          }
+          if (config.srlose) {
+            var ranks = Object.keys(rank);
+            ranks.pop();
+            for (var i = 0; i != ranks.length; ++i) {
+              var theRank = ranks[i];
+              var nameIdx = rank[theRank].indexOf(name);
+              if (nameIdx != -1 && theRank != 'd') {
+                rank[theRank].splice(nameIdx, 1);
+                rank[ranks[i + 1]].push(name);
+              }
+            }
+          } // config.srlose
+        } // jlsg_sr
+        var addRank = function (rank) {
+          if (!lib.rank) return;
+          for (var i in rank) {
+            if (i == 'rarity') continue; 
+              lib.rank[i].addArray(rank[i]);
+          }
+          if (rank.rarity && lib.rank.rarity) {
+            for (var i in rank.rarity) {
+              if (lib.rank.rarity[i] === undefined) {
+                lib.rank.rarity[i] = [];
+              }
+              lib.rank.rarity[i].addArray(rank.rarity[i]);
+            }
+          }
+        };
+        addRank(rank);
+      } // lib.rank
+
+    },
     precontent: function (config) {
       if (!config.enable) { return; }
       if (navigator.userAgent.indexOf('HUAWEI') != -1) {
@@ -129,7 +392,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         let a = 1;
         const b = 1;
       } catch (error) {
-        alert("极略怕是无法在你的设备上正确运行。请更新webview","极略");
+        alert("极略怕是无法在你的设备上正确运行。请更新webview", "极略");
         console.error(error, navigator.userAgent);
       }
       if (this.package.changelog) {
@@ -2314,14 +2577,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { player: 'phaseEnd' },
               check: function (event, player) {
-                var num = game.filterPlayer(p=>p != player && player.inRangeOf(p)).length;
+                var num = game.filterPlayer(p => p != player && player.inRangeOf(p)).length;
                 if (player.isTurnedOver()) return true;
                 if (num > 2) return 1;
                 return 0;
               },
               content: function () {
                 'step 0'
-                var num = game.filterPlayer(p=>p != player && player.inRangeOf(p)).length;
+                var num = game.filterPlayer(p => p != player && player.inRangeOf(p)).length;
                 player.draw(Math.min(5, num + 1));
                 player.turnOver();
               }
@@ -3217,7 +3480,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player.logSkill('jlsg_jiwux');
                   event.card = result.cards[0];
                   player.showCards(event.card);
-                  let paint = function(card, paintType, toggle= true) {
+                  let paint = function (card, paintType, toggle = true) {
                     if (!document.body.contains(card.parentElement)) {
                       return;
                     }
@@ -3240,12 +3503,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         div.style.left = "0%";
                         div.style.backgroundColor = "rgba(255,0,0,0.6)";
                         break;
-                        case 2:
+                      case 2:
                         div.setAttribute("id", "Jiwu2");
                         div.style.left = "33%";
                         div.style.backgroundColor = "rgba(0,255,0,0.6)";
                         break;
-                        case 3:
+                      case 3:
                         div.setAttribute("id", "Jiwu3");
                         div.style.left = "67%";
                         div.style.backgroundColor = "rgba(0,0,255,0.6)";
@@ -3259,9 +3522,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     //   paint(event.card, paintType, toggle);
                     // },
                     _card: event.card,
-                    get 1() {return this._1;},
-                    get 2() {return this._2;},
-                    get 3() {return this._3;},
+                    get 1() { return this._1; },
+                    get 2() { return this._2; },
+                    get 3() { return this._3; },
                     set 1(value) {
                       if (value == this._1) return;
                       this._1 = !!value;
@@ -3294,7 +3557,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.finish();
                 }
                 'step 2'
-                
+
                 if (result.control == event._options[0]) {
                   event.card.isJiwu[1] = true;
                   game.log(player, '所展示的', event.card, '不计入次数限制');
@@ -5264,7 +5527,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (get.attitude(player, event.player) < 0 && player.countCards('h') > 2) return 1;
                 return 0;
               },
-              logTarget:'player',
+              logTarget: 'player',
               content: function () {
                 'step 0'
                 player.chooseToCompare(trigger.player);
@@ -6001,7 +6264,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return event.player != player && event.card && (event.card.name == 'sha' || get.type(event.card, 'trick') == 'trick');
               },
               check: function (event, player) {
-                if(event.getParent().excluded.contains(player)) return false;
+                if (event.getParent().excluded.contains(player)) return false;
                 if (get.attitude(player, event.player) > 0) {
                   return false;
                 }
@@ -8261,8 +8524,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               enable: ['chooseToUse', 'chooseToRespond'],
               filterCard: { type: 'equip' },
               viewAs: { name: 'sha' },
-              viewAsFilter:function(player){
-                return player.countCards('he',{ type: 'equip' }) != 0;
+              viewAsFilter: function (player) {
+                return player.countCards('he', { type: 'equip' }) != 0;
               },
               position: 'he',
               prompt: '将一张装备牌当【杀】使用或打出',
@@ -8382,7 +8645,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player.chooseControlList([
                     "摸两张牌",
                     "额外出牌阶段"
-                  ],true).set('ai',function(event,player){
+                  ], true).set('ai', function (event, player) {
                     if (player.num('h') > 2) return 1;
                     if (jlsg.needKongcheng(player, true)) return 1;
                     return 0;
@@ -8513,7 +8776,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   forced: true,
                   popup: false,
                   filter: function (event, player) {
-                    if(_status.currentPhase != player) return false;
+                    if (_status.currentPhase != player) return false;
                     //if(event.player==player) return false;
                     if (event.cards) {
                       for (var i = 0; i < event.cards.length; i++) {
@@ -8589,7 +8852,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 result: {
                   player: 0.5,
                   target: function (player, target) {
-                    var suits = player.getCards('h').map(card=>get.type(card, 'trick'));
+                    var suits = player.getCards('h').map(card => get.type(card, 'trick'));
                     var num = new Set(suits).size;
                     var m = num / 3;
                     if (get.attitude(player, target) > 0 && Math.random() < m) return 1;
@@ -13835,7 +14098,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player, name) {
                 return _status.currentPhase == player && event.player != player;
               },
-              content:function(){}
+              content: function () { }
             },
             jlsg_tongtian_qun2: {
               mod: {
@@ -14936,7 +15199,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               forced: true,
               content: function () {
                 'step 0'
-                trigger.cancel(null,null,'notrigger');
+                trigger.cancel(null, null, 'notrigger');
                 event.cards = [];
                 event.num = 1;
                 event.getResultString = function (str) {
@@ -18132,8 +18395,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseToDiscard('h', '木牛流马：请弃置一张基本牌，否则失去1点体力', function (card) {
                   return get.type(card) == 'basic';
                 }).set('ai', function (card) {
-                  if(card.name=='tao') return -10;
-                  if(card.name=='jiu'&&player.hp==1) return -10;
+                  if (card.name == 'tao') return -10;
+                  if (card.name == 'jiu' && player.hp == 1) return -10;
                   if (player.hp == 1) return 15 - ai.get.value(card);
                   return 8 - ai.get.value(card);
                 });
@@ -18179,8 +18442,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseToDiscard('h', '太平要术：请弃置一张红色牌，否则失去1点体力', function (card) {
                   return get.color(card) == 'red';
                 }).set('ai', function (card) {
-                  if(card.name=='tao') return -10;
-						      if(card.name=='jiu'&&player.hp==1) return -10;
+                  if (card.name == 'tao') return -10;
+                  if (card.name == 'jiu' && player.hp == 1) return -10;
                   if (player.hp == 1) return 15 - ai.get.value(card);
                   return 8 - ai.get.value(card);
                 });
@@ -18378,7 +18641,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 } else {
                   target.chooseControl('获得你两张牌', '对你造成伤害', ui.create.dialog('请选择一项', 'hidden')).set('ai', function () {
                     if (get.attitude(target, player) > 5) return '获得你两张牌';
-                    if (get.damageEffect(target, player, target,'fire') > 0) return '对你造成伤害';
+                    if (get.damageEffect(target, player, target, 'fire') > 0) return '对你造成伤害';
                     if (target.countCards('h', 'tao')) return '对你造成伤害';
                     if (target.countCards('h', 'jiu') && target.hp == 1) return '对你造成伤害';
                     if (target.hp == 1) return '获得你两张牌';
@@ -18620,7 +18883,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           skill: {
             jlsgqs_kongmingdeng: {
-              equipSkill:true,
+              equipSkill: true,
               popname: true,
               enable: ['chooseToUse', 'chooseToRespond'],
               filterCard: function (card) {
@@ -18661,14 +18924,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_muniu: {
-              equipSkill:true,
+              equipSkill: true,
               enable: 'phaseUse',
               usable: 1,
               prompt: '请选择一名角色交给其一张牌然后你摸一张牌',
               filterTarget: function (card, player, target) {
                 return player != target;
               },
-              filter:function(event,player){
+              filter: function (event, player) {
                 return player.countCards('h') != 0;
               },
               filterCard: true,
@@ -18697,7 +18960,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_yuxi: {
-              equipSkill:true,
+              equipSkill: true,
               trigger: { player: 'phaseBegin' },
               forced: true,
               content: function () {
@@ -18710,7 +18973,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             _jlsgqs_yuxi2: {
-              equipSkill:true,
+              equipSkill: true,
               trigger: { player: 'shaHit' },
               filter: function (event, player) {
                 if (player != event.player) return false;
@@ -18741,7 +19004,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_xiujian: {
-              equipSkill:true,
+              equipSkill: true,
               trigger: { player: 'phaseBegin' },
               direct: true,
               filter: function (event, player) {
@@ -18775,7 +19038,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsgqs_qixingbaodao: {
-              equipSkill:true,
+              equipSkill: true,
               trigger: { player: 'shaMiss' },
               filter: function (event, player) {
                 return event.target && event.target.countCards('e');
@@ -18804,7 +19067,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_dunjiatianshu: {
-              equipSkill:true,
+              equipSkill: true,
               mod: {
                 globalTo: function (from, to, distance) {
                   var e1 = to.get('e', '3');
@@ -18824,7 +19087,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsgqs_taipingyaoshu: {
-              equipSkill:true,
+              equipSkill: true,
               enable: 'phaseUse',
               usable: 1,
               prompt: '请选择一名角色令其摸一张牌',
@@ -19870,7 +20133,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         "<li>修改SC赵云的贴图（原图太违和。。）" +
         "<li>身为强迫症一枚，调度代码的结构和位置（原代码歪七竖八，不成体统，有失体面。本人受不了这刺激，故而所览之处，代码均已扶正！）" +
         "<br><font color=Green>很多改动都忘了。。。到此为止吧。。。</font>" +
-        "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已" + 
+        "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已" +
         "<br><br><font color=Blue>后言2：</font>以上都是遗留了 SC包已经被我鲨了(●'◡'●) ——xiaoas"
     }, package: {
       character: {
