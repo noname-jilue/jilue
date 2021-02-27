@@ -119,7 +119,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         });
       }
       // prepare rank & rarity data
-      if (lib.rank) {
+      if (false) {
+      // if (lib.rank) {
         var retrieveFromTierMaker = function () {
           var result = $(".tier.sort").map(function () {
             var res = $(this).children().map(function () { return $(this).css("background-image").match(/jlsg\w+(?=jpg)/); });
@@ -138,13 +139,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsoul_diaochan',
             'jlsgsoul_guojia',
             'jlsgsoul_huangyueying',
-            'jlsgsk_zuoci',
             'jlsgsoul_huatuo',
             'jlsgsoul_jiaxu',
             'jlsgsoul_simahui',
             'jlsgsoul_simayi',
+            'jlsgsoul_zhaoyun',
             'jlsgsoul_sunquan',
-            'jlsgsoul_zhangliao',
+            'jlsgsk_zuoci',
             'jlsgsr_huangyueying',
           ],
           ap: [
@@ -156,7 +157,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsoul_lvmeng',
             'jlsgsoul_luxun',
             'jlsgsoul_sunshangxiang',
-            'jlsgsoul_zhaoyun',
             'jlsgsr_zhenji',
             'jlsgsr_sunshangxiang',
             'jlsgsr_lvmeng',
@@ -165,6 +165,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_dongzhuo',
             'jlsgsk_guonvwang',
             'jlsgsk_zhangning',
+            'jlsgsoul_zhangliao',
           ],
           a: [
             'jlsgsoul_zhouyu',
@@ -2417,6 +2418,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_angyang: {
+              shaRelated:true,
               audio: "ext:极略:1",
               trigger: { player: ['shaBefore', 'juedouBefore'] },
               filter: function (event, player) {
@@ -3246,6 +3248,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_qingxi: {
+              shaRelated:true,
               audio: "ext:极略:true",
               trigger: { player: 'shaBegin' },
               forced: true,
@@ -9203,9 +9206,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               usable: 1,
               enable: 'phaseUse',
-              filterTarget: function (card, player, target) {
-                return player != target;
-              },
+              // filterTarget: function (card, player, target) {
+              //   return player != target;
+              // },
               direct: true,
               init: function (player) {
                 player.storage.isjlsg_zhouyan = false;
@@ -9258,6 +9261,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player: 0,
                 fireattack: true,
                 target: function (player, target) {
+                  if (player == target) return 1;
                   if (!lib.card.huogong) return 0;
                   var result = lib.card.huogong.ai.result.target;
 
@@ -9360,6 +9364,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         name: 'sha',
                         nature: 'fire'
                       }, player, player);
+                      if (target.mayHaveShan()) effect *= 1.2;
                       if (effect > 0) {
                         return (get.attitude(player, target) > 0 ? 1 : -1) * effect
                       }
@@ -9370,7 +9375,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return 0;
                   }
                 }
-              }
+              },
+              group: "jlsg_zhaxiang_directHit",
+              subSkill: {
+                directHit: {
+                  shaRelated:true,
+                  trigger:{player:'useCard1'},
+                  firstDo:true,
+                  silent:true,
+                  filter:function(event,player){
+                    return event.parent.name=='jlsg_zhaxiang';
+                  },
+                  content:function(){
+                    trigger.directHit.addArray(game.players);
+                  },
+                }
+              },
             },
             jlsg_old_zhaxiang: {
               audio: "ext:极略:true",
@@ -11202,6 +11222,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
             },
             jlsg_benxi: {
+              shaRelated:true,
               audio: "ext:极略:1",
               srlose: true,
               trigger: { player: 'shaBegin' },
@@ -12951,8 +12972,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fangxin_info: '当你需要使用一张【桃】时，你可以将一张梅花牌当【兵粮寸断】或将一张方片牌当【乐不思蜀】对自己使用，若如此做，视为你使用了一张【桃】。',
             jlsg_xiyu_info: '你的回合开始时，你可以弃置一名角色的一张牌，然后该角色进行一个额外的出牌阶段。',
             jlsg_wanrou_info: '你的方片牌或你判定区的牌进入弃牌堆时，你可以令一名角色摸一张牌。',
-            jlsg_zhouyan_info: '出牌阶段，你可以令一名其它角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成1次伤害后，你可以摸一张牌。',
-            jlsg_zhaxiang_info: '出牌阶段，你可以将一张手牌扣置，然后令一名其它角色选择一项：交给你一张牌并弃置你扣置的牌；或展示你扣置的牌并获得之。若你扣置的牌为【杀】，则视为你对其使用一张火属性的【杀】（不计入出牌阶段的使用限制）。',
+            jlsg_zhouyan_info: '出牌阶段，你可以令一名角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成1次伤害后，你可以摸一张牌。',
+            jlsg_zhaxiang_info: '出牌阶段，你可以将一张手牌扣置，然后令一名其它角色选择一项：交给你一张牌并弃置你扣置的牌；或展示你扣置的牌并获得之。若你扣置的牌为【杀】，则视为你对其使用一张火属性的【杀】（不计入出牌阶段的使用限制且不可被响应）。',
             jlsg_old_zhaxiang_info: '出牌阶段限一次，你可以指定一名其它角色，视为该角色对你使用一张【杀】，然后你摸2张牌并视为对其使用一张【杀】（你的此【杀】无视防具）。',
             jlsg_shixue_info: '当你使用【杀】指定目标后，你可以摸两张牌，当此【杀】被【闪】响应后，你须弃置一张牌。',
             jlsg_guoshi_info: '任一角色的回合开始阶段开始时，你可以观看牌堆顶的2张牌，然后可将其中任意张牌置于牌堆底；任1角色的回合结束阶段开始时，你可以令其获得本回合因弃置或判定进入弃牌堆的一张牌。',
@@ -20153,8 +20174,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0225",
+      version: "2.2.0226",
       changelog: `\
+2021.02.26更新<br>
+&ensp; 加入了所有角色的评级和稀有度。<br>
+&ensp; 略微加强SR黄盖一技能&二技能，虽然其仍然是最弱的SR。<br>
+&ensp; 优化SR黄盖舟炎AI。<br>
+&ensp; 多个技能被正确的标记为与杀相关了。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.02.25更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
 &ensp; ————当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
@@ -20169,20 +20196,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK关兴 勇继 摸牌<br>
 &ensp; 优化SK神吕蒙 涉猎 提示<br>
 &ensp; 优化所有距离结算<br>
-<span style="font-size: large;">历史：</span><br>
-2021.02.18更新<br>
-&ensp; 优化SR陆逊 代劳描述。<br>
-&ensp; 修复SR黄月英 授计 描述。<br>
-&ensp; 修复SK神吕布 无前 无法正确使标记获得加成。<br>
-&ensp; 修复SK王异 贞烈<br>
-&ensp; 修复SK神赵云 技能名<br>
-&ensp; 重新采用极略全扩中的高清图，替换了全部武将立绘<br>
-&ensp; 去除了原图的水印，重新裁剪了部分原图，同时使用mozJPEG压缩以控制立绘的大小。<br>
-&ensp; 修正了七杀包 七星宝刀、玉玺、木牛流马的贴图。<br>
-2021.02.13更新<br>
-&ensp; 优化SR吕布 射戟询问。<br>
-&ensp; 修复SR吕布 极武摸牌。<br>
-&ensp; 移除DIYSR颜良文丑 加回SK颜良。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
