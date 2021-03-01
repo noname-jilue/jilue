@@ -3,21 +3,21 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
   return {
     name: "极略",
     editable: false,
-    content: function (config) {
-      // if (config.bettergroupsign) {
-      //   lib.group.push('shu');
-      //   lib.translate.shu = '<font color="#FF0000"><span style="font-size:20px">蜀汉</font></span>';
-      //   lib.group.push('wei');
-      //   lib.translate.wei = '<font color="#00FFFF"><span style="font-size:20px">曹魏</font></span>';
-      //   lib.group.push('wu');
-      //   lib.translate.wu = '<font color="#9AFF02"><span style="font-size:20px">东吴</font></span>';
-      //   lib.group.push('qun');
-      //   lib.translate.qun = '<font color="#F9F900"><span style="font-size:20px">群雄</font></span>';
-      //   lib.group.push('shen');
-      //   lib.translate.shen = '<font color="#FF00FF"><span style="font-size:20px">神将</font></span>';
-      //   lib.group.push('key');
-      //   lib.translate.key = '<font color="#FFFFFF"><span style="font-size:20px">键盘</font></span>';
-      // }
+    content: function (config, pack) {
+      if (pack.changelog) {
+        try {
+          let a = 1;
+          const b = 1;
+        } catch (error) {
+          if (!lib.config["extension_极略_compatibilityAlert"]) {
+            game.saveconfig("extension_极略_compatibilityAlert", true);
+            alert("极略与你的设备不兼容", "极略");
+          }
+          pack.changelog = `<span style="font-weight:bold;">极略与你的设备不兼容，因此导入被终止了。</span><br>` + pack.changelog;
+          return; 
+        }
+        game.showExtensionChangeLog(pack.changelog);
+      }
       if (config.simple_name === 'hide') {
         get.slimName = function (str) {
 
@@ -119,8 +119,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         });
       }
       // prepare rank & rarity data
-      if (false) {
-      // if (lib.rank) {
+      // if (false) {
+      if (lib.rank) {
         var retrieveFromTierMaker = function () {
           var result = $(".tier.sort").map(function () {
             var res = $(this).children().map(function () { return $(this).css("background-image").match(/jlsg\w+(?=jpg)/); });
@@ -386,18 +386,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
     },
     precontent: function (config) {
       if (!config.enable) { return; }
-      if (navigator.userAgent.indexOf('HUAWEI') != -1) {
-        alert("极略：部分华为手机无法使用极略拓展。无法导入请尝试万能导入。导入消失请不要咨询作者。");
-      }
       try {
         let a = 1;
         const b = 1;
       } catch (error) {
-        alert("极略怕是无法在你的设备上正确运行。请更新webview", "极略");
-        console.error(error, navigator.userAgent);
-      }
-      if (this.package.changelog) {
-        game.showExtensionChangeLog(this.package.changelog);
+        // alert("极略怕是无法在你的设备上正确运行。请更新webview", "极略");
+        // console.error(error, navigator.userAgent);
+        if (this.package.intro) {
+          this.package.intro = `<span style="font-weight:bold;">极略导入失败了。</span><br>` + this.package.intro;
+        }
+        return;
       }
       // lib.init.js(lib.assetURL +'extension/极略/jlsg_martial.js');
       // lib.config.all.mode.add('jlsg_martial');
@@ -779,7 +777,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 0"
                 player.chooseControl("摸牌", "弃牌", function (event, player) {
                   return "摸牌";
-                }).prompt = "怀橘：你可以摸一张牌或弃置2张牌";
+                }).prompt = "怀橘：你可以摸一张牌或弃置两张牌";
                 "step 1"
                 if (result.control == "摸牌") {
                   player.draw();
@@ -5799,11 +5797,21 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               multitarget: true,
               multiline: true,
+              precontent: function () {
+                player.draw(2);
+              },
               content: function () {
                 'step 0'
-                player.draw(2);
+                event.target.chooseToUse('是否对' + get.translation(player) + '使用一张【杀】？', { name: 'sha' }, player, -1);
                 'step 1'
-                target.chooseToUse('是否对' + get.translation(player) + '使用一张【杀】？', { name: 'sha' }, player, -1);
+                var idx = event.targets.indexOf(event.target);
+                if (idx != -1) {
+                  ++idx;
+                  if (idx != event.targets.length) {
+                    event.target = event.targets[idx];
+                    event.goto(0);
+                  }
+                }
               },
               ai: {
                 order: 9,
@@ -8592,28 +8600,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: { global: 'dying' },
               priority: 6,
               filter: function (event, player) {
-                return event.player.hp <= 0 && event.player.countCards('h') > 0;
+                return event.player.hp <= 0 && event.player.countCards('h') != 0;
               },
               logTarget: 'player',
               check: function (event, player) {
                 var att = get.attitude(player, event.player);
-                var save = false;
-                var players = game.filterPlayer();
-                for (var i = 0; i < players.length; i++) {
-                  if (players[i] == event.player) continue;
-                  if (players[i], event.player <= 0) continue;
-                  if (players[i].countCards("h", { name: "tao" })) save = true;
-                  break;
+                var num = event.player.countCards('h');
+                if (att > 0 &&event.player.hasSkillTag('nosave')) {
+                  return false;
                 }
-                if (event.player.countCards("h", { name: "tao" }) || event.player.countCards("h", { name: "jiu" })) save = true;
-                if (att > 0 && save == true) return false;
-                if (att < 0 && save == false) return false;
-                if (att < 0 && save == true && event.player.countCards("h") <= 4) return false;
-                return true;
+                if (num < 3) {
+                  return att > 0;
+                }
+                if (num > 4) {
+                  return att < 0;
+                }
+                return [true, false].randomGet();
               },
               content: function () {
                 "step 0"
-                var cards = trigger.player.get('h');
+                var cards = trigger.player.getCards('h');
                 event.bool = cards.length >= 2;
                 trigger.player.discard(cards);
                 trigger.player.recover();
@@ -8625,6 +8631,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 expose: 0.2,
                 threaten: 1.5,
+                // save:true,
+                // skillTagFilter:function(player,tag,target){
+                //   debugger;
+                //   return target.countCards('h');
+                // },
               }
             },
             jlsg_wuqin: {
@@ -8818,14 +8829,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               srlose: true,
               enable: 'phaseUse',
-              marktext: "盟",
-              mark: true,
-              intro: {
-                content: "卡牌类型对应：<br><br>摸牌：♥=♦、♦=♣、♠=♥、♣=♠<br><br>弃牌：♦≠♦、♣≠♣、♥≠♥、♠≠♠、♥≠♣、♦≠♠",
-              },
               group: ['jlsg_yinmeng2'],
               filter: function (event, player) {
-                return player.countCards('h') && (player.storage.jlsg_yinmeng < Math.max(1, player.maxHp - player.hp))
+                return player.countCards('h') && (player.storage.jlsg_yinmeng < Math.max(1, player.maxHp - player.hp));
               },
               filterTarget: function (card, player, target) {
                 return target.sex == 'male' && target.countCards('h') && player != target;
@@ -10205,70 +10211,36 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_dailao: {
               audio: "ext:极略:2",
-              group: "jlsg_dailao2",
+              usable: 1,
               srlose: true,
-              enable: ["chooseToUse", "chooseToRespond"],
-              filterCard: function () {
-                return false;
+              enable: 'phaseUse',
+              filterTarget: function (cards, target, player) {
+                return player != target;
               },
-              selectCard: -1,
-              viewAs: {
-                name: "sha",
-              },
-              viewAsFilter: function (player) {
-                return !player.isTurnedOver() && _status.currentPhase == player;
-              },
-              prompt: "你可以将武将牌背面朝上并摸一张牌，视为对一名其他角色使用一张【杀】，然后弃置该目标的一张牌",
-              check: function () {
-                return 1;
-              },
-              onuse: function (result, player) {
+              content: function () {
+                'step 0'
                 player.turnOver();
-                player.draw();
-              },
-              onrespond: function (result, player) {
-                if (!player.isTurnedOver()) {
-                  player.turnOver();
+                target.turnOver();
+                'step 1'
+                target.chooseToDiscard('he').set('prompt2',`或点「取消」，令你与${get.translation(player)}各摸一张牌`);;
+                'step 2'
+                if (result.bool) {
+                  player.chooseToDiscard('he', true);
+                } else {
+                  game.asyncDraw([player, target]);
                 }
-                player.draw();
               },
               ai: {
-                order: function () {
-                  if (_status.event.player.hasSkillTag('presha', true, null, true)) return 10;
-                  return 3.8;
-                },
-                skillTagFilter: function (player) {
-                  return !player.isTurnedOver() && _status.currentPhase == player;
-                },
-                respondSha: true,
-                basic: {
-                  useful: [5, 1],
-                  value: [5, 1],
-                },
+                order: 9,
                 result: {
-                  target: function (player, target) {
-                    if (player.hasSkill('jiu') && !target.getEquip('baiyin')) {
-                      if (get.attitude(player, target) > 0) {
-                        return -6;
-                      } else {
-                        return -3;
-                      }
-                    }
-                    return -1.5;
+                  player: function (player) {
+                    return player.isTurnedOver() ? 3 : -3;
                   },
-                },
-              },
-            },
-            jlsg_dailao2: {
-              trigger: {
-                player: "shaAfter",
-              },
-              filter: function (event, player) {
-                return event.parent.skill == 'jlsg_dailao';
-              },
-              direct: true,
-              content: function () {
-                player.discardPlayerCard(trigger.target, 'he');
+                  target: function (target, player) {
+                    if(target.hasSkillTag('noturn')) return 0;
+                    return target.isTurnedOver() ? 3 : -3;
+                  }
+                }
               }
             },
             jlsg_old_dailao: {
@@ -11027,7 +10999,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (result.bool) {
                   player.discard(result.cards);
                   player.logSkill('jlsg_tuwei', result.targets);
-                  event.targets = result.targets
+                  event.targets = result.targets;
                   if (result.targets.length == 1) {
                     player.discardPlayerCard(event.targets[0], 'he', [1, 2], true);
                   } else {
@@ -11745,47 +11717,63 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               filterCard: true,
               position: 'he',
-              filterTarget: function (card, player, target) {
-                var next;
+              getCardName(card) {
                 switch (get.suit(card)) {
                   case 'heart':
-                    next = 'shunshou';
+                    return 'shunshou';
                     break;
                   case 'diamond':
-                    next = 'huogong';
+                    return 'huogong';
                     break;
                   case 'club':
-                    next = 'jiedao';
+                    return 'jiedao';
                     break;
                   case 'spade':
-                    next = 'juedou';
+                    return 'juedou';
                     break;
                 }
+              },
+              filterTarget: function (card, player, target) {
+                var cardName = lib.skill.jlsg_shouji.getCardName(card);
+                if (ui.selected.targets.length == 2) {
+                  return lib.filter.filterTarget({name:'sha'},ui.selected.targets[1],target);
+                } 
                 if (ui.selected.targets.length == 1) {
-                  return ui.selected.targets[0].canUse({ name: next }, target);
+                  // canUse is not compatible with modified select jiedao
+                  if (cardName === 'jiedao') {
+                    var targetEnabled = function(player,target){
+                      var card = {name:cardName, isCard:true};
+                      var info=get.info(card);
+                      var mod=game.checkMod(card,player,target,'unchanged','playerEnabled',player);
+                      if(mod==false) return false;
+                      // should not check target enabled mod
+                      return true;
+                    }
+                    if (!targetEnabled(ui.selected.targets[0], target)) return false;
+                    return target.getEquip(1) && 
+                      game.hasPlayer(shaTarget => lib.filter.filterTarget({name:'sha'},target,shaTarget));
+                  }
+                  return ui.selected.targets[0].canUse({ name: cardName }, target);
                 }
+                // return game.hasPlayer(p => target.canUse({ name: cardName }, p));
                 return true;
               },
-              targetprompt: ['发起者', '承受者'],
-              selectTarget: 2,
+              targetprompt: ['发起者', '承受者', '出杀目标'],
+              selectTarget: function() {
+                if (!ui.selected.cards.length) return 2;
+                return lib.skill.jlsg_shouji.getCardName(ui.selected.cards[0]) == 'jiedao' ? 3 : 2;
+              },
               multitarget: true,
               content: function () {
-                var next;
-                switch (get.suit(cards[0])) {
-                  case 'heart':
-                    next = 'shunshou';
-                    break;
-                  case 'diamond':
-                    next = 'huogong';
-                    break;
-                  case 'club':
-                    next = 'jiedao';
-                    break;
-                  case 'spade':
-                    next = 'juedou';
-                    break;
+                var cardName = lib.skill.jlsg_shouji.getCardName(cards[0]);
+                if (cardName != 'jiedao') {
+                  targets[0].useCard({ name: cardName }, targets[1], 'noai');
+                } else {
+                  targets[0].useCard({ name: cardName }, [targets[1],targets[2]], 'noai');
                 }
-                targets[0].useCard({ name: next }, targets[1]);
+                // var prompt = `###${get.translation(event.name)}###选择${get.name(targets[1])}出杀目标`;
+                // player.chooseTarget(prompt,shaTarget => lib.filter.filterTarget({name:'sha'},target,shaTarget));
+                // targets[0].useCard({ name: 'jiedao' }, [targets[1], result.targets[0]], 'noai');
               },
               ai: {
                 order: 6,
@@ -11795,22 +11783,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (ui.selected.targets.length == 0) {
                       return 3;
                     } else {
-                      var next;
                       var card = ui.selected.cards[0];
-                      switch (get.suit(card)) {
-                        case 'heart':
-                          next = 'shunshou';
-                          break;
-                        case 'diamond':
-                          next = 'huogong';
-                          break;
-                        case 'club':
-                          next = 'guohe';
-                          break;
-                        case 'spade':
-                          next = 'juedou';
-                          break;
-                      }
+                      var next = lib.skill.jlsg_shouji.getCardName(card);
+                      if (next == 'jiedao') return -1.5;
                       return get.effect(target, { name: next }, ui.selected.targets[0], target);
                     }
                   }
@@ -12987,7 +12962,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_old_youxia_info: '出牌阶段限1次，你可以将你的武将牌翻面，然后从1至2名其他角色的区域各弃置一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【兵粮寸断】的目标。',
 
             jlsg_huailing_info: '若你的武将牌背面朝上，其他角色使用一张锦囊牌指定大于一个目标时，你可以令一名其他角色不受到该牌的效果，然后你将武将牌正面朝上；锁定技，若你的武将牌背面朝上，你不能成为【决斗】和【过河拆桥】的目标。',
-            jlsg_dailao_info: '若你的武将牌正面朝上，你可以将武将牌翻面并摸一张牌视为使用或打出一张【杀】，你以此法使用的杀结算完成后可以弃置目标角色的一张牌。',
+            jlsg_dailao_info: '出牌阶段限一次，你可以令一名其他角色与你将武将牌翻面，然后其选择一项：与你各摸一张牌；或与你各弃置一张牌。',
             jlsg_youdi_info: '若你的武将牌背面朝上，你可以将其翻面来视为你使用一张【闪】。每当你使用【闪】响应一名角色使用的【杀】时，你可以弃置至多X张牌，然后该角色弃置等量的牌（X为该角色的牌数）。',
             jlsg_ruya_info: '当你失去最后的手牌时，你可以翻面并将手牌补至你体力上限的张数。',
             jlsg_quanheng_info: '出牌阶段限一次，你可以将至少一张手牌当【无中生有】或【杀】使用，若你以此法使用的牌被【无懈可击】或【闪】响应时，你摸等量的牌。',
@@ -14537,7 +14512,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   }
                 },
-                maixie: true,
                 save: true,
                 respondSha: true,
                 respondShan: true,
@@ -14855,7 +14829,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (result.bool) {
                   player.logSkill('jlsg_suyin', result.targets);
                   result.targets[0].turnOver();
-                  result.targets[0].chooseToDiscard('he', 1, true);
                 }
               },
               ai: {
@@ -16889,7 +16862,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_cuifeng_info: '锁定技，回合结束阶段，若场上的「袭」标记总数不小于4，你须依次从每名被标记的角色处获得等同于其「袭」标记数量的手牌。若该角色手牌不足，则你获得其全部手牌，然后该角色受到你对其造成的一点伤害。最后移除场上全部的「袭」标记。',
             jlsg_weizhen_info: '回合开始阶段，你可以移除场上全部的「袭」标记，然后摸等同于「袭」标记数量的牌。',
             jlsg_zhiming_info: '其他角色的回合开始阶段开始时，若其有手牌，你可以弃置一张手牌，然后弃置其一张手牌，若两张牌颜色相同，你令其跳过此回合的摸牌阶段或出牌阶段。',
-            jlsg_suyin_info: '你的回合外，当你失去最后的手牌时，可令一名其他角色将其武将牌翻面，然后令其弃置一张牌。',
+            jlsg_suyin_info: '你的回合外，当你失去最后的手牌时，可令一名其他角色将其武将牌翻面。',
             jlsg_mod_dianjie_info: '你的回合外，当你使用或打出一张闪后，或你主动跳过出牌阶段后：你可以进行一次判定，若为黑色，你对一名角色造成1点雷电伤害；若为红色，你可以令一至二名未横置的角色横置。',
             jlsg_dianjie_info: '你可以跳过你的摸牌阶段或出牌阶段，然后判定：若结果为黑色，你对一名角色造成一点雷电伤害；若结果为红色，你令至多两名武将牌未横置的角色将其武将牌横置。',
             jlsg_mod_shendao_info: '锁定技，对一名角色的判定牌生效前，你亮出牌堆顶的2张牌，选择其中一张直接代替之，若不是你的回合，你将另一种牌收入手牌。',
@@ -20100,10 +20073,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       window.jlsg = jlsg;
     },
     config: {
-      intro: {
-        name: "<div><li>极略全部武将·可能可以联机版<li>可在联机武将设置里设为联机禁用</div>",
-        clear: true,
-      },
       srlose: {
         name: "srlose",
         intro: "是否要求SR武将弃置技能",
@@ -20170,17 +20139,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         skill: {},
         translate: {},
       },
-      intro: "",
+      intro: "<div><li>极略全部武将·可能可以联机版<li>可在联机武将设置里设为联机禁用</div>",
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0226",
+      version: "2.2.0301",
       changelog: `\
-2021.02.26更新<br>
+2021.03.01更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
+&ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
 &ensp; 略微加强SR黄盖一技能&二技能，虽然其仍然是最弱的SR。<br>
 &ensp; 优化SR黄盖舟炎AI。<br>
 &ensp; 多个技能被正确的标记为与杀相关了。<br>
+&ensp; 修复SR华佗 刮骨 AI。AI不再能透视其他角色是否有桃。<br>
+&ensp; 回滚SK神黄月英。<br>
+&ensp; 回滚并修改了SR陆逊 代劳。SR陆逊又能翻面别人了。<br>
+&ensp; 优化SK神赵云 龙魂AI。<br>
+&ensp; 优化了兼容提示。兼容提示不会进行提前误报且只会提示一次。<br>
+&ensp; 修复SK程昱 捧日，优化UX。<br>
+&ensp; 修复SR黄月英 授计借刀，优化AI。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.02.25更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
