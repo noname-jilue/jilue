@@ -990,7 +990,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 "step 0"
-                trigger.player.chooseCard("是否发动【" + get.translation(player) + "】的技能【母仪】？<p>你可以交给【" + get.translation(player) + "】1至2张牌，回合结束时，其交还你等量的牌。</p>", 'he', [1, 2]).ai = function (card) {
+                trigger.player.chooseCard("是否发动【" + get.translation(player) + "】的技能【母仪】？<p>你可以交给【" + get.translation(player) + "】1至两张牌，回合结束时，其交还你等量的牌。</p>", 'he', [1, 2]).ai = function (card) {
                   if (get.position(card) == 'e' && get.attitude(player, target) > 0) return 7 - get.value(card);
                   if (get.attitude(_status.event.player, player) > 2) return 2 - get.useful(card);
                   return -1;
@@ -3069,7 +3069,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (event.num < event.targets.length) {
                   event.target = event.targets[event.num];
                   if (event.target.countDiscardableCards('he') >= 2) {
-                    event.target.chooseCard('交给' + get.translation(player) + '一张牌，或弃置2张牌对其造成1点伤害', 'he').ai = function (card) {
+                    event.target.chooseCard('交给' + get.translation(player) + '一张牌，或弃置两张牌对其造成1点伤害', 'he').ai = function (card) {
                       if (get.attitude(event.target, player) > 0) return 10 - get.value(card);
                       return 0;
                     }
@@ -3090,7 +3090,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.num++;
                   event.goto(1);
                 } else if (event.target.countDiscardableCards('he') >= 2) {
-                  event.target.chooseToDiscard('弃置2张牌对' + get.translation(player) + '造成1点伤害', 2, 'he', true);
+                  event.target.chooseToDiscard('弃置两张牌对' + get.translation(player) + '造成1点伤害', 2, 'he', true);
                   event.target.line(player, 'fire');
                   player.damage(event.target);
                   event.num++;
@@ -6690,7 +6690,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fenwei_info: '当你使用【杀】对目标角色造成伤害时，你可以展示该角色的一张手牌：若为【桃】或【酒】，则你获得之；若不为基本牌，你弃掉该牌并令该伤害+1。',
             jlsg_shiyong_info: '锁定技，当你受到一次红色【杀】或【酒】【杀】造成的伤害后，须减1点体力上限。',
             jlsg_angyang_info: '每当你指定目标后或成为目标后一张【决斗】或红色的【杀】时，你可以摸一张牌，若对方判定区内有牌，你改为摸两张。',
-            jlsg_weifeng_info: '回合开始阶段，若你的手牌数小于你的体力值，你可以与一名角色拼点，若你赢，你从牌堆摸2张牌，若你没赢，该角色从牌堆摸两张牌。',
+            jlsg_weifeng_info: '回合开始阶段，若你的手牌数小于你的体力值，你可以与一名角色拼点，若你赢，你从牌堆摸两张牌，若你没赢，该角色从牌堆摸两张牌。',
             jlsg_xieli_info: '主公技，当你需要打出一张拼点牌时，你可请场上吴将帮你出，所有吴将给出牌后，你必须从中挑选一张作为拼点牌并弃掉其余。',
             jlsg_jushou_info: '回合结束阶段，你可以摸(X+1)张牌，最多5张。若如此做，将你的武将牌翻面。X为仅计算攻击范围和距离时，场上可以攻击到你的人数。',
             jlsg_yicong_info: '锁定技，只要你的体力值大于2点，你计算与其他角色的距离时，始终-1；只要你的体力值为2点或更低，其他角色计算与你的距离时，始终+1。',
@@ -6717,7 +6717,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhijiao_info: '限定技，回合结束阶段开始时，你可以令一名其他角色获得你的本回合因弃置而进入弃牌堆的牌。',
             jlsg_jiwux_info: '出牌阶段开始时，你可以展示一张【杀】，令其获得以下效果之一（离开手牌区后失效）：1、此【杀】不计入次数限制；2、此【杀】无距离限制，且可以额外指定1个目标；3、此【杀】的伤害值+1。',
             jlsg_daoshi_info: '一名角色的回合结束阶段开始时，若其装备区有牌，其可以摸一张牌，然后将其装备区的一张牌交给你。',
-            jlsg_lirang_info: '一名角色的回合开始阶段结束时，其可以将一张与所有「礼」花色均不同的手牌置于你的武将牌上作为「礼」，然后摸一张牌。你可以将2张「礼」当【桃】使用。',
+            jlsg_lirang_info: '一名角色的回合开始阶段结束时，其可以将一张与所有「礼」花色均不同的手牌置于你的武将牌上作为「礼」，然后摸一张牌。你可以将两张「礼」当【桃】使用。',
             jlsg_xianshi_info: '每当你受到一次伤害时，可以令伤害来源选择一项：展示所有手牌并弃置其中一张；或令此伤害-1.',
             jlsg_chengxiang_info: '每当你受到伤害后，你可以亮出牌顶堆的4张牌，然后获得其中的至少一张点数和不大于13的牌，将其余的牌置入弃牌堆。',
             jlsg_renxin_info: '每当一名其他角色处于濒死状态时，你可以翻面并将所有手牌交给该角色，令其恢复1点体力。',
@@ -7456,7 +7456,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             //   check: function (card) {
             //     return 8 - get.value(card)
             //   },
-            //   prompt: '弃置一张黑色牌，令一名角色选择一项：恢复1点体力或摸2张牌',
+            //   prompt: '弃置一张黑色牌，令一名角色选择一项：恢复1点体力或摸两张牌',
             //   filterTarget: true,
             //   content: function () {
             //     player.link();
@@ -8901,7 +8901,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 0"
                 player.chooseCard(2, 'h', function (card) {
                   return get.type(card) == 'basic';
-                }, '交给' + get.translation(trigger.player) + '2张基本牌', true).set('ai', function (card) {
+                }, '交给' + get.translation(trigger.player) + '两张基本牌', true).set('ai', function (card) {
                   return 7 - get.value(card);
                 });
                 "step 1"
@@ -10972,7 +10972,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: { global: 'useCardAfter' },
               filter: function (event, player) {
                 if (event.player != player && !event.targets.contains(player)) return false;
-                var criterion0 = event.card.name == "sha" && event.card.isCard && get.position(event.card.cards[0]) == 'd';
+                var criterion0 = event.card.name == "sha" && event.card.isCard 
+                && (event.cards.length == 1 && event.cards[0].name === 'sha')
+                && get.position(event.card.cards[0]) == 'd';
                 var criterion1 = player.countCards('h', card => get.tag(card, 'damage')) != 0;
                 return criterion0 && criterion1;
               },
@@ -10984,7 +10986,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return get.tag(card, 'damage');
                   },
                   filterTarget: function (card, player, target) {
-                    return trigger.player == target || trigger.target == target && target.countDiscardableCards('he') > 0;
+                    return (trigger.player == target || trigger.targets.contains(target)) && target.countDiscardableCards('he') > 0;
                   },
                   selectTarget: [1, 2],
                   ai1: function (card) {
@@ -10993,7 +10995,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   ai2: function (target) {
                     return -get.attitude(_status.event.player, target);
                   },
-                  prompt: '是否发动【突围】？'
+                  prompt: get.prompt2('jlsg_tuwei'),
                 });
                 'step 1'
                 if (result.bool) {
@@ -11828,6 +11830,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 } else {
                   event.finish();
                 }
+              },
+              ai: {
+                expose: 0.1,
               },
               subSkill: {
                 heart: {
@@ -12916,14 +12921,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhuizun_info: '限定技，当你进入濒死状态时，你可以恢复体力至1点，令所有其他角色依次交给你一张手牌。然后当前回合结束后，你进行1个额外的回合。',
             jlsg_tianshang_info: '限定技，你死亡时，可令一名其他角色获得你当前另外一项技能，增加1点体力上限并恢复1点体力。',
             jlsg_yiji_info: '每当你受到一点伤害，可以观看牌堆顶的两张牌，并将其交给任意1~2名角色。',
-            jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的2张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
+            jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
             jlsg_huiqu_info: '回合开始阶段，你可以弃置一张手牌进行一次判定，若结果为红色，你将场上的一张牌移动到一个合理的位置；若结果为黑色，你对一名角色造成1点伤害，然后你摸一张牌。',
             jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其或杀的目标在你的攻击范围内，你须先弃置一张手牌。',
             jlsg_zhishi_info: '出牌阶段限一次，你可以令一名其他角色选择一项：1、弃置一张基本牌，然后回复一点。2、受到你造成的一点伤害，然后回复一点体力。',
             jlsg_old_zhishi_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色，你选择其中一项执行：1.你展示一张【杀】令其弃置一张【杀】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害；2.你展示一张【闪】令其弃置一张【闪】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害。',
             jlsg_jianxiong_info: '主公技。每当其他魏势力受到不为你的1次伤害后，该角色可以弃置一张手牌，然后令你获得对其造成伤害的牌。',
             jlsg_jiuzhu_info: '每当一张非转化的【闪】进入弃牌堆时，你可以用一张不为【闪】的牌替换之。若此时不是你的回合，你可以视为对当前回合角色使用一张无视防具的【杀】。',
-            jlsg_tuwei_info: '每当一张非转化的【杀】进入弃牌堆时，若你是此【杀】的目标或使用者，你可以弃置一张能造成伤害的牌，然后弃置此牌目标或使用者的共计2张牌。',
+            jlsg_tuwei_info: '每当一张非转化的【杀】进入弃牌堆时，若你是此【杀】的目标或使用者，你可以弃置一张能造成伤害的牌，然后弃置此牌目标或使用者的共计两张牌。',
             // jlsg_xujin_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的5张牌，并令一名角色获得其中1种花色的所有牌，再将其余的牌置入弃牌堆。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
             jlsg_xujin_info: '摸牌阶段开始时，你展示牌堆顶的五张牌，然后，你可以放弃摸牌并将其中一种花色的牌交给一名角色。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
             jlsg_paoxiao_info: '出牌阶段，当你使用【杀】对目标角色造成1次伤害并结算完毕后，你可以摸一张牌，然后选择一项：使用一张无视距离的【杀】，或令该角色弃置你的一张牌。',
@@ -12938,9 +12943,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_hemou_info: '其他角色的出牌阶段开始时，你可以将一张手牌正面朝上交给该角色，该角色本阶段限一次，可将一张与之相同花色的手牌按下列规则使用：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
             jlsg_qicai_info: '每当你失去一次手牌时，你可以进行判定，若结果为红色，你摸一张牌。',
             jlsg_rende_info: '任一角色的回合结束阶段结束时，你可以将任意数量的手牌交给该角色，然后该角色进行1个额外的出牌阶段。',
-            jlsg_chouxi_info: '出牌阶段限1次，你可以弃置一张手牌并展示牌堆顶的2张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
+            jlsg_chouxi_info: '出牌阶段限1次，你可以弃置一张手牌并展示牌堆顶的两张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
             jlsg_yongbing_info: '主公技，当一名其他蜀势力角色使用【杀】造成1次伤害后，该角色可令你摸一张牌。',
-            jlsg_yinmeng_info: '出牌阶段限X次，若你有手牌，你可以展示一名其他男性角色的一张手牌，然后展示你的一张手牌，若2张牌类型相同，你与其各摸一张牌；若不同，你弃置其展示的牌，X为你所损失的体力且至少为1',
+            jlsg_yinmeng_info: '出牌阶段限X次，若你有手牌，你可以展示一名其他男性角色的一张手牌，然后展示你的一张手牌，若两张牌类型相同，你与其各摸一张牌；若不同，你弃置其展示的牌，X为你所损失的体力且至少为1',
             jlsg_xiwu_info: '当你使用的【杀】被目标角色的【闪】响应后，你可以摸一张牌，然后弃置其一张手牌。',
             jlsg_juelie_info: '出牌阶段限1次，你可以令一名手牌数与你不同的其他角色选择一项：将手牌数调整至与你相等；或视为你对其使用一张【杀】（不计入出牌阶段的使用限制）。',
             jlsg_xianger_info: "一名其他男性角色的回合开始时，你可以交给其两张基本牌。若如此做，该角色跳过出牌阶段，然后可以视为对你使用一张【杀】，否则下回合的出牌阶段受到你的1点伤害；若其在此阶段未造成伤害，则跳过弃牌阶段，且你摸一张牌。",
@@ -12949,9 +12954,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wanrou_info: '你的方片牌或你判定区的牌进入弃牌堆时，你可以令一名角色摸一张牌。',
             jlsg_zhouyan_info: '出牌阶段，你可以令一名角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成1次伤害后，你可以摸一张牌。',
             jlsg_zhaxiang_info: '出牌阶段，你可以将一张手牌扣置，然后令一名其它角色选择一项：交给你一张牌并弃置你扣置的牌；或展示你扣置的牌并获得之。若你扣置的牌为【杀】，则视为你对其使用一张火属性的【杀】（不计入出牌阶段的使用限制且不可被响应）。',
-            jlsg_old_zhaxiang_info: '出牌阶段限一次，你可以指定一名其它角色，视为该角色对你使用一张【杀】，然后你摸2张牌并视为对其使用一张【杀】（你的此【杀】无视防具）。',
+            jlsg_old_zhaxiang_info: '出牌阶段限一次，你可以指定一名其它角色，视为该角色对你使用一张【杀】，然后你摸两张牌并视为对其使用一张【杀】（你的此【杀】无视防具）。',
             jlsg_shixue_info: '当你使用【杀】指定目标后，你可以摸两张牌，当此【杀】被【闪】响应后，你须弃置一张牌。',
-            jlsg_guoshi_info: '任一角色的回合开始阶段开始时，你可以观看牌堆顶的2张牌，然后可将其中任意张牌置于牌堆底；任1角色的回合结束阶段开始时，你可以令其获得本回合因弃置或判定进入弃牌堆的一张牌。',
+            jlsg_guoshi_info: '任一角色的回合开始阶段开始时，你可以观看牌堆顶的两张牌，然后可将其中任意张牌置于牌堆底；任1角色的回合结束阶段开始时，你可以令其获得本回合因弃置或判定进入弃牌堆的一张牌。',
             jlsg_yingcai_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的一张牌，你重复此流程直到你展示出第3种花色的牌时，将这张牌置入弃牌堆，然后获得其余的牌。',
             jlsg_old_yingcai_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的一张牌，你重复此流程直到你展示出第三种花色的牌时，将这张牌置入弃牌堆，然后获得其余的牌。',
             jlsg_weibao_info: '出牌阶段限一次，你可以将一张手牌置于牌堆顶，然后令一名其他角色选择一种花色后摸一张牌并展示之，若此牌与所选花色不同，你对其造成一点伤害。',
@@ -13756,7 +13761,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.finish();
                 }
                 "step 2"
-                player.chooseCardButton(player.storage.jlsg_qixing, '选择1-2张牌作为手牌', [1, 2], true).ai = function (button) {
+                player.chooseCardButton(player.storage.jlsg_qixing, '选择1-两张牌作为手牌', [1, 2], true).ai = function (button) {
                   if (player.skipList.contains('phaseUse') && button.link != 'du') {
                     return -get.value(button.link);
                   }
@@ -14750,7 +14755,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 "step 0"
-                player.chooseToDiscard('h', '知命:你可以弃置一张手牌，然后弃置其一张手牌，若2张牌颜色相同，你令其跳过此回合的摸牌阶段或出牌阶段').ai = function (card) {
+                player.chooseToDiscard('h', '知命:你可以弃置一张手牌，然后弃置其一张手牌，若两张牌颜色相同，你令其跳过此回合的摸牌阶段或出牌阶段').ai = function (card) {
                   if (get.attitude(player, trigger.player) < 0)
                     return 10 - get.value(card);
                   return 0;
@@ -16566,9 +16571,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                var list = ["摸2张牌，然后令所有角色各失去1点体力。"];
+                var list = ["摸两张牌，然后令所有角色各失去1点体力。"];
                 if (player.countCards('he') >= 2) {
-                  list.push("弃2张牌，然后令所有角色各恢复1点体力。");
+                  list.push("弃两张牌，然后令所有角色各恢复1点体力。");
                 }
                 event.list = list;
                 player.chooseControlList(event.list).set('ai', function (event, player) {
@@ -16605,12 +16610,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (player.needsToDiscard()) {
                     recover++;
                   }
-                  if (lose > recover && lose > 0) return event.list.indexOf('摸2张牌，然后令所有角色各失去1点体力。');
-                  if (lose < recover && recover > 0 && event.list.contains('弃2张牌，然后令所有角色各恢复1点体力。')) return event.list.indexOf('弃2张牌，然后令所有角色各恢复1点体力。');
+                  if (lose > recover && lose > 0) return event.list.indexOf('摸两张牌，然后令所有角色各失去1点体力。');
+                  if (lose < recover && recover > 0 && event.list.contains('弃两张牌，然后令所有角色各恢复1点体力。')) return event.list.indexOf('弃两张牌，然后令所有角色各恢复1点体力。');
                   return event.list.indexOf('cancel2');
                 });
                 'step 1'
-                if (event.list[result.index] == '摸2张牌，然后令所有角色各失去1点体力。') {
+                if (event.list[result.index] == '摸两张牌，然后令所有角色各失去1点体力。') {
                   player.draw(2);
                   var players = game.filterPlayer();
                   player.logSkill('jlsg_qinyin2');
@@ -16619,7 +16624,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     game.delay();
                   }
                 }
-                if (event.list[result.index] == '弃2张牌，然后令所有角色各恢复1点体力。') {
+                if (event.list[result.index] == '弃两张牌，然后令所有角色各恢复1点体力。') {
                   player.chooseToDiscard(2, 'he', true);
                   var players = game.filterPlayer();
                   player.logSkill('jlsg_qinyin1');
@@ -16835,7 +16840,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
             jlsg_feiying_info: '锁定技，若你的武将牌正面朝上，你使用【杀】无距离限制；若你的武将牌正面朝下，你不能成为【杀】的目标。',
             jlsg_guixin_info: '当你受到1次伤害后，你可以获得每名其他角色区域里的一张牌，再摸X张牌（X为阵亡/败退的角色数），然后翻面。',
-            jlsg_qinyin_info: '弃牌阶段开始时，你可以选择一项：1.摸2张牌，然后令所有角色各失去一点体力；2.弃2张牌，然后令所有角色各恢复一点体力。',
+            jlsg_qinyin_info: '弃牌阶段开始时，你可以选择一项：1.摸两张牌，然后令所有角色各失去一点体力；2.弃两张牌，然后令所有角色各恢复一点体力。',
             jlsg_yeyan_info: '限定技，出牌阶段，你可以弃置至少一种花色不同的手牌，然后对一至2名角色各造成等量的火属性伤害，若你以此法弃置的手牌花色数不少于3，你将失去3点体力。',
             jlsg_huju_info: '锁定技，其他角色的回合开始时，你摸一张牌。你的回合开始时，若你的手牌数为最多（或之一），你选择一项：1、失去一点体力；2、减一点体力上限，失去〖虎踞〗，并获得技能〖制衡〗和〖虎缚〗。',
             jlsg_hufu_info: '出牌阶段限一次，你可以令一名其他角色弃置X张牌（X为其装备区的牌数）。',
@@ -16856,7 +16861,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_shenfen_info: '出牌阶段，弃6个暴怒标记，你对每名其他角色各造成一点伤害，其他角色先弃掉各自装备区里所有的牌，再各弃4张手牌，然后将你的武将牌翻面，每回合限一次。',
             jlsg_wushen_info: '锁定技，你的【杀】和【桃】均视为【决斗】。',
             jlsg_suohun_info: '锁定技，每当你受到一点伤害时，伤害来源(除你以外)获得一个「魂」标记。当你进入濒死状态时，减一半(向上取整)的体力上限并恢复体力至体力上限，拥有「魂」标记的角色依次弃置所有的「魂」标记，然后受到与弃置的「魂」标记数量相同的伤害。',
-            jlsg_juejing_info: '锁定技，一名角色的回合开始时，若你的体力值：为一，你摸一张牌；大于一，你失去1点体力，然后摸2张牌。',
+            jlsg_juejing_info: '锁定技，一名角色的回合开始时，若你的体力值：为一，你摸一张牌；大于一，你失去1点体力，然后摸两张牌。',
             jlsg_longhun_info: '你可以将同花色的X张牌按下列规则使用（或打出）：红桃当【桃】；方块当【杀】；梅花当【闪】；黑桃当【无懈可击】。（X为你当前的体力值且至少为一）。',
             jlsg_nizhan_info: '每当一名角色受到【杀】或【决斗】造成的一次伤害后，你可以将一枚「袭」标记放置在该角色或伤害来源(不为你)的武将牌上；锁定技，你的身份为“主公”时，不增加体力上限。',
             jlsg_cuifeng_info: '锁定技，回合结束阶段，若场上的「袭」标记总数不小于4，你须依次从每名被标记的角色处获得等同于其「袭」标记数量的手牌。若该角色手牌不足，则你获得其全部手牌，然后该角色受到你对其造成的一点伤害。最后移除场上全部的「袭」标记。',
@@ -16865,7 +16870,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_suyin_info: '你的回合外，当你失去最后的手牌时，可令一名其他角色将其武将牌翻面。',
             jlsg_mod_dianjie_info: '你的回合外，当你使用或打出一张闪后，或你主动跳过出牌阶段后：你可以进行一次判定，若为黑色，你对一名角色造成1点雷电伤害；若为红色，你可以令一至二名未横置的角色横置。',
             jlsg_dianjie_info: '你可以跳过你的摸牌阶段或出牌阶段，然后判定：若结果为黑色，你对一名角色造成一点雷电伤害；若结果为红色，你令至多两名武将牌未横置的角色将其武将牌横置。',
-            jlsg_mod_shendao_info: '锁定技，对一名角色的判定牌生效前，你亮出牌堆顶的2张牌，选择其中一张直接代替之，若不是你的回合，你将另一种牌收入手牌。',
+            jlsg_mod_shendao_info: '锁定技，对一名角色的判定牌生效前，你亮出牌堆顶的两张牌，选择其中一张直接代替之，若不是你的回合，你将另一种牌收入手牌。',
             jlsg_shendao_info: '一名角色的判定牌生效前，你可以用一张手牌或场上的牌代替之',
             jlsg_leihun_info: '锁定技，你受到的雷电伤害均视为体力恢复。',
             jlsg_shelie_info: '锁定技，摸牌阶段开始时，你跳过之，改为选择指定获得某种类型的牌（最多四次），然后从牌堆随机摸取之。',
@@ -18433,6 +18438,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               onEquip: function () {
                 "step 0"
+                var cards=player.getCards('e',{subtype:['equip3','equip4']});
+                if (cards.length == 2) {
+                  player.chooseCard('e', '将进攻坐骑或防御坐骑置入弃牌堆', card => cards.contains(card), true);
+                }
+                "step 1"
+                // 模拟替换
+                player.lose(result.cards,false,'visible').set('type','equip').set('getlx',false);
+                "step 2"
                 player.chooseToDiscard('h', '太平要术：请弃置一张红色牌，否则失去1点体力', function (card) {
                   return get.color(card) == 'red';
                 }).set('ai', function (card) {
@@ -18441,7 +18454,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (player.hp == 1) return 15 - ai.get.value(card);
                   return 8 - ai.get.value(card);
                 });
-                "step 1"
+                "step 3"
                 if (!result.bool) {
                   player.loseHp();
                 }
@@ -18876,6 +18889,38 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
           },
           skill: {
+            jlsgqs_relic: {
+              trigger:{player:'equipEnd'},
+              forced:true,
+              filter: function(event, player) {
+                if (!event.card) return false;
+                if (get.position(event.card) != 'e') return false;
+                return ['3', '4'].contains(get.subtype(event.card, player)[5]);
+              },
+              content:function(){
+                'step 0'
+                var type = get.subtype(trigger.card, player)[5];
+                var card = null, cards = [];
+                if (type == '3') {
+                  card = player.getCards('e', {subtype: "equip4"});
+                } else {
+                  card = player.getCards('e', {subtype: "equip3"});
+                }
+                if (!card) {
+                  event.finish(); return;
+                }
+                cards = cards.concat(card);
+                card = player.getCards('e', {subtype: "equip5"});
+                if (!card) {
+                  event.finish(); return;
+                }
+                cards = cards.concat(card);
+                var prompt = "将" + cards.map(card=>get.translation(card)).join("或") + "置入弃牌堆";
+                player.chooseCard('e', prompt, card => cards.contains(card), true);
+                'step 1'
+                player.lose(card,false,'visible').set('type','equip').set('getlx',false);
+              },
+            },
             jlsgqs_kongmingdeng: {
               equipSkill: true,
               popname: true,
@@ -19206,6 +19251,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
           if (card.audio === true) {
             card.audio = `ext:${extname}`;
+          }
+          if (card.chongzhu && config.qsRelic) { // 七杀特殊宝物规则
+            if(!card.onEquip) {
+              card.onEquip = function() { // remember to sync with onEquip of jlsgqs_taipingyaoshu!
+                "step 0"
+                var cards=player.getCards('e',{subtype:['equip3','equip4']});
+                if (cards.length == 2) {
+                  player.chooseCard('e', '将进攻坐骑或防御坐骑置入弃牌堆', card => cards.contains(card), true);
+                }
+                "step 1"
+                // 模拟替换
+                player.lose(result.cards,false,'visible').set('type','equip').set('getlx',false);
+              };
+            }
+            if (!card.skills) {
+              card.skills = [];
+            }
+            card.skills.push("jlsgqs_relic");
           }
         }
         return jlsg_qs;
@@ -20078,6 +20141,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         intro: "是否要求SR武将弃置技能",
         init: true,
       },
+      qsRelic: {
+        name: "七杀宝物",
+        intro: "锁定技，当一张七杀宝物进入你的装备区时，若你同时装备了+1马与-1马，你选择并将装备区内的一张坐骑牌置入弃牌堆；<br>锁定技，当+1马（-1马）进入你的装备区时，你将装备区内的-1马（+1马）或七杀宝物置入弃牌堆。",
+        init: false,
+      },
       jlsg_identity_music_image: {
         name: "身份模式背景＆音乐",
         init: false
@@ -20148,6 +20216,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 2021.03.01更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
 &ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
+&ensp; 新增极略七杀宝物规则，可以在拓展页中开启<br>
+&ensp; AI暂时不会采取不同的策略<br>
 &ensp; 略微加强SR黄盖一技能&二技能，虽然其仍然是最弱的SR。<br>
 &ensp; 优化SR黄盖舟炎AI。<br>
 &ensp; 多个技能被正确的标记为与杀相关了。<br>
@@ -20158,6 +20228,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 优化了兼容提示。兼容提示不会进行提前误报且只会提示一次。<br>
 &ensp; 修复SK程昱 捧日，优化UX。<br>
 &ensp; 修复SR黄月英 授计借刀，优化AI。<br>
+&ensp; 修复SR赵云 突围。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.02.25更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
