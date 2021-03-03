@@ -18362,7 +18362,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
         return jlsg_sy;
       });
-
+      var specialRelic = config.qsRelic;
       game.import('card', () => { // 七杀
         var jlsg_qs = {
           name: "jlsg_qs",
@@ -18436,7 +18436,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (player.hp <= 1) return player.num('h', { color: 'red' }) > 1;
                 }
               },
-              onEquip: function () {
+              onEquip: specialRelic ? function () {
                 "step 0"
                 var cards=player.getCards('e',{subtype:['equip3','equip4']});
                 if (cards.length == 2) {
@@ -18455,6 +18455,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return 8 - ai.get.value(card);
                 });
                 "step 3"
+                if (!result.bool) {
+                  player.loseHp();
+                }
+              } : function () {
+                "step 0"
+                player.chooseToDiscard('h', '太平要术：请弃置一张红色牌，否则失去1点体力', function (card) {
+                  return get.color(card) == 'red';
+                }).set('ai', function (card) {
+                  if (card.name == 'tao') return -10;
+                  if (card.name == 'jiu' && player.hp == 1) return -10;
+                  if (player.hp == 1) return 15 - ai.get.value(card);
+                  return 8 - ai.get.value(card);
+                });
+                "step 1"
                 if (!result.bool) {
                   player.loseHp();
                 }
@@ -20141,11 +20155,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         intro: "是否要求SR武将弃置技能",
         init: true,
       },
-      qsRelic: {
-        name: "七杀宝物",
-        intro: "锁定技，当一张七杀宝物进入你的装备区时，若你同时装备了+1马与-1马，你选择并将装备区内的一张坐骑牌置入弃牌堆；<br>锁定技，当+1马（-1马）进入你的装备区时，你将装备区内的-1马（+1马）或七杀宝物置入弃牌堆。",
-        init: false,
-      },
+      // qsRelic: {
+      //   name: "七杀宝物",
+      //   intro: "锁定技，当一张七杀宝物进入你的装备区时，若你同时装备了+1马与-1马，你选择并将装备区内的一张坐骑牌置入弃牌堆；<br>锁定技，当+1马（-1马）进入你的装备区时，你将装备区内的-1马（+1马）或七杀宝物置入弃牌堆。",
+      //   init: false,
+      // },
       jlsg_identity_music_image: {
         name: "身份模式背景＆音乐",
         init: false
@@ -20211,13 +20225,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
       diskURL: "",
       forumURL: "",
-      version: "2.2.0301",
+      mirrorURL: "https://github.com/xiaoas/jilue",
+      version: "2.2.0303",
       changelog: `\
-2021.03.01更新<br>
+2021.03.03更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
 &ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
-&ensp; 新增极略七杀宝物规则，可以在拓展页中开启<br>
-&ensp; AI暂时不会采取不同的策略<br>
+&ensp; <s>新增极略七杀宝物规则，可以在拓展页中开启</s><br>
+&ensp; 由于七杀宝物规则平衡性有点离谱，暂时被搁置了<br>
 &ensp; 略微加强SR黄盖一技能&二技能，虽然其仍然是最弱的SR。<br>
 &ensp; 优化SR黄盖舟炎AI。<br>
 &ensp; 多个技能被正确的标记为与杀相关了。<br>
