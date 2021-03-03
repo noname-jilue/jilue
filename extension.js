@@ -7256,11 +7256,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               srlose: true,
               trigger: { global: 'phaseBegin' },
-              check: function (event, player) {
-                if (ai.get.attitude(player, event.player) > 0) return event.player.num('j');
-                if (ai.get.attitude(player, event.player) < 0) return event.player.num('e');
-                return 0;
-              },
+              // check: function (event, player) {
+              //   if (ai.get.attitude(player, event.player) > 0) return event.player.num('j');
+              //   if (ai.get.attitude(player, event.player) < 0) return event.player.num('e');
+              //   return 0;
+              // },
+              direct: true,
               filter: function (event, player) {
                 var num = 0;
                 for (var i = 0; i < game.players.length; i++) {
@@ -7270,41 +7271,39 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                if (player.isLinked()) player.link();
-                if (player.isTurnedOver()) player.turnOver();
                 player.chooseTarget('将场上的一张牌置于牌堆顶', function (card, player, target) {
                   return target.num('ej') > 0;
-                }).ai = function (target) {
+                }).set("ai", function (target) {
                   if (ai.get.attitude(player, target) > 0) return target.num('j');
                   if (ai.get.attitude(player, target) < 0) return target.num('e');
                   return 0;
-                }
+                }).logskill = "jlsg_lingbo";
                 'step 1'
                 if (result.bool) {
+                  if (player.isLinked()) player.link();
+                  if (player.isTurnedOver()) player.turnOver();
                   event.target = result.targets[0];
-                  player.choosePlayerCard('将目标的一张牌置于牌堆顶', event.target, 'ej', true);
                 }
                 else {
                   event.finish();
                 }
                 'step 2'
-                if (result.bool) {
-                  event.card = result.links[0];
-                  event.target.lose(event.card, ui.special);
-                  game.broadcastAll(function (player) {
-                    var cardx = ui.create.card();
-                    cardx.classList.add('infohidden');
-                    cardx.classList.add('infoflip');
-                    player.$throw(cardx, 1000, 'nobroadcast');
-                  }, event.target);
-                  game.log(player, '将', event.target, '的', event.card, '置于牌堆顶');
-                }
-                else {
-                  event.card = null;
-                }
+                player.choosePlayerCard('将目标的一张牌置于牌堆顶', event.target, 'ej', true);
                 'step 3'
-                if (event.target == game.me) game.delay(0.5);
+                event.card = result.links[0];
+                if (!event.card) {
+                  event.finish(); return;
+                }
+                event.target.lose(event.card, ui.special);
+                game.broadcastAll(function (player) {
+                  var cardx = ui.create.card();
+                  cardx.classList.add('infohidden');
+                  cardx.classList.add('infoflip');
+                  player.$throw(cardx, 1000, 'nobroadcast');
+                }, event.target);
+                game.log(player, '将', event.target, '的', event.card, '置于牌堆顶');
                 'step 4'
+                if (event.target == game.me) game.delay(0.5);
                 if (event.card) {
                   event.card.fix();
                   ui.cardPile.insertBefore(event.card, ui.cardPile.firstChild);
@@ -14059,7 +14058,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               marktext: "魏",
               unique: true,
               intro: {
-                content: "当你受到伤害后，你可以获得伤害来源的一张牌",
+                content: get.skillInfoTranslation('fankui'),
               },
               inherit: 'fankui',
             },
@@ -14069,7 +14068,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               mark: true,
               marktext: "吴",
               intro: {
-                content: "出牌阶段1次，你可以弃置任意张牌，然后摸等量的牌。",
+                content: get.skillInfoTranslation('zhiheng'),
               },
               inherit: 'zhiheng',
             },
@@ -14079,7 +14078,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               unique: true,
               marktext: "蜀",
               intro: {
-                content: "准备阶段，你可以观看牌堆顶的X张牌，并将其以任意顺序置于牌堆项或牌堆底（X为存活角色数且至多为5）",
+                content: get.skillInfoTranslation('guanxing'),
               },
               inherit: "guanxing",
             },
@@ -14089,7 +14088,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               unique: true,
               marktext: "群",
               intro: {
-                content: "锁定技，你的回合内，除你以外，不处于濒死状态的角色不能使用【桃】。",
+                content: get.skillInfoTranslation('wansha'),
               },
               locked: true,
               trigger: { global: 'dying' },
@@ -16432,10 +16431,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
 
             jlsg_lvezhen: {
+              shaRelated:true,
               audio: "ext:极略:2",
               trigger: { player: 'shaBegin' },
               filter: function (event, player) {
-                return event.target.countCards('he');
+                return event.target.countDiscardableCards(player, 'he');
               },
               check: function (event, player) {
                 return get.attitude(player, event.target) < 0;
@@ -16443,16 +16443,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 event.cards = get.cards(3);
+                game.cardsGotoOrdering(cards);
                 player.showCards(event.cards);
                 'step 1'
                 event.numx = 0;
                 for (var i = 0; i < event.cards.length; i++) {
                   if (get.type(event.cards[i]) != 'basic') event.numx++;
-                  ui.discardPile.appendChild(event.cards[i]);
                 }
-                player.$throw(event.cards);
+                // player.$throw(event.cards);
                 if (event.numx) {
-                  player.discardPlayerCard('请选择想要弃置的牌', trigger.target, [1, event.numx], 'he', true);
+                  player.discardPlayerCard('请选择想要弃置的牌', trigger.target, 
+                    [1, Math.min(event.numx, trigger.target.countDiscardableCards(player, 'he'))], 'he').set(
+                    'forceAuto',true);
                 }
               }
             },
@@ -16460,7 +16462,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               enable: 'phaseUse',
               mark: true,
-              marktext: "<font color=yellow>牌</font>",
+              marktext: "游",
               intro: {
                 content: function () {
                   return '牌堆数' + ui.cardPile.childNodes.length + '张' + '||' + '弃牌数' + ui.discardPile.childNodes.length + '张';
@@ -16759,14 +16761,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_dawu: '大雾',
             jlsg_dawu2: '大雾',
             jlsg_tongtian: '通天',
-            jlsg_tongtian_shu: '观星',
-            jlsg_tongtian_wei: '反馈',
-            jlsg_tongtian_wu: '制衡',
-            jlsg_tongtian_qun: '完杀',
-            jlsg_tongtian_wei_info: "当你受到伤害后，你可以获得伤害来源的一张牌。",
-            jlsg_tongtian_shu_info: "准备阶段，你可以观看牌堆顶的X张牌，并将其以任意顺序置于牌堆项或牌堆底。（X为存活角色数且至多为5）",
-            jlsg_tongtian_qun_info: "锁定技，你的回合内，除你以外，不处于濒死状态的角色不能使用【桃】。",
-            jlsg_tongtian_wu_info: "出牌阶段限一次，你可以弃置任意张牌，然后摸等量的牌。",
+            // jlsg_tongtian_shu: '观星',
+            // jlsg_tongtian_wei: '反馈',
+            // jlsg_tongtian_wu: '制衡',
+            // jlsg_tongtian_qun: '完杀',
+            // jlsg_tongtian_wei_info: "当你受到伤害后，你可以获得伤害来源的一张牌。",
+            // jlsg_tongtian_shu_info: "准备阶段，你可以观看牌堆顶的X张牌，并将其以任意顺序置于牌堆项或牌堆底。（X为存活角色数且至多为5）",
+            // jlsg_tongtian_qun_info: "锁定技，你的回合内，除你以外，不处于濒死状态的角色不能使用【桃】。",
+            // jlsg_tongtian_wu_info: "出牌阶段限一次，你可以弃置任意张牌，然后摸等量的牌。",
             jlsg_jilve: '极略',
             jlsg_jieyan: '劫焰',
             jlsg_jieyan_buff: "劫焰·摸牌",
@@ -19298,6 +19300,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
       });
       var jlsg = {
+        showRepo() {
+          var mirrorURL = lib.extensionPack["极略"] && lib.extensionPack["极略"].mirrorURL;
+          if (!mirrorURL) return;
+          if (window.cordova) {
+            if (cordova.InAppBrowser) {
+              return cordova.InAppBrowser.open(mirrorURL, '_system');
+            }
+            return;
+          }
+          if (window.require) {
+            return require('electron').shell.openExternal(mirrorURL);
+          }
+          return window.open(mirrorURL);
+        },
         ai: {
           skill: {
             lose_equip: 'xiaoji|xuanfeng',
@@ -20226,7 +20242,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0302",
+      version: "2.2.0303",
       changelog: `
 2021.03.03更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
@@ -20244,7 +20260,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK程昱 捧日，优化UX。<br>
 &ensp; 修复SR黄月英 授计借刀，优化AI。<br>
 &ensp; 修复SR赵云 突围。<br>
-<a onclick="require('electron').shell.openExternal('https://github.com/xiaoas/jilue')" style="cursor: pointer;text-decoration: underline;">
+&ensp; 修复SR甄姬 凌波。<br>
+&ensp; 优化SK神司马懿 通天。<br>
+&ensp; 优化SK神甘宁 掠阵。<br>
+<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 <span style="font-size: large;">历史：</span><br>
 2021.02.25更新<br>
