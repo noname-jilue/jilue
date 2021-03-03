@@ -20226,8 +20226,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0303",
-      changelog: `\
+      version: "2.2.0302",
+      changelog: `
 2021.03.03更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
 &ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
@@ -20244,6 +20244,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK程昱 捧日，优化UX。<br>
 &ensp; 修复SR黄月英 授计借刀，优化AI。<br>
 &ensp; 修复SR赵云 突围。<br>
+<a onclick="require('electron').shell.openExternal('https://github.com/xiaoas/jilue')" style="cursor: pointer;text-decoration: underline;">
+Visit Repository</a><br>
 <span style="font-size: large;">历史：</span><br>
 2021.02.25更新<br>
 &ensp; 加入了设备能否正确运行极略的判断。<br>
