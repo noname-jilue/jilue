@@ -20252,9 +20252,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0303",
+      version: "2.2.0305",
       changelog: `
-2021.03.03更新<br>
+2021.03.05更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
 &ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
 &ensp; <s>新增极略七杀宝物规则，可以在拓展页中开启</s><br>
