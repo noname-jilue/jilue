@@ -138,17 +138,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           s: [
             'jlsgsoul_diaochan',
             'jlsgsoul_guojia',
-            'jlsgsoul_huangyueying',
             'jlsgsoul_huatuo',
             'jlsgsoul_jiaxu',
             'jlsgsoul_simahui',
             'jlsgsoul_simayi',
             'jlsgsoul_zhaoyun',
             'jlsgsoul_sunquan',
-            'jlsgsk_zuoci',
             'jlsgsr_huangyueying',
+            'jlsgsoul_huangyueying',
           ],
           ap: [
+            'jlsgsk_zuoci',
             'jlsgsoul_caocao',
             'jlsgsoul_dianwei',
             'jlsgsoul_guanyu',
@@ -1987,9 +1987,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseTarget('素检：选择一名其他角色弃置你一张牌，然后你弃置其一张牌', function (card, player, target) {
                   return player != target && target.countCards('he') > 0;
                 }).ai = function (target) {
-                  if (!player.countCards('he')) return -get.attitude(player, target) && target.countCards('he');
-                  if (player.countCards('he') > 4) return get.attitude(player, target) && target.countCards('he');
-                  return 0;
+                  // if (!player.countCards('he')) return -get.attitude(player, target) && target.countCards('he');
+                  // if (player.countCards('he') > 4) return get.attitude(player, target) && target.countCards('he');
+                  // return 0;
+                  return get.effect(player, {name:'guohe'}, player, target) - get.effect(player, {name:'guohe'}, target, player);
                 }
                 'step 1'
                 if (result.bool) {
@@ -3068,7 +3069,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 1"
                 if (event.num < event.targets.length) {
                   event.target = event.targets[event.num];
-                  if (event.target.countDiscardableCards('he') >= 2) {
+                  if (event.target.countDiscardableCards(event.target, 'he') >= 2) {
                     event.target.chooseCard('交给' + get.translation(player) + '一张牌，或弃置两张牌对其造成1点伤害', 'he').ai = function (card) {
                       if (get.attitude(event.target, player) > 0) return 10 - get.value(card);
                       return 0;
@@ -3089,7 +3090,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.target.$give(1, player);
                   event.num++;
                   event.goto(1);
-                } else if (event.target.countDiscardableCards('he') >= 2) {
+                } else if (event.target.countDiscardableCards(event.target, 'he') >= 2) {
                   event.target.chooseToDiscard('弃置两张牌对' + get.translation(player) + '造成1点伤害', 2, 'he', true);
                   event.target.line(player, 'fire');
                   player.damage(event.target);
@@ -4464,7 +4465,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               trigger: { global: 'phaseBegin' },
               filter: function (event, player) {
-                return player.countDiscardableCards('he');
+                return player.countDiscardableCards(player, 'he');
               },
               direct: true,
               content: function () {
@@ -4817,7 +4818,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               usable: 1,
               enable: 'phaseUse',
               filter: function (event, player) {
-                return player.countDiscardableCards('h') && player.isDamaged() && player.canMoveCard();
+                return player.countDiscardableCards(player, 'h') && player.isDamaged() && player.canMoveCard();
               },
               filterCard: true,
               selectCard: function () {
@@ -8479,7 +8480,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               trigger: { global: 'damageEnd' },
               filter: function (event, player) {
-                return player.countDiscardableCards('he') != 0 && event.source && event.source.get('e', '1') != undefined && event.source != player;
+                return player.countDiscardableCards(player, 'he') != 0 && event.source && event.source.get('e', '1') != undefined && event.source != player;
               },
               check: function (event, player) {
                 return get.attitude(player, event.source) <= 0;
@@ -10985,7 +10986,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return get.tag(card, 'damage');
                   },
                   filterTarget: function (card, player, target) {
-                    return (trigger.player == target || trigger.targets.contains(target)) && target.countDiscardableCards('he') > 0;
+                    return (trigger.player == target || trigger.targets.contains(target)) && target.countDiscardableCards(player, 'he') != 0;
                   },
                   selectTarget: [1, 2],
                   ai1: function (card) {
@@ -14061,6 +14062,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 content: get.skillInfoTranslation('fankui'),
               },
               inherit: 'fankui',
+              content:function(){
+                player.gainPlayerCard(get.prompt('fankui',trigger.source),trigger.source,get.buttonValue,'he').set('logSkill',['jlsg_tongtian_wei',trigger.source]);
+              },
             },
             jlsg_tongtian_wu: {
               unique: true,
@@ -19300,6 +19304,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
       });
       var jlsg = {
+        get enabledCards() {
+          delete this.enabledCards;
+          this.enabledCards = null;
+          throw 'Not implemented.';
+          return this.enabledCards;
+        },
         showRepo() {
           var mirrorURL = lib.extensionPack["极略"] && lib.extensionPack["极略"].mirrorURL;
           if (!mirrorURL) return;
@@ -20263,6 +20273,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SR甄姬 凌波。<br>
 &ensp; 优化SK神司马懿 通天。<br>
 &ensp; 优化SK神甘宁 掠阵。<br>
+&ensp; 修复SK神司马懿 通天反馈 配音。<br>
+&ensp; 修复SK董卓 暴政。<br>
+&ensp; 修复SK邓芝 素俭 AI。<br>
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 <span style="font-size: large;">历史：</span><br>
