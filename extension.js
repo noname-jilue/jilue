@@ -8,6 +8,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         try {
           let a = 1;
           const b = 1;
+          (() => console.log(a+b))();
         } catch (error) {
           if (!lib.config["extension_极略_compatibilityAlert"]) {
             game.saveconfig("extension_极略_compatibilityAlert", true);
@@ -389,6 +390,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       try {
         let a = 1;
         const b = 1;
+        (() => console.log(a+b))();
       } catch (error) {
         // alert("极略怕是无法在你的设备上正确运行。请更新webview", "极略");
         // console.error(error, navigator.userAgent);
@@ -413,7 +415,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_bianfuren: ["female", 'wei', 3, ["jlsg_huage", "jlsg_muyi"], []],
             jlsgsk_heqi: ["male", 'wu', 4, ["jlsg_diezhang"], []],
             jlsgsk_mateng: ["male", 'qun', 4, ["mashu", "jlsg_xiongyi"], []],
-            jlsgsk_tianfeng: ["male", 'qun', 3, ["jlsg_sijian", "jlsg_gangzhi"], []],
+            jlsgsk_tianfeng: ["male", 'qun', 2, ["jlsg_sijian", "jlsg_gangzhi"], []],
             jlsgsk_feiyi: ["male", 'shu', 3, ["jlsg_yanxi", "jlsg_zhige"], []],
             jlsgsk_jiangqin: ["male", 'wu', 4, ["jlsg_shangyi", "jlsg_wangsi"], []],
             jlsgsk_dongyun: ["male", 'shu', 3, ["jlsg_bibu", "jlsg_kuangzheng"], []],
@@ -1117,58 +1119,94 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.draw(2);
               }
             },
-            jlsg_gangzhi: {
+            jlsg_sijian: {
               audio: "ext:极略:2",
-              trigger: { player: 'damageBegin4' },
-              filter: function (event, player) {
-                return player.countCards('h') > 0;
+              trigger:{
+                player:'loseAfter',
+                global:['equipAfter','addJudgeAfter','gainAfter'],
               },
-              check: function (event, player) {
-                if (!player.hasCard(function (cardx) {
-                  return get.value(cardx) > 7;
-                }, 'h')) {
-                  if (event.num > 1) return true;
-                  if (player.countCards('h') <= player.maxHp && player.hp > 1) return true;
-                }
-                if (event.num > 1 && !player.hasSkillTag('filterDamage', null, {
-                  card: event.card,
-                  player: trigger.source,
-                })) return true;
-                return false;
+              direct:true,
+              filter:function(event,player){
+                if(player.countCards('h')) return false;
+                var evt=event.getl(player);
+                return evt&&evt.hs&&evt.hs.length;
               },
               content: function () {
                 "step 0"
-                trigger.cancel();
+                player.chooseTarget(get.prompt('jlsg_sijian'), function (card, player, target) {
+                  return player != target && target.countDiscardableCards(player, 'he') > 0;
+                }).set('ai', function (target) {
+                  return -get.attitude(_status.event.player, target);
+                });
                 "step 1"
+                if (result.bool) {
+                  player.logSkill('jlsg_sijian', result.targets);
+                  event.target = result.targets[0];
+                  player.discardPlayerCard(player.hp, event.target, true);
+                }
+                else {
+                  event.finish();
+                }
+              },
+              ai: {
+                expose: 0.2,
+              }
+            },
+            jlsg_gangzhi: {
+              audio: "ext:极略:1",
+              group: ['jlsg_gangzhi2'],
+              trigger: { player: 'damageBefore' },
+              filter: function (event, player) {
+                return player.countCards('h') != 0;
+              },
+              content: function () {
+                "step 0"
                 var cards = player.getCards('h');
                 player.discard(cards);
-                "step 2"
-                player.turnOver();
+                "step 1"
+                trigger.cancel();
+              },
+              ai:{
+                maixie_defend: true, // only when sijian is active
+                effect:{
+                  target:function(card,player,target){
+                    if(player.hasSkillTag('jueqing',false,target)) return;
+                    if(!target.hasFriend()) return;
+                    if(get.tag(card,'damage')&&target.countCards('h') != 0) {
+                      return [0.5, -0.5 * (target.counCards('h') - (target.hasSkill('jlsg_sijian') ? target.hp : 0))];
+                    }
+                  }
+                },
               },
             },
-            jlsg_sijian: {
-              audio: "ext:极略:1",
-              trigger: { player: 'damageEnd' },
-              filter: function (event, player) {
-                return player.countCards('h') <= 0;
+            jlsg_gangzhi2: {
+              audio: "ext:极略:true",
+              trigger: { player: 'damageAfter' },
+              check:function(event,player){
+                return player.isTurnedOver() || game.hasPlayer(
+                  p => get.attitude(player, p) > 0
+                ) || player.maxHp > 1;
               },
-              forced: true,
+              filter: function (event, player) {
+                return player.countCards('h') == 0;
+              },
               content: function () {
                 "step 0"
-                if (player.isTurnedOver()) player.turnOver();
+                player.turnOver();
                 "step 1"
                 player.drawTo(player.maxHp);
               },
-              ai: {
-                effect: {
-                  target: function (card, player, target) {
-                    if (!get.tag(card, 'damage')) return;
-                    if (player.hasSkillTag('jueqing', false, target)) return [1, -2.5];
-                    if (target.countCards('h') >= target.maxHp) return [1, -1];
-                    if (target.isTurnedOver() && target.hp > 1) return [1, (target.maxHp - target.countCards('h')) / 2];
-                  },
-                }
-              }
+              ai:{
+                maixie:true,
+                maixie_hp:true,
+                effect:{
+                  target:function(card,player,target){
+                    if(player.hasSkillTag('jueqing',false,target)) return;
+                    if(!target.hasFriend() && (!target.isTurnedOver() || target.hp == 1)) return;
+                    if(get.tag(card,'damage')&&target.countCards('h') == 0) return target.isTurnedOver() ? [0, 4] : 0.5;
+                  }
+                },
+              },
             },
             jlsg_yanxi: {
               audio: "ext:极略:2",
@@ -3040,7 +3078,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.target.$give(result.cards.length, result.targets[0]);
                   event.goto(0);
                 } else {
-                  player.gainPlayerCard(event.target);
+                  player.gainPlayerCard('h', event.target);
                 }
               },
               ai: {
@@ -4827,7 +4865,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               check: function (card) {
                 return 6 - ai.get.value(card);
               },
-              filterTarget: true,
+              filterTarget: function(card,player,target){
+                return target.canMoveCard();
+              },
               content: function () {
                 'step 0'
                 event.count = cards.length;
@@ -5794,7 +5834,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   });
               // },
               filterTarget: function (card, player, target) {
-                return player != target && player.inRangeOf(target);
+                return target && player != target && player.inRangeOf(target);
               },
               multitarget: true,
               multiline: true,
@@ -6793,8 +6833,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_xiongyi_info: "锁定技，你的回合开始时，若你的体力值为1，你恢复1点体力；若你没有手牌，你摸两张牌。",
             jlsg_sijian: "死谏",
             jlsg_gangzhi: "刚直",
-            jlsg_sijian_info: "锁定技，当你受到伤害后，若你没有手牌，你将武将牌正面朝上，然后将手牌数补至体力上限。",
-            jlsg_gangzhi_info: "当你受到伤害时，若你有手牌，你可以弃置所有手牌，然后免疫此伤害并将武将牌背面朝上。",
+            jlsg_sijian_info: "当你失去所有手牌后，你可以弃置一名其他角色的X张牌(X为你的体力值)。",
+            jlsg_gangzhi_info: "当你受到伤害时，若你有手牌，你可以弃置所有手牌，然后防止此伤害，若你没有手牌，你可以将武将牌翻面，然后将手牌数补至体力上限。",
             jlsg_yanxi: "衍息",
             jlsg_zhige: "止戈",
             jlsg_zhige_3: "止戈·闪",
@@ -9446,7 +9486,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               forced: true,
               popup: false,
               content: function () {
-                player.chooseToDiscard(true).ai = get.disvalue;
+                player.chooseToDiscard(2, true);
               }
             },
             jlsg_guoshi: {
@@ -10373,23 +10413,23 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               srlose: true,
               enable: ['chooseToUse', 'chooseToRespond'],
-              filterCard: function () {
-                return false;
-              },
-              selectCard: -1,
+              // filterCard: function () {
+              //   return false;
+              // },
+              // selectCard: -1,
               viewAs: { name: 'shan' },
               viewAsFilter: function (player) {
                 return player.isTurnedOver();
               },
               prompt: '可以将你的武将牌正面朝上，视为打出一张【闪】',
               check: function () {
-                return 1
+                return true;
               },
               onuse: function (result, player) {
-                if (player.isTurnedOver()) player.turnOver();
+                player.turnOver(false);
               },
               onrespond: function (result, player) {
-                if (player.isTurnedOver()) player.turnOver();
+                player.turnOver(false);
               },
               ai: {
                 skillTagFilter: function (player) {
@@ -12955,7 +12995,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhouyan_info: '出牌阶段，你可以令一名角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成1次伤害后，你可以摸一张牌。',
             jlsg_zhaxiang_info: '出牌阶段，你可以将一张手牌扣置，然后令一名其它角色选择一项：交给你一张牌并弃置你扣置的牌；或展示你扣置的牌并获得之。若你扣置的牌为【杀】，则视为你对其使用一张火属性的【杀】（不计入出牌阶段的使用限制且不可被响应）。',
             jlsg_old_zhaxiang_info: '出牌阶段限一次，你可以指定一名其它角色，视为该角色对你使用一张【杀】，然后你摸两张牌并视为对其使用一张【杀】（你的此【杀】无视防具）。',
-            jlsg_shixue_info: '当你使用【杀】指定目标后，你可以摸两张牌，当此【杀】被【闪】响应后，你须弃置一张牌。',
+            jlsg_shixue_info: '当你使用【杀】指定目标后，你可以摸两张牌；若如此做，当此【杀】被【闪】响应后，你须弃置两张牌。',
             jlsg_guoshi_info: '任一角色的回合开始阶段开始时，你可以观看牌堆顶的两张牌，然后可将其中任意张牌置于牌堆底；任1角色的回合结束阶段开始时，你可以令其获得本回合因弃置或判定进入弃牌堆的一张牌。',
             jlsg_yingcai_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的一张牌，你重复此流程直到你展示出第3种花色的牌时，将这张牌置入弃牌堆，然后获得其余的牌。',
             jlsg_old_yingcai_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的一张牌，你重复此流程直到你展示出第三种花色的牌时，将这张牌置入弃牌堆，然后获得其余的牌。',
@@ -13645,8 +13685,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return !target.storage.jlsg_jizhao1 && player != target;
               },
               content: function () {
-                target.gain(cards, player);
-                player.$give(cards, target);
+                target.gain(cards, player, 'giveAuto');
+                // player.$give(cards, target);
                 target.addTempSkill('jlsg_jizhao_zhao', { player: 'dieAfter' });
                 target.storage.jlsg_jizhao1 = true;
                 target.storage.jlsg_jizhao2 = player;
@@ -14242,7 +14282,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: { player: 'useCard' },
               forced: true,
               filter: function (event) {
-                return (get.type(event.card, 'trick') == 'trick' && event.cards[0] && event.cards[0] == event.card);
+                return get.type(event.card) == 'trick';
               },
               content: function () {
                 'step 0'
@@ -16216,8 +16256,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 nothunder: true,
                 effect: {
                   target: function (card, player, target, current) {
-                    if (get.tag(card, 'damage')) return [0, 0];
-                    if (target.countCards('h') < target.maxHp) return [0, 2];
+                    if (get.tag(card, 'damage')) return [0, 0.5];
+                    return [1, 0.5];
+                    // if (target.countCards('h') < target.maxHp) return [0, 2];
                   }
                 },
               },
@@ -19304,6 +19345,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
       });
       var jlsg = {
+        debug: {
+          logCurrentRanks() {
+            var logC = function (name) {
+              console.log(`${name} ${get.translation(name)} ${get.rank(name)}`);
+            };
+            Array.from(document.getElementsByClassName('character')).filter(
+              c => c.link
+            ).forEach(
+              c => logC(c.link)
+            );
+            if (!game.players || !game.players.forEach) return;
+            game.players.forEach(
+              p => {
+                if (p.name1) logC(p.name1);
+                if (p.name2) logC(p.name2);
+              }
+            )
+          },
+        },
         get enabledCards() {
           delete this.enabledCards;
           this.enabledCards = null;
@@ -20254,6 +20314,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       mirrorURL: "https://github.com/xiaoas/jilue",
       version: "2.2.0305",
       changelog: `
+2021.03.06更新<br>
+&ensp; 修复SK神吕布 无谋。<br>
+&ensp; 修复SK神刘备 激诏 动画。<br>
+&ensp; 回滚SR吕蒙 誓学。<br>
+&ensp; 修复SK诸葛瑾选择目标。<br>
+&ensp; 修复SK黄月英 流马 选择卡牌位置。<br>
+&ensp; 回滚并削弱SK田丰。优化死谏发动条件。优化AI<br>
+&ensp; 优化SK神司马徽 隐世AI<br>
+<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
+Visit Repository</a><br>
+<span style="font-size: large;">历史：</span><br>
 2021.03.05更新<br>
 &ensp; 加入了所有角色的评级和稀有度。<br>
 &ensp; 如果你没有试过无名杀的战棋君主模式，或许是时候试试看了!<br>
@@ -20276,23 +20347,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK神司马懿 通天反馈 配音。<br>
 &ensp; 修复SK董卓 暴政。<br>
 &ensp; 修复SK邓芝 素俭 AI。<br>
-<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
-Visit Repository</a><br>
-<span style="font-size: large;">历史：</span><br>
-2021.02.25更新<br>
-&ensp; 加入了设备能否正确运行极略的判断。<br>
-&ensp; ————当然，如果你能在游戏中看到这条changelog，你的设备应当可以正确运行极略。<br>
-&ensp; 修复SK神司马懿 通天完杀 bug<br>
-&ensp; 修复SR孙尚香 姻盟 优化AI<br>
-&ensp; 优化SK三英神董卓纵欲 暴政 技能描述<br>
-&ensp; 修复SK神吕蒙 涉猎<br>
-&ensp; 修复SK吕玲绮 造成伤害bug<br>
-&ensp; 优化SR华佗 五禽 询问，修复配音<br>
-&ensp; 修复SK关兴 勇继<br>
-&ensp; 修复七杀青梅煮酒 描述<br>
-&ensp; 修复SK关兴 勇继 摸牌<br>
-&ensp; 优化SK神吕蒙 涉猎 提示<br>
-&ensp; 优化所有距离结算<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
