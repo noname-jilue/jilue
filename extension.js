@@ -1165,7 +1165,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if(player.hasSkillTag('jueqing',false,target)) return;
                     if(!target.hasFriend()) return;
                     if(get.tag(card,'damage')&&target.countCards('h') != 0) {
-                      return [0.6, -0.4 * (target.counCards('h') - (target.hasSkill('jlsg_sijian') ? target.hp : 0))];
+                      return [0.6, -0.4 * (target.countCards('h') - (target.hasSkill('jlsg_sijian') ? target.hp : 0))];
                     }
                   }
                 },
@@ -20357,9 +20357,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0308",
+      version: "2.2.0309",
       changelog: `
-2021.03.08更新<br>
+2021.03.09更新<br>
 &ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
 &ensp; 修复SK神吕布 无谋。<br>
 &ensp; 修复SK神刘备 激诏 动画。<br>
