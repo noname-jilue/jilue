@@ -2155,6 +2155,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_kuangyan: {
               audio: "ext:极略:2",
+              group: ['jlsg_kuangyan1', 'jlsg_kuangyan2']
+            },
+            jlsg_kuangyan1: {
+              inherit: 'jlsg_kuangyan',
+              audio: "ext:极略:true",
               priority: -1,
               trigger: { player: 'damageBegin3' },
               filter: function (event, player) {
@@ -2176,10 +2181,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                 }
               },
-              group: 'jlsg_kuangyan2'
             },
             jlsg_kuangyan2: {
-              audio: "ext:极略:2",
+              inherit: 'jlsg_kuangyan',
+              audio: "ext:极略:true",
               trigger: { player: 'damageBegin3' },
               filter: function (event, player) {
                 return event.num >= 2;
@@ -7272,7 +7277,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (ai.get.attitude(player, target) > 0) return target.num('j');
                   if (ai.get.attitude(player, target) < 0) return target.num('e');
                   return 0;
-                }).logskill = "jlsg_lingbo";
+                }).logSkill = "jlsg_lingbo";
                 'step 1'
                 if (result.bool) {
                   if (player.isLinked()) player.link();
@@ -14477,6 +14482,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               group: ['jlsg_suohun2'],
+              ai:{
+                maixie_defend:true,
+              }      
             },
             jlsg_suohun2: {
               skillAnimation: true,
@@ -15362,6 +15370,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_tianqi: {
+              // TODO: delete excessive audio clips
               usable: 1,
               audio: "ext:极略:2",
               enable: ['chooseToUse','chooseToRespond'],
@@ -15547,7 +15556,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 effect:{
                   player:function(card,player,target){
-                    if(_status.event.skill=='jlsg_tianqi_wuxie'){
+                    if(card.name == 'wuxie' && _status.event.skill=='jlsg_tianqi_wuxie'){
                       var knowHead = player.getStorage('jlsg_tianji_top')[0] === ui.cardPile.firstChild;
                       // calculating lose hp effect
                       var loseHpEffect = lib.jlsg.getLoseHpEffect(player);
@@ -15617,7 +15626,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 effect:{
                   player:function(card,player,target){
-                    if(_status.event.skill=='jlsg_tianqi_shan'){
+                    if(card.name == 'shan' && _status.event.skill=='jlsg_tianqi_shan'){
                       var knowHead = player.getStorage('jlsg_tianji_top')[0] === ui.cardPile.firstChild;
                       // calculating lose hp effect
                       var loseHpEffect = -1;
@@ -15835,6 +15844,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     .set('choice', get.attitude(player, event.target) > 0);
                 'step 3'
                 if (result.bool) {
+                  player.logSkill('jlsg_xianzhu2', event.target);
                   event.target.draw(2);
                   event.goto(2);
                 } else {
@@ -20251,6 +20261,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SR赵云 救主<br>
 &ensp; 修复SK黄月英 木牛<br>
 &ensp; 修复SK管辂 纵情<br>
+&ensp; 修复SK许攸 配音映射<br>
+&ensp; 修复SK神孙尚香 贤助 配音<br>
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 <span style="font-size: large;">历史：</span><br>
