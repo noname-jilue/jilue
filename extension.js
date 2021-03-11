@@ -2951,41 +2951,56 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_muniu: {
               audio: "ext:极略:2",
-              trigger: { global: 'loseAfter' },
+              trigger: { 
+                global:['equipAfter','addJudgeAfter','loseAfter','gainAfter','loseAsyncAfter'],
+              },
+              // TODO: revise according to shoucheng
               filter: function (event, player) {
                 if (_status.currentPhase != player) return false;
-                for (var i = 0; i < event.cards.length; i++) {
-                  if (event.cards[i].original == 'e') return true;
-                }
-                return false;
+                return game.hasPlayer(p => {
+                  var evt=event.getl(p);
+                  return evt&&evt.es&&evt.es.length;
+                });
               },
               direct: true,
               content: function () {
                 'step 0'
-                player.chooseTarget('是否发动【木牛】').ai = function (target) {
+                event.num = game.filterPlayer(p => {
+                  var evt=trigger.getl(p);
+                  return evt&&evt.es&&evt.es.length;
+                }).length;
+                'step 1'
+                if (!event.num) {
+                  event.finish();
+                  return;
+                }
+                --event.num;
+                player.chooseTarget(get.prompt2('jlsg_muniu')).ai = function (target) {
                   if (Math.random() < 0.5) return -get.attitude(player, target);
                   return get.attitude(player, target);
                 }
-                'step 1'
+                'step 2'
                 if (result.bool) {
                   event.target = result.targets[0];
                   player.logSkill('jlsg_muniu', event.target);
                   if (event.target.countCards('h')) {
                     player.discardPlayerCard(event.target, 'h').ai = function (button) {
-                      if (get.attitude(player, event.target) > 0) return false;
-                      return get.value(button.link);
+                      return get.attitude(player, event.target) < 0;
+                      // if (get.attitude(player, event.target) > 0) return false;
+                      // return get.value(button.link);
                     }
                   } else {
                     event.target.draw();
+                    event.goto(1);
                   }
-
                 } else {
                   event.finish();
                 }
-                'step 2'
+                'step 3'
                 if (!result.bool) {
                   event.target.draw();
                 }
+                event.goto(1);
               },
               group: ['jlsg_muniu2']
             },
@@ -4131,16 +4146,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               subSkill: {
                 show: {
                   audio: false,
-                  trigger: { player: 'gainAfter' },
+                  trigger: { player: 'phaseDrawEnd' },
                   forced: true,
                   popup: false,
                   filter: function (event) {
-                    return event.parent.parent.name == 'phaseDraw';
+                    // return event.parent.parent.name == 'phaseDraw';
+                    return event.cards && event.cards.length;
                   },
                   content: function () {
                     'step 0'
                     event.card = player.storage.jlsg_zongqing;
-                    player.showCards(event.card);
+                    // player.showCards(event.card);
+                    player.showCards(trigger.cards);
                     'step 1'
                     var cards = [];
                     if (get.color(event.card) == 'red') {
@@ -4160,7 +4177,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         }
                         player.useCard({ name: 'jiu' }, player);
                       }
-                    } else {
+                    } else { // card color == black
                       for (var i = 0; i < trigger.cards.length; i++) {
                         if (get.color(trigger.cards[i]) == 'red') {
                           cards.push(trigger.cards[i]);
@@ -15528,9 +15545,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 delete player.storage.jlsg_tianji_top;
               },
               ai: {
-                skillTagFilter: function (player) {
-                  return !player.isDying();
+                effect:{
+                  player:function(card,player,target){
+                    if(_status.event.skill=='jlsg_tianqi_wuxie'){
+                      var knowHead = player.getStorage('jlsg_tianji_top')[0] === ui.cardPile.firstChild;
+                      // calculating lose hp effect
+                      var loseHpEffect = lib.jlsg.getLoseHpEffect(player);
+                      if (!knowHead) {
+                        loseHpEffect /= 2;
+                      } else {
+                        if (get.type(ui.cardPile.firstChild, 'trick') == get.type(button.link[2], "trick")) {
+                          loseHpEffect = 0;
+                        }
+                      }
+                      return [1, loseHpEffect];
+                    }
+                  }
                 },
+                // skillTagFilter: function (player) {
+                //   return !player.isDying();
+                // },
                 // basic: {
                 //   useful: [6, 4],
                 //   value: [6, 4],
@@ -15558,7 +15592,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               viewAs: { name: 'shan' },
               viewAsFilter: function (player) {
-                return !player.isDying;
+                return !player.isDying();
               },
               onuse: function (result, player) {
                 var cards = get.cards();
@@ -15581,10 +15615,27 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 delete player.storage.jlsg_tianji_top;
               },
               ai: {
-                basic: {
-                  useful: [7, 2],
-                  value: [7, 2],
+                effect:{
+                  player:function(card,player,target){
+                    if(_status.event.skill=='jlsg_tianqi_shan'){
+                      var knowHead = player.getStorage('jlsg_tianji_top')[0] === ui.cardPile.firstChild;
+                      // calculating lose hp effect
+                      var loseHpEffect = -1;
+                      if (!knowHead) {
+                        loseHpEffect /= 2;
+                      } else {
+                        if (get.type(ui.cardPile.firstChild, 'trick') == get.type(button.link[2], "trick")) {
+                          loseHpEffect = 0;
+                        }
+                      }
+                      return [1, loseHpEffect];
+                    }
+                  }
                 },
+                // basic: {
+                //   useful: [7, 2],
+                //   value: [7, 2],
+                // },
               },
             },
             jlsg_tianji: {
@@ -20190,14 +20241,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0309",
+      version: "2.2.0311",
       changelog: `
-2021.03.09更新<br>
+2021.03.11更新<br>
 &ensp; 修复SK张鲁 米道<br>
 &ensp; 优化 SK神郭嘉 天机<br>
 &ensp; 重写了SK神郭嘉 天启<br>
-&ensp; 天启在没有天机时不会再报错，优化了AI和UX，<br>
-&ensp; 修复SR赵云 救主，<br>
+&ensp; 天启在没有天机时不会再报错，优化了AI和UX<br>
+&ensp; 修复SR赵云 救主<br>
+&ensp; 修复SK黄月英 木牛<br>
+&ensp; 修复SK管辂 纵情<br>
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 <span style="font-size: large;">历史：</span><br>
