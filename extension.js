@@ -1814,7 +1814,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 player.chooseToDiscard('h', `咒缚：是否弃置一张手牌，令${get.translation(trigger.player)}进行判定？`).set("ai", function (card) {
-                  return 2 + get.effect(trigger.player, { name: 'sha' }, game.me) - get.value(card);
+                  return get.attitude(player, trigger.player) >= 0 ? 6 - get.useful(card);
+                  // return 2 + get.effect(trigger.player, { name: 'sha' }, game.me) - get.value(card);
                 }).set('logSkill', 'jlsg_zhoufu');
                 'step 1'
                 if (result.bool) {
@@ -5532,7 +5533,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               trigger: { global: 'phaseBegin' },
               filter: function (event, player) {
-                return player != event.player && event.player.countCards('h') && player.countCards('h') && !event.player.hasSkill("jlsg_chanyuan");
+                return player.canCompare(event.player); // && !event.player.hasSkill("jlsg_chanyuan");
               },
               check: function (event, player) {
                 var cards = player.get('h');
@@ -5551,10 +5552,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 1'
                 if (result.bool) {
                   var list = [];
-                  for (var i in lib.card) {
+                  for (var i of lib.inpile) {
                     if (!lib.translate[i + '_info']) continue;
-                    if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false) continue;
-                    if (lib.config.hiddenCardPack.indexOf(i) == 0) continue;
                     if (lib.card[i].type == 'trick') list.push(['trick', '', i]);
                   }
                   var dialog = ui.create.dialog('蛊惑', [list, 'vcard']);
@@ -6976,7 +6975,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               prompt: '是否发动技能【无畏】，展示牌中每有一张基本牌便可视为对一名角色使用一张【杀】（每名角色限一次）',
               content: function () {
                 'step 0'
-                player.storage.jlsg_wuweiT = [];
                 trigger.cancel();
                 event.cards = get.cards(3);
                 player.showCards(event.cards);
@@ -6988,9 +6986,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 }
                 if (event.lose > 0 && game.hasPlayer(function (cur) {
-                  return lib.filter.targetEnabled({ name: 'sha' }, player, cur) && !player.storage.jlsg_wuweiT.contains(cur);
+                  return lib.filter.targetEnabled({ name: 'sha' }, player, cur);
                 })) {
-                  var next = player.chooseCardButton('请选择无畏视为【杀】使用的牌', event.cards);
+                  var next = player.chooseCardButton('请选择无畏视为使用【杀】弃置的牌', event.cards);
                   next.ai = function (button) {
                     if (jlsg.isWeak(player)) {
                       return button.link.name != 'du' || button.link.name != 'tao';
@@ -7008,7 +7006,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (result.bool) {
                   event.cards1 = result.links[0];
                   player.chooseTarget('请选择无畏的目标', function (card, player, target) {
-                    return lib.filter.targetEnabled({ name: 'sha' }, player, target) && !player.storage.jlsg_wuweiT.contains(target);
+                    return lib.filter.targetEnabled({ name: 'sha' }, player, target);
                   }).set('ai', function (target) {
                     if (jlsg.isEnemy(player, target)) {
                       return 10 - jlsg.getDefenseSha(target, player);
@@ -7021,8 +7019,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 3'
                 if (result.bool) {
-                  player.storage.jlsg_wuweiT.push(result.targets[0]);
-                  player.useCard({ name: 'sha' }, result.targets, [event.cards1], false);
+                  player.useCard({ name: 'sha', suit:'none', number: null }, result.targets, [event.cards1], false);
                   event.cards.remove(event.cards1);
                   event.goto(1);
                 } else {
@@ -7032,7 +7029,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               ai: {
                 threaten: 1.5,
-                expose: 0.2,
+                // expose: 0.2,
               }
             },
             jlsg_yansha: {
@@ -20251,9 +20248,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0311",
+      version: "2.2.0312",
       changelog: `
-2021.03.11更新<br>
+<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
+Visit Repository</a><br>
+2021.03.12更新<br>
 &ensp; 修复SK张鲁 米道<br>
 &ensp; 优化 SK神郭嘉 天机<br>
 &ensp; 重写了SK神郭嘉 天启<br>
@@ -20263,8 +20262,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 &ensp; 修复SK管辂 纵情<br>
 &ensp; 修复SK许攸 配音映射<br>
 &ensp; 修复SK神孙尚香 贤助 配音<br>
-<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
-Visit Repository</a><br>
+&ensp; 修复SK于吉 选卡<br>
+&ensp; 修复SR张辽 无畏 优化AI<br>
+&ensp; 修复SK张宝 咒缚AI<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.09更新<br>
 &ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
