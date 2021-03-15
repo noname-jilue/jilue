@@ -388,8 +388,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
     },
     precontent: function (config) {
       if (!config.enable) { return; }
-      // lib.init.js(lib.assetURL +'extension/极略/jlsg_martial.js');
-      // lib.config.all.mode.add('jlsg_martial');
       if (config.debug) {
         lib.config.characters = ["jlsg_sk", "jlsg_sr", "jlsg_soul", "jlsg_sy"];
       }
@@ -5841,7 +5839,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_danmou: {
               audio: "ext:极略:2",
               trigger: { player: 'damageEnd' },
-              filter: function (event) {
+              filter: function (event, player) {
                 return event.source && event.source.isAlive() && event.source != player
                   && (event.source.countCards('h') || player.countCards('h'));
               },
@@ -5905,7 +5903,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return suit;
                 });
                 'step 1'
-                player.chat(get.translation(result.control));
+                var message = `<span style="color: ${['heart2', 'diamond2'].contains(result.control)?"#631515":"rgba(0,0,0,0.8)"}; font-size: 200%;">${get.translation(result.control.slice(0, -1))}</span>`;
+                // can't really chat this due to ban words restrictions
+                player.say(message);
                 trigger.player.storage.jlsg_fushe = result.control;
                 trigger.player.storage.jlsg_fushe_source = player;
                 trigger.player.addTempSkill('jlsg_fushe_scanning', 'phaseUseAfter');
@@ -6830,9 +6830,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
         return jlsg_sk;
       });
-      // if (!lib.config.characters.contains('jlsg_sk')) lib.config.characters.remove('jlsg_sk');
-      // lib.translate['jlsg_sk_character_config'] = 'SK武将';
-
       game.import('character', function () { // SR
         var jlsg_sr = {
           name: 'jlsg_sr',
@@ -13060,8 +13057,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
         return jlsg_sr;
       });
-      // if (!lib.config.characters.contains('jlsg_sr')) lib.config.characters.remove('jlsg_sr');
-      // lib.translate['jlsg_sr_character_config'] = 'SR武将';
       game.import('character', function () { // Soul
         var jlsg_soul = {
           name: 'jlsg_soul',
@@ -14416,7 +14411,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (card.name == 'sha' || card.name == 'tao') return false;
                 },
               },
-              audio: "ext:极略:1",
+              // audio: "ext:极略:1",
               enable: 'chooseToUse',
               filter: function (event, player) {
                 return player.countCards('h', { name: ['sha', 'tao'] }) > 0;
@@ -14522,7 +14517,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_juejing: {
-              audio: "ext:极略:2",
+              audio: "ext:极略:1",
               trigger: { global: 'phaseEnd' },
               filter: function (event, player) {
                 return player.hp >= 1;
@@ -14609,7 +14604,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               selectCard: function () {
                 return Math.max(1, _status.event.player.hp);
               },
-              viewAs: { name: 'sha' },
+              viewAs: { name: 'sha', nature: 'fire' },
               filter: function (event, player) {
                 return player.countCards('he', { suit: 'diamond' }) >= player.hp;
               },
@@ -16826,7 +16821,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wushen_info: '锁定技，你的【杀】和【桃】均视为【决斗】。',
             jlsg_suohun_info: '锁定技，每当你受到一点伤害时，伤害来源(除你以外)获得一个「魂」标记。当你进入濒死状态时，减一半(向上取整)的体力上限并恢复体力至体力上限，拥有「魂」标记的角色依次弃置所有的「魂」标记，然后受到与弃置的「魂」标记数量相同的伤害。',
             jlsg_juejing_info: '锁定技，一名角色的回合开始时，若你的体力值：为一，你摸一张牌；大于一，你失去1点体力，然后摸两张牌。',
-            jlsg_longhun_info: '你可以将同花色的X张牌按下列规则使用（或打出）：红桃当【桃】；方块当【杀】；梅花当【闪】；黑桃当【无懈可击】。（X为你当前的体力值且至少为一）。',
+            jlsg_longhun_info: '你可以将同花色的X张牌按下列规则使用（或打出）：红桃当【桃】；方块当火属性的【杀】；梅花当【闪】；黑桃当【无懈可击】。（X为你当前的体力值且至少为一）。',
             jlsg_nizhan_info: '每当一名角色受到【杀】或【决斗】造成的一次伤害后，你可以将一枚「袭」标记放置在该角色或伤害来源(不为你)的武将牌上；锁定技，你的身份为“主公”时，不增加体力上限。',
             jlsg_cuifeng_info: '锁定技，回合结束阶段，若场上的「袭」标记总数不小于4，你须依次从每名被标记的角色处获得等同于其「袭」标记数量的手牌。若该角色手牌不足，则你获得其全部手牌，然后该角色受到你对其造成的一点伤害。最后移除场上全部的「袭」标记。',
             jlsg_weizhen_info: '回合开始阶段，你可以移除场上全部的「袭」标记，然后摸等同于「袭」标记数量的牌。',
@@ -16875,8 +16870,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         }
         return jlsg_soul;
       });
-      // if (!lib.config.characters.contains('jlsg_soul')) lib.config.characters.remove('jlsg_soul');
-      // lib.translate['jlsg_soul_character_config'] = '魂烈包';
       game.import('character', function () { // 三英
         var jlsg_sy = {
           name: 'jlsg_sy',
@@ -19303,6 +19296,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           }
           return window.open(mirrorURL);
         },
+        showRepoElement(refElement) {
+          let potentialRepo = refElement.nextElementSibling;
+          if (potentialRepo && potentialRepo.id == "repo-link") {
+            potentialRepo.remove();
+          } else {
+            refElement.insertAdjacentHTML('afterend', `<a id="repo-link" onclick="lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;display:block">Visit Repository</a>`);
+          }
+        },
         getLoseHpEffect(player) {
           var loseHpEffect = -3;
           if (player.hp == 1) loseHpEffect *= 2.5;
@@ -20202,7 +20203,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         intro: "禁用所有其他武将包 <span style='color:#FF0000'>测试用！</span>",
         init: false
       }
-    }, help: {
+    }, 
+    help: {
       "民间极略": "<h2><font color=Magenta>民间极略魔改版</font></h2><br>" +
         "前言：因为本人（仲哥）对极略三国扩展有独到的情怀和殷勤的热情，很喜欢极略三国里面的武将。但本扩展BUG较多，限制于原作者的能力有限，再加上疫情期间空闲时间较多，所以呢，就顺便对此扩展魔改了一二。希望能给大家带来更好的体验~" +
         "<br><br><font color=Red>具体的魔改内容：</font><br>" +
@@ -20222,7 +20224,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         "<br><font color=Green>很多改动都忘了。。。到此为止吧。。。</font>" +
         "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已" +
         "<br><br><font color=Blue>后言2：</font>以上都是遗留了 SC包已经被我鲨了(●'◡'●) ——xiaoas"
-    }, package: {
+    }, 
+    package: {
       character: {
         character: {},
         translate: {},
@@ -20236,8 +20239,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         skill: {},
         translate: {},
       },
-      intro: "<div><li>极略全部武将·可能可以联机版<li>可在联机武将设置里设为联机禁用</div>",
-      author: "可乐，舔狗(代更)：赵云，做联机：青冢，修小BUG：萧墨(17岁) <font color=Purple>帮助中查看更多内容</font>",
+      intro: `<div>\
+<img src="${lib.assetURL}extension/极略/logo.png" alt="极略三国" style="width:100%" onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
+<li>极略全部武将·附带七杀卡包+极略三英武将，不需要请记得关闭。<li>帮助中查看更多内容
+</div>`,
+      author: "可乐，赵云，青冢，萧墨(17岁)",
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
@@ -20260,6 +20266,10 @@ Visit Repository</a><br>
 &ensp; 修复SK张宝 咒缚AI<br>
 &ensp; 优化三英神暴怒逻辑<br>
 &ensp; 优化SK程昱 胆谋<br>
+&ensp; 优化SK张任 伏射 提示<br>
+&ensp; 移除SK神关羽 武神的错误配音<br>
+&ensp; 优化SK神赵云 绝境配音<br>
+&ensp; 修复龙魂方片效果<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.09更新<br>
 &ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
