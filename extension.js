@@ -388,6 +388,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
     },
     precontent: function (config) {
       if (!config.enable) { return; }
+      console.time(_status.extension + 'pre');
       if (config.debug) {
         lib.config.characters = ["jlsg_sk", "jlsg_sr", "jlsg_soul", "jlsg_sy"];
       }
@@ -2660,12 +2661,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                   if (trigger.player.countCards('h') <= 2 && get.attitude(player, trigger.player) > 3 && player.countCards('h') > 3) return 6 - get.value(card);
                   return 0;
-                }
+                }.logSkill = ['jlsg_suiji', trigger.player];
                 'step 1'
                 if (result.bool) {
-                  player.logSkill('jlsg_suiji', trigger.player);
                   trigger.player.gain(result.cards, player, 'giveAuto');
-                  game.delay();
                 } else {
                   event.finish();
                 }
@@ -5805,16 +5804,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
+                event.target = event.targets.shift();
+                if (!event.target) {
+                  event.finish();
+                  return;
+                }
                 event.target.chooseToUse('是否对' + get.translation(player) + '使用一张【杀】？', { name: 'sha' }, player, -1);
                 'step 1'
-                var idx = event.targets.indexOf(event.target);
-                if (idx != -1) {
-                  ++idx;
-                  if (idx != event.targets.length) {
-                    event.target = event.targets[idx];
-                    event.goto(0);
-                  }
-                }
+                event.goto(0);
               },
               ai: {
                 order: 9,
@@ -12219,7 +12216,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 1'
                 if (result.bool) {
-                  delete result.bool;
                   if (trigger.player.countCards('h')) {
                     trigger.player.chooseCard('交给' + get.translation(player) + '一张牌或令打出的杀无效').set('ai', function (card) {
                       if (_status.event.getParent().player.hasSkill('jiu')) {
@@ -12258,6 +12254,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
+                if (!target.countDiscardableCards('h')) {
+                  target.damage(player);
+                  target.recover();
+                  event.finish();
+                  return;
+                }
                 target.chooseToDiscard('弃置一张基本牌，并回复一点体力。或受到一点伤害并回复一点体力。', { type: 'basic' }).ai = function (card) {
                   if (target.hasSkillTag('maixie') && target.hp > 1) return 0;
                   if (get.recoverEffect(target, target, target) > 0) return 7.5 - get.value(card);
@@ -20164,6 +20166,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       };
       lib.jlsg = jlsg;
       window.jlsg = jlsg;
+      console.timeEnd(_status.extension + 'pre');
     },
     config: {
       srlose: {
@@ -20266,10 +20269,12 @@ Visit Repository</a><br>
 &ensp; 修复SK张宝 咒缚AI<br>
 &ensp; 优化三英神暴怒逻辑<br>
 &ensp; 优化SK程昱 胆谋<br>
+&ensp; 修复SK程昱 捧日<br>
 &ensp; 优化SK张任 伏射 提示<br>
 &ensp; 移除SK神关羽 武神的错误配音<br>
 &ensp; 优化SK神赵云 绝境配音<br>
 &ensp; 修复龙魂方片效果<br>
+&ensp; 优化SR曹操 治世 询问<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.09更新<br>
 &ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
