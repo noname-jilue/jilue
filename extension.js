@@ -54,14 +54,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         },
       };
       // TODO: 司马师
-      var trivialSolveCharacterReplace = function (name) {
-        var shortname = name.substring(name.lastIndexOf('_') + 1);
-        if (shortname && lib.character[shortname]) {
-          if (!lib.characterReplace[shortname]) {
-            // console.log(shortname);
-            lib.characterReplace[shortname] = [shortname, name];
+      var CharacterReplaceExclude = {
+        jlsgsk_luzhi: 'yl_luzhi',
+      };
+      var trivialSolveCharacterReplace = function (name, prefix= '') {
+        var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
+        if (name in CharacterReplaceExclude) {
+          if (CharacterReplaceExclude[name]) {
+            originalName = CharacterReplaceExclude[name];
           } else {
-            lib.characterReplace[shortname].push(name);
+            return;
+          }
+        }
+        if (originalName && lib.character[originalName]) {
+          if (!lib.characterReplace[originalName]) {
+            // console.log(originalName);
+            lib.characterReplace[originalName] = [originalName, name];
+          } else {
+            lib.characterReplace[originalName].push(name);
           }
         }
       };
@@ -83,8 +93,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         trivialSolveCharacterReplace(i);
         suppressDieAudio(i);
       }
-      var soulShenMapping = {};
       for (var i of Object.keys(lib.characterPack['jlsg_soul'])) {
+        trivialSolveCharacterReplace(i, 'shen_');
         suppressDieAudio(i);
       }
       for (var i of Object.keys(lib.characterPack['jlsg_sy'])) {
@@ -20250,15 +20260,21 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0312",
+      version: "2.2.0316",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.12更新<br>
-&ensp; 修复SK张鲁 米道<br>
-&ensp; 优化 SK神郭嘉 天机<br>
+2021.03.16更新<br>
+&ensp; 增加神将 同将替换<br>
 &ensp; 重写了SK神郭嘉 天启<br>
+&ensp; 优化 SK神郭嘉 天机<br>
 &ensp; 天启在没有天机时不会再报错，优化了AI和UX<br>
+&ensp; 优化三英神暴怒逻辑<br>
+&ensp; 优化SK程昱 胆谋<br>
+&ensp; 优化SK张任 伏射 提示<br>
+&ensp; 优化SK神赵云 绝境配音<br>
+&ensp; 优化SR曹操 治世 询问<br>
+&ensp; 修复SK张鲁 米道<br>
 &ensp; 修复SR赵云 救主<br>
 &ensp; 修复SK黄月英 木牛<br>
 &ensp; 修复SK管辂 纵情<br>
@@ -20267,14 +20283,10 @@ Visit Repository</a><br>
 &ensp; 修复SK于吉 选卡<br>
 &ensp; 修复SR张辽 无畏 优化AI<br>
 &ensp; 修复SK张宝 咒缚AI<br>
-&ensp; 优化三英神暴怒逻辑<br>
-&ensp; 优化SK程昱 胆谋<br>
 &ensp; 修复SK程昱 捧日<br>
-&ensp; 优化SK张任 伏射 提示<br>
 &ensp; 移除SK神关羽 武神的错误配音<br>
-&ensp; 优化SK神赵云 绝境配音<br>
 &ensp; 修复龙魂方片效果<br>
-&ensp; 优化SR曹操 治世 询问<br>
+&ensp; 修复SK卢植 同将替换<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.09更新<br>
 &ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
