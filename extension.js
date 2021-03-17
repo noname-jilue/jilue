@@ -12344,415 +12344,123 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
 
-            // jlsg_zhonghou: {
-            //   trigger: {
-            //     global: ["useCardBegin", "respondBegin"],
-            //   },
-            //   direct: true,
-            //   audio: "ext:极略:1",
-            //   srlose: true,
-            //   filter: function (event, player) {
-            //     return event.skill == 'jlsg_zhonghou_phaseUse_backup' || event.skill == 'jlsg_zhonghou_sha' || event.skill == 'jlsg_zhonghou_shan' || event.skill == 'jlsg_zhonghou_tao';
-            //   },
-            //   content: function () {
-            //     'step 0'
-            //     game.log(trigger.player, '向', player, '请求使用一张', trigger.card);
-            //     player.chooseBool('是否失去1点体力视为' + get.translation(trigger.player) + '使用一张' + get.translation(trigger.card) + '？', function (event, player) {
-            //       if (get.attitude(player, trigger.player) <= 0) return false;
-            //       if (player == trigger.player) return true;
-            //       if (trigger.player.hp == 1) {
-            //         var hs = trigger.player.getCards('h');
-            //         if (hs.length) {
-            //           for (var i = 0; i < hs.length; i++) {
-            //             if (trigger.card.name == hs[i].name) {
-            //               return false;
-            //             }
-            //           }
-            //         }
-            //         if (player.hp <= 2) return false;
-            //       }
-            //       return true;
-            //     });
-            //     'step 1'
-            //     if (result.bool) {
-            //       game.log(player, '同意了', trigger.player, '使用一张', trigger.card);
-            //       player.draw();
-            //       player.loseHp();
-            //       event.finish();
-            //     } else {
-            //       var str = '拒绝';
-            //       if (Math.random() < 0.5) {
-            //         str = '拒绝';
-            //       } else {
-            //         str = '拒绝';
-            //       }
-            //       game.log(player, str + '了', trigger.player);
-            //       if (trigger.name == 'respond') {
-            //         if (trigger.parent.result) {
-            //           trigger.cancel();
-            //           trigger.parent.result.bool = false;
-            //         }
-            //       } else {
-            //         trigger.cancel();
-            //       }
-            //     }
-            //     'step 2'
-            //     if (trigger.player.getStat('skill').jlsg_zhonghou_phaseUse == undefined) {
-            //       trigger.player.getStat('skill').jlsg_zhonghou_phaseUse = 0;
-            //     }
-            //     trigger.player.getStat('skill').jlsg_zhonghou_phaseUse++;
-            //   },
-            //   global: ["jlsg_zhonghou_phaseUse", "jlsg_zhonghou_sha", "jlsg_zhonghou_shan", "jlsg_zhonghou_tao"],
-            //   subSkill: {
-            //     phaseUse: {
-            //       audio: "ext:极略:2",
-            //       usable: 1,
-            //       enable: "phaseUse",
-            //       filter: function (event, player) {
-            //         return game.hasPlayer(function (target) {
-            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
-            //         });
-            //       },
-            //       chooseButton: {
-            //         dialog: function () {
-            //           var list2 = [];
-            //           for (var i in lib.card) {
-            //             if (!lib.translate[i + '_info']) continue;
-            //             if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false) continue;
-            //             if (lib.config.hiddenCardPack.indexOf(i) == 0) continue;
-            //             if (lib.card[i].type == 'basic') list2.push(['basic', '', i]);
-            //           }
-            //           var dialog = ui.create.dialog();
-            //           dialog.add('基本牌');
-            //           dialog.add([list2, 'vcard']);
-            //           return dialog;
-            //         },
-            //         filter: function (button, player) {
-            //           return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
-            //         },
-            //         check: function (button, player) {
-            //           var player = _status.event.player;
-            //           var recover = 0, lose = 1;
-            //           for (var i = 0; i < game.players.length; i++) {
-            //             if (!game.players[i].isOut()) {
-            //               if (game.players[i].hp < game.players[i].maxHp) {
-            //                 if (get.attitude(player, game.players[i]) > 0) {
-            //                   if (game.players[i].hp < 2) {
-            //                     lose--;
-            //                     recover += 0.5;
-            //                   }
-            //                   lose--;
-            //                   recover++;
-            //                 } else if (get.attitude(player, game.players[i]) < 0) {
-            //                   if (game.players[i].hp < 2) {
-            //                     lose++;
-            //                     recover -= 0.5;
-            //                   }
-            //                   lose++;
-            //                   recover--;
-            //                 }
-            //               } else {
-            //                 if (get.attitude(player, game.players[i]) > 0) {
-            //                   lose--;
-            //                 } else if (get.attitude(player, game.players[i]) < 0) {
-            //                   lose++;
-            //                 }
-            //               }
-            //             }
-            //           }
-            //           if (player.hp > 1 && player.isDamaged()) return (button.link[2] == 'tao') ? 1 : -1;
-            //           if (player.hp > 2 && player.countCards('h', 'sha')) return (button.link[2] == 'jiu') ? 1 : -1;
-            //           if (player.hp > 2 && !player.countCards('h', 'sha')) return (button.link[2] == 'sha') ? 1 : -1;
-            //           return 0;
-            //         },
-            //         backup: function (links, player) {
-            //           return {
-            //             filterCard: function () {
-            //               return false;
-            //             },
-            //             selectCard: -1,
-            //             //audio:"ext:极略:true",
-            //             //usable:1,
-            //             viewAs: { name: links[0][2] }
-            //           }
-            //         },
-            //       },
-            //       ai: {
-            //         order: 10,
-            //         result: {
-            //           player: function (player) {
-            //             if (Math.random() < 0.67) return 1;
-            //             return -1;
-            //           },
-            //         },
-            //         threaten: 4,
-            //       },
-            //     },
-            //     sha: {
-            //       audio: "ext:极略:2",
-            //       enable: ["chooseToUse", "chooseToRespond"],
-            //       filterCard: function () {
-            //         return false;
-            //       },
-            //       check: function (event, player) {
-            //         return !player.hasSha();
-            //       },
-            //       selectCard: -1,
-            //       viewAs: {
-            //         name: "sha",
-            //       },
-            //       filter: function (event, player) {
-            //         if (event.parent.name == 'phaseUse') return false;
-            //         return game.hasPlayer(function (target) {
-            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
-            //         });
-            //       },
-            //       ai: {
-            //         order: function () {
-            //           if (_status.event.player.hasSkillTag('presha', true, null, true)) return 10;
-            //           return 3;
-            //         },
-            //         result: {
-            //           target: function (player, target) {
-            //             if (player.hasSkill('jiu') && !target.getEquip('baiyin')) {
-            //               if (get.attitude(player, target) > 0) {
-            //                 return -6;
-            //               } else {
-            //                 return -3;
-            //               }
-            //             }
-            //             return -1.5;
-            //           },
-            //         },
-            //       },
-            //     },
-            //     shan: {
-            //       audio: "ext:极略:2",
-            //       enable: ["chooseToRespond", "chooseToUse"],
-            //       filterCard: function () {
-            //         return false;
-            //       },
-            //       check: function (event, player) {
-            //         return !player.hasShan();
-            //       },
-            //       selectCard: -1,
-            //       viewAs: {
-            //         name: "shan",
-            //       },
-            //       filter: function (event, player) {
-            //         if (event.parent.name == 'phaseUse') return false;
-            //         return game.hasPlayer(function (target) {
-            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
-            //         });
-            //       },
-            //       ai: {},
-            //     },
-            //     tao: {
-            //       audio: "ext:极略:2",
-            //       enable: "chooseToUse",
-            //       filter: function (event, player) {
-            //         if (event.parent.name == 'phaseUse') return false;
-            //         return game.hasPlayer(function (target) {
-            //           return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou');
-            //         });
-            //       },
-            //       check: function (event, player) {
-            //         if (player.countCards('h', { name: 'tao' })) return false;
-            //         if (player.countCards('h', { name: 'jiu' })) return false;
-            //         return !player.hasSkillTag('save');
-            //       },
-            //       filterCard: function () {
-            //         return false;
-            //       },
-            //       selectCard: -1,
-            //       viewAs: {
-            //         name: "tao",
-            //       },
-            //       ai: {},
-            //     },
-            //   }
-            // },
-            zh_mark: {
-              unique: true
-            },
             jlsg_zhonghou: {
+              unique: true,
               audio: "ext:极略:1",
-              trigger: { global: ['useCardBegin', 'respondBegin'] },
-              direct: true,
               srlose: true,
+              trigger:{
+                global:['useCardBefore','respondBefore'],
+              },
+              // silent:true,
+              forced: true,
+              popup: false,
+              firstDo: true,
+              filter:function(event,player){
+                return event.skill && event.skill.startsWith('jlsg_zhonghou_');
+              },
+              content:function(){
+                'step 0'
+                // player.addTempSkill('jlsg_zhonghou_phase');
+                if (trigger.player == player) {
+                  event.goto(2);
+                } else {
+                  var prompt = `是否失去1点体力视为${get.translation(trigger.player)}使用一张${get.translation(trigger.card)}？`;
+                  player.chooseBool(prompt).set('choice', 
+                  get.attitude(player, trigger.player) >= 6);
+                }
+                'step 1'
+                 if (!result.bool) {
+                   trigger.cancel();
+                   trigger.getParent().goto(0);
+                   event.finish();
+                   game.delayx();
+                 }
+                 'step 2'
+                 player.loseHp();
+              },
+              global: ['jlsg_zhonghou_shan', 'jlsg_zhonghou_global'],
+            },
+            jlsg_zhonghou_global: {
+              enable:["chooseToUse","chooseToRespond"],
+              hiddenCard:function (player,name){
+                  return get.type(name) == 'basic';
+              },
               filter: function (event, player) {
-                if (player.isDying()) return false;
-                if (player.hasSkill('zh_mark')) return false;
-                if (event.skill == 'jlsg_zhonghou_phaseUse_backup') return true;
-                if (event.skill == 'jlsg_zhonghou_sha') return true;
-                if (event.skill == 'jlsg_zhonghou_shan') return true;
-                if (event.skill == 'jlsg_zhonghou_tao') return true;
+                return game.hasPlayer(function (target) {
+                  return (player == target && (target.hasSkill('jlsg_zhonghou') || target.hiddenSkills.contains('jlsg_zhonghou')) ||
+                  player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou')) && !target.isDying();
+                });
+              },
+              chooseButton:{
+                dialog:function(){
+                  var list=[];
+                  for(var i of lib.inpile){
+                    if(i=='shan') continue;
+                    var type=get.type(i);
+                    if(type!='basic') continue;
+                    list.push([type,'',i]);
+                    if(i=='sha'){
+                      list.push([type,'',i,'fire']);
+                      list.push([type,'',i,'thunder']);
+                      list.push([type,'',i,'ice']);
+                    }
+                  }
+                  return ui.create.dialog('忠候',[list,'vcard']);
+                },
+                filter:function(button,player){
+                  var evt=_status.event.getParent();
+                  return evt.filterCard({name:button.link[2],nature:button.link[3]},player,evt);
+                },
+                check:function(button){
+                  var player=_status.event.player;
+                  var card={name:button.link[2],nature:button.link[3]};
+                  var val=_status.event.getParent().type=='phase'?player.getUseValue(card):1;
+                  if(val<=0) return 0;
+                  return val;
+                },
+                backup:function(links,player){
+                  return {
+                    viewAs:{
+                      name:links[0][2],
+                      nature:links[0][3],
+                    },
+                    filterCard: function () {
+                      return false;
+                    },
+                    selectCard: -1,
+                    // ai1:function(card){
+                    //   var player=_status.event.player;
+                    //   var hasEnemy=game.hasPlayer(function(current){
+                    //     return current!=player&&!current.hasSkill('rechanyuan')&&(get.realAttitude||get.attitude)(current,player)<0;
+                    //   });
+                    //   var cardx=lib.skill.reguhuo_backup.viewAs;
+                    //   if(hasEnemy){
+                    //     if(card.name==cardx.name&&(card.name!='sha'||card.nature==cardx.nature)) return 10;
+                    //     return 0;
+                    //   }
+                    //   return 6-get.value(card);
+                    // },
+                  }
+                },
+              },
+            },
+            jlsg_zhonghou_shan: {
+              filter: function () {
+                return lib.skill.jlsg_zhonghou_global.filter.apply(this, arguments);
+              },
+              filterCard: function () {
                 return false;
               },
-              content: function () {
-                'step 0'
-                player.addTempSkill('zh_mark');
-                var list = game.filterPlayer();
-                for (var i = 0; i < list.length; i++) {
-                  if (list[i] != player && !list[i].hasSkill('zh_mark')) {
-                    list[i].addTempSkill('zh_mark');
-                    // player.line(list[i], 'green');
-                  }
-                }
-                if (trigger.player == player) {
-                  // player.logSkill("jlsg_zhonghou");
-                  player.loseHp();
-                  event.finish();
-                  return;
-                }
-                game.log(trigger.player, '向', player, '请求使用一张', trigger.card);
-                player.chooseBool('是否失去1点体力视为' + get.translation(trigger.player) + '使用一张' + get.translation(trigger.card) + '？', function () {
-                  if (jlsg.isEnemy(player, trigger.player)) return false;
-                  if (jlsg.isFriend(player, trigger.player)) {
-                    if (trigger.player == player) {
-                      if (jlsg.isWeak(player)) return false;
-                      if (trigger.card.name == 'sha' && player.num('h', 'sha')) return false;
-                      if (trigger.card.name == 'tao' && player.num('h', 'tao')) return false;
-                      if (trigger.card.name == 'jiu' && player.num('h', 'jiu')) return false;
-                      return true;
-                    }
-                    else {
-                      if (trigger.skill == 'jlsg_zhonghou_tao') return true;
-                    }
-                    return false;
-                  }
-                  return false;
-                });
-                'step 1'
-                if (result.bool) {
-                  player.loseHp();
-                  event.finish();
-                }
-                else {
-                  var str = Math.random() < 0.5 ? '丑拒了' : '蠢拒了';
-                  game.log(player, str, trigger.player);
-                  if (trigger.name == 'respond') {
-                    if (trigger.parent.result) {
-                      trigger.parent.result.bool = false;
-                    }
-                  }
-                  else {
-                    trigger.untrigger();
-                    trigger.finish();
-                  }
-                }
-                'step 2'
-                if (trigger.player.getStat('skill').jlsg_zhonghou_phaseUse == undefined) {
-                  trigger.player.getStat('skill').jlsg_zhonghou_phaseUse = 0;
-                }
-                trigger.player.getStat('skill').jlsg_zhonghou_phaseUse++;
+              check: function (event, player) {
+                return !player.hasShan();
+              },            
+              selectCard: -1,
+              viewAs: {
+                name: "shan",
               },
-              global: ['jlsg_zhonghou_phaseUse', 'jlsg_zhonghou_sha', 'jlsg_zhonghou_shan', 'jlsg_zhonghou_tao'],
-              subSkill: {
-                phaseUse: {
-                  audio: "ext:极略:2",
-                  usable: 1,
-                  enable: 'phaseUse',
-                  filter: function (event, player) {
-                    return game.hasPlayer(function (target) {
-                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
-                    });
-                  },
-                  chooseButton: {
-                    dialog: function () {
-                      var list = ['sha', 'shan', 'tao', 'jiu'];
-                      for (var i = 0; i < list.length; i++) {
-                        list[i] = ['basic', '', list[i]];
-                      }
-                      return ui.create.dialog('忠侯', [list, 'vcard']);
-                    },
-                    check: function (button, player) {
-                      var player = _status.event.player;
-                      var shaTarget = false;
-                      for (var i = 0; i < game.players.length; i++) {
-                        if (player.canUse('sha', game.players[i]) && ai.get.effect(game.players[i], { name: 'sha' }, player) > 1) {
-                          shaTarget = true;
-                        }
-                      }
-                      if (player.hasSkill('zhaxiang') && player.hp > 1) return (button.link[2] == 'tao') ? 1 : -1;
-                      if (shaTarget && player.num('h', 'sha') && player.hp > 2) return (button.link[2] == 'jiu') ? 1 : -1;
-                      if (shaTarget && !player.num('h', 'sha') && player.hp > 2) return (button.link[2] == 'sha') ? 1 : -1;
-                      return 0;
-                    },
-                    filter: function (button, player) {
-                      return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
-                    },
-                    backup: function (links, player) {
-                      return {
-                        filterCard: function () { return false; },
-                        selectCard: -1,
-                        audio: "ext:极略:2",
-                        usable: 1,
-                        viewAs: { name: links[0][2] }
-                      }
-                    }
-                  },
-                  ai: {
-                    order: function () {
-                      return lib.card.sha.ai.order + 0.3;
-                    },
-                    result: {
-                      player: 1,
-                    }
-                  }
-                },
-                sha: {
-                  audio: "ext:极略:2",
-                  usable: 1,
-                  enable: ['chooseToUse', 'chooseToRespond'],
-                  filterCard: function () { return false; },
-                  selectCard: -1,
-                  viewAs: { name: 'sha' },
-                  filter: function (event, player) {
-                    if (event.parent.name == 'phaseUse') return false;
-                    return game.hasPlayer(function (target) {
-                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
-                    });
-                  },
-                  ai: {
-                    respondSha: true
-                  }
-                },
-                shan: {
-                  audio: "ext:极略:2",
-                  usable: 1,
-                  enable: ['chooseToRespond', 'chooseToUse'],
-                  filterCard: function () { return false; },
-                  selectCard: -1,
-                  viewAs: { name: 'shan' },
-                  filter: function (event, player) {
-                    if (event.parent.name == 'phaseUse') return false;
-                    return game.hasPlayer(function (target) {
-                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
-                    });
-                  },
-                  ai: {
-                    respondShan: true
-                  }
-                },
-                tao: {
-                  audio: "ext:极略:2",
-                  usable: 1,
-                  enable: 'chooseToUse',
-                  filter: function (event, player) {
-                    if (event.parent.name == 'phaseUse') return false;
-                    return game.hasPlayer(function (target) {
-                      return player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou') && !player.hasSkill('zh_mark');
-                    });
-                  },
-                  filterCard: function () { return false; },
-                  selectCard: -1,
-                  viewAs: { name: 'tao' },
-                  ai: {
-                    save: true
-                  }
-                },
-              }
+              // ai: {
+              //   respondShan: true,
+              // }
             },
             jlsg_ganglie: {
               audio: "ext:极略:1",
@@ -12830,11 +12538,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yansha3: '掩杀',
             zh_mark: '忠候',
             jlsg_zhonghou: '忠侯',
-            jlsg_zhonghou_phaseUse: '忠侯',
-            jlsg_zhonghou_phaseUse_backup: '忠侯',
-            jlsg_zhonghou_sha: '忠侯·杀',
+            jlsg_zhonghou_global: '忠侯',
             jlsg_zhonghou_shan: '忠侯·闪',
-            jlsg_zhonghou_tao: '忠侯·桃',
             jlsg_ganglie: '刚烈',
             jlsg_liuyun: '流云',
             jlsg_lingbo: '凌波',
@@ -12948,7 +12653,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wuwei_info: '摸牌阶段，你可以放弃摸牌，改为亮出牌堆顶的3张牌，其中每有一张基本牌，你便可视为对一名其他角色使用一张杀(每阶段对每名角色限一次)。然后将这些基本牌置入弃牌堆，其余收入手牌。',
             jlsg_yansha_info: '摸牌阶段，你可以少摸一张牌。若如此做，本回合弃牌阶段开始时，你可以将一张手牌置于武将牌上，称为「掩」。当一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
             jlsg_yansha2_info: '一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
-            jlsg_zhonghou_info: '当你攻击范围内的一名角色需要使用或打出一张基本牌时，该角色可以向你请求之，你可以摸一张牌并失去1点体力，视为该角色使用此牌；若你拒绝，则取消此次响应。（每名角色的回合限一次）',
+            jlsg_zhonghou_info: '当你攻击范围内的一名角色需要使用或打出一张基本牌时，该角色可以向你请求之，你可以失去1点体力，视为该角色使用此牌；若你拒绝，则取消此次响应。（你的濒死阶段除外）',
+            jlsg_zhonghou_append: '一名其他角色被你拒绝后，其本回合内不能再次发动忠候。你不能拒绝自己请求的忠候。',
             jlsg_liuyun_info: '出牌阶段限一次，你可以横置你的武将牌并弃置一张黑色牌，然后令一名角色选择一项：回复1点体力，或摸两张牌。',
             // jlsg_lingbo_info: '当一名其他角色回合结束时，若你的武将牌横置时，你可以将一张自己装备区的牌移至该角色的合理区域；当一名其他角色回合开始时，若你的武将牌重置时，你可以选择该角色一张除手牌的牌，将此牌置入牌顶。',
             jlsg_lingbo_info: '一名角色的回合开始阶段，你可以重置你的武将牌，然后将场上的一张牌置于牌堆顶。',
@@ -20260,15 +19966,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0316",
+      version: "2.2.0317",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.16更新<br>
+2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
 &ensp; 重写了SK神郭嘉 天启<br>
 &ensp; 优化 SK神郭嘉 天机<br>
 &ensp; 天启在没有天机时不会再报错，优化了AI和UX<br>
+&ensp; 重写了SR夏侯惇 忠候<br>
+&ensp; 忠候现在与国战兼容。目前使用的AI比较简单。<br>
+&ensp; 忠候描述进行了一些修改，请注意查看<br>
 &ensp; 优化三英神暴怒逻辑<br>
 &ensp; 优化SK程昱 胆谋<br>
 &ensp; 优化SK张任 伏射 提示<br>
