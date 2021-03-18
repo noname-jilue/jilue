@@ -9245,9 +9245,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               usable: 1,
               enable: 'phaseUse',
-              // filterTarget: function (card, player, target) {
-              //   return player != target;
-              // },
+              filterTarget: function (card, player, target) {
+                return player != target;
+              },
               direct: true,
               init: function (player) {
                 player.storage.isjlsg_zhouyan = false;
@@ -11835,7 +11835,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_hemou: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseUseBegin' },
               filter: function (event, player) {
                 return event.player != player && player.countCards('h') > 0;
               },
@@ -12190,7 +12190,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 // console.log(trigger);
-                if (!trigger.player.inRangeOf(player) && !trigger.target.inRangeOf(player)) {
+                if (!trigger.player.inRangeOf(player) || !trigger.target.inRangeOf(player)) {
                   var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player))
                   next.ai = function () {
                     if (jlsg.isFriend(player, trigger.player)) {
@@ -12654,7 +12654,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yansha_info: '摸牌阶段，你可以少摸一张牌。若如此做，本回合弃牌阶段开始时，你可以将一张手牌置于武将牌上，称为「掩」。当一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
             jlsg_yansha2_info: '一名角色使用杀选择目标后，你可以将一张「掩」置入弃牌堆，然后获得其两张牌。',
             jlsg_zhonghou_info: '当你攻击范围内的一名角色需要使用或打出一张基本牌时，该角色可以向你请求之，你可以失去1点体力，视为该角色使用此牌；若你拒绝，则取消此次响应。（你的濒死阶段除外）',
-            jlsg_zhonghou_append: '一名其他角色被你拒绝后，其本回合内不能再次发动忠候。你不能拒绝自己请求的忠候。',
+            jlsg_zhonghou_append: '<span style="font-family: yuanli">一名其他角色被你拒绝后，其本回合内不能再次发动忠候。你不能拒绝自己请求的忠候。</span>',
             jlsg_liuyun_info: '出牌阶段限一次，你可以横置你的武将牌并弃置一张黑色牌，然后令一名角色选择一项：回复1点体力，或摸两张牌。',
             // jlsg_lingbo_info: '当一名其他角色回合结束时，若你的武将牌横置时，你可以将一张自己装备区的牌移至该角色的合理区域；当一名其他角色回合开始时，若你的武将牌重置时，你可以选择该角色一张除手牌的牌，将此牌置入牌顶。',
             jlsg_lingbo_info: '一名角色的回合开始阶段，你可以重置你的武将牌，然后将场上的一张牌置于牌堆顶。',
@@ -12672,7 +12672,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yiji_info: '每当你受到一点伤害，可以观看牌堆顶的两张牌，并将其交给任意1~2名角色。',
             jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
             jlsg_huiqu_info: '回合开始阶段，你可以弃置一张手牌进行一次判定，若结果为红色，你将场上的一张牌移动到一个合理的位置；若结果为黑色，你对一名角色造成1点伤害，然后你摸一张牌。',
-            jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其或杀的目标在你的攻击范围内，你须先弃置一张手牌。',
+            jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其与杀的目标均在你的攻击范围内，你须先弃置一张手牌。',
             jlsg_zhishi_info: '出牌阶段限一次，你可以令一名其他角色选择一项：1、弃置一张基本牌，然后回复一点。2、受到你造成的一点伤害，然后回复一点体力。',
             jlsg_old_zhishi_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色，你选择其中一项执行：1.你展示一张【杀】令其弃置一张【杀】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害；2.你展示一张【闪】令其弃置一张【闪】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害。',
             jlsg_jianxiong_info: '主公技。每当其他魏势力受到不为你的1次伤害后，该角色可以弃置一张手牌，然后令你获得对其造成伤害的牌。',
@@ -18991,12 +18991,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             )
           },
         },
-        get enabledCards() {
-          delete this.enabledCards;
-          this.enabledCards = null;
-          throw 'Not implemented.';
-          return this.enabledCards;
-        },
         relu(num) {
           return num >= 0 ? num : 0;
         },
@@ -19020,6 +19014,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             potentialRepo.remove();
           } else {
             refElement.insertAdjacentHTML('afterend', `<a id="repo-link" onclick="lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;display:block">Visit Repository</a>`);
+            // refElement.nextElementSibling.scrollIntoView({
+            //   behavior: 'smooth',
+            //   block: 'nearest',
+            // });
           }
         },
         getLoseHpEffect(player) {
@@ -19966,10 +19964,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0317",
+      version: "2.2.0318",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.03.18更新<br>
+&ensp; 修复SR黄月英 合谋 时机<br>
+&ensp; 加强SR曹操 招降<br>
+&ensp; TODO: 修复SR黄盖 舟焰<br>
+<span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
 &ensp; 重写了SK神郭嘉 天启<br>
@@ -19996,27 +19999,6 @@ Visit Repository</a><br>
 &ensp; 移除SK神关羽 武神的错误配音<br>
 &ensp; 修复龙魂方片效果<br>
 &ensp; 修复SK卢植 同将替换<br>
-<span style="font-size: large;">历史：</span><br>
-2021.03.09更新<br>
-&ensp; 建议更新了新版无名杀的极略用户尽快更新到此版本（或更高）的极略<br>
-&ensp; 修复SK神吕布 无谋。<br>
-&ensp; 修复SK神刘备 激诏 动画。<br>
-&ensp; 回滚SR吕蒙 誓学。<br>
-&ensp; 修复SK诸葛瑾选择目标。<br>
-&ensp; 修复SK黄月英 流马 选择卡牌位置。<br>
-&ensp; 回滚并削弱SK田丰。优化死谏发动条件。优化双技能AI<br>
-&ensp; 优化SK神司马徽 隐世AI<br>
-&ensp; 修复SK程昱 捧日<br>
-&ensp; 修复SK周仓 可以在暗将时触发。优化技能提示。<br>
-&ensp; 更新所有置于牌堆顶的技能的模式，提高与其他技能卡牌的兼容性。<br>
-&ensp; 优化SK何进 专擅 发动时机。<br>
-&ensp; 修复SK陈到 给牌。<br>
-&ensp; 修复SK张任 伏射 记录牌错误，描述错误 优化UX。<br>
-&ensp; 修复SR大乔 细语可以不弃牌。<br>
-&ensp; 重写SR貂蝉 拜月 修复了一系列选牌错误，拜月不再强制发动。<br>
-&ensp; 修复SR吕蒙 国士，修复配音。<br>
-&ensp; 更新SK田丰 死谏、SR陆逊 儒雅、 SK神孙尚香 贤助对最新版三国杀的兼容性。<br>
-&ensp; 重写SK神孙尚香 贤助，优化AI， 修复描述。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
