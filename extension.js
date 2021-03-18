@@ -2658,7 +2658,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                player.chooseCard('是否对' + get.translation(trigger.player) + '发动【随骥】？', [1, Infinity]).ai = function (card) {
+                player.chooseCard('是否对' + get.translation(trigger.player) + '发动【随骥】？', [1, Infinity])
+                  .set('ai',function (card) {
                   var cha = trigger.player.countCards('h') - trigger.player.hp;
                   var att = get.attitude(player, trigger.player);
                   if (cha == 0 && ui.selected.cards.length == 0) return att > 3 ? 2 : -1;
@@ -2671,7 +2672,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                   if (trigger.player.countCards('h') <= 2 && get.attitude(player, trigger.player) > 3 && player.countCards('h') > 3) return 6 - get.value(card);
                   return 0;
-                }.logSkill = ['jlsg_suiji', trigger.player];
+                }).logSkill = ['jlsg_suiji', trigger.player];
                 'step 1'
                 if (result.bool) {
                   trigger.player.gain(result.cards, player, 'giveAuto');
@@ -3273,22 +3274,23 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_danshou: {
               audio: "ext:极略:1",
               trigger: {
-                target: "shaBegin",
+                target:"useCardToTargeted",
               },
               filter: function (event, player) {
-                return event.player.countCards('h') && player.countCards('h');
+                return event.card.name=='sha' && player.canCompare(event.player);
               },
               forced: true,
               content: function () {
                 'step 0'
-                trigger.player.chooseToCompare(player);
+                player.chooseToCompare(trigger.player);
                 'step 1'
                 if (result.bool) {
-                  trigger.directHit = true;
-                  player.draw();
-                } else {
                   player.draw(2);
                   player.discardPlayerCard(trigger.player, true);
+                } else {
+                  // trigger.directHit = true;
+                  trigger.getParent().directHit.add(player);
+                  // player.draw();
                 }
               },
             },
@@ -3894,6 +3896,61 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_chengxiang: {
               audio: "ext:极略:2",
               inherit: 'chengxiang',
+              content:function(){
+                "step 0"
+                event.cards=get.cards(4);
+                game.cardsGotoOrdering(event.cards);
+                event.videoId=lib.status.videoId++;
+                game.broadcastAll(function(player,id,cards,num){
+                  var str;
+                  if(player==game.me&&!_status.auto){
+                    str='称象：选择任意张点数不大于13的牌';
+                  }
+                  else{
+                    str='称象';
+                  }
+                  var dialog=ui.create.dialog(str,cards);
+                  dialog.videoId=id;
+                },player,event.videoId,event.cards,13);
+                event.time=get.utc();
+                game.addVideo('showCards',player,['称象',get.cardsInfo(event.cards)]);
+                game.addVideo('delay',null,2);
+                "step 1"
+                var next=player.chooseButton([0,4]);
+                next.set('dialog',event.videoId);
+                next.set('filterButton',function(button){
+                  var num=0
+                  for(var i=0;i<ui.selected.buttons.length;i++){
+                    num+=get.number(ui.selected.buttons[i].link);
+                  }
+                  return (num+get.number(button.link)<=_status.event.maxNum);
+                });
+                next.set('maxNum',13);
+                next.set('ai',function(button){
+                  return get.value(button.link,_status.event.player);
+                });
+                "step 2"
+                if(result.bool&&result.links){
+                  //player.logSkill('chengxiang');
+                  var cards2=[];
+                  for(var i=0;i<result.links.length;i++){
+                    cards2.push(result.links[i]);
+                    cards.remove(result.links[i]);
+                  }
+                  event.cards2=cards2;
+                }
+                else{
+                  event.finish();
+                }
+                var time=1000-(get.utc()-event.time);
+                if(time>0){
+                  game.delay(0,time);
+                }
+                "step 3"
+                game.broadcastAll('closeDialog',event.videoId);
+                var cards2=event.cards2;
+                player.gain(cards2,'log','gain2');
+              },
             },
             jlsg_renxin: {
               audio: "ext:极略:2",
@@ -6708,7 +6765,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_bozhan_info: '当你使用或被使用一张【杀】并完成结算后，若此【杀】未造成伤害，则此【杀】的目标或你可以对你或此【杀】的使用者使用一张【杀】(无距离限制）。',
             jlsg_qingxi_info: '锁定技，当你使用【杀】指定一名其他角色为目标后，若你装备区的牌数少于该角色，其不能使用【闪】响应此【杀】。',
 
-            jlsg_danshou_info: '锁定技，当一名角色使用【杀】指定你为目标后，若你与其均有手牌，该角色须与你拼点，若你赢，你摸两张牌，然后弃置其一张牌；若你没赢，你摸一张牌且此【杀】不可被【闪】响应。',
+            jlsg_danshou_info: '锁定技，当一名角色使用【杀】指定你为目标后，若你与其均有手牌，你与该角色拼点，若你赢，你摸两张牌，然后弃置其一张牌；若你没赢，此【杀】不可被【闪】响应。',
             jlsg_yonglie_info: '当你攻击范围内的一名角色受到【杀】造成的伤害后，你可以失去1点体力，然后对伤害来源造成1点伤害。',
             jlsg_hengshi_info: '弃牌阶段开始时，你可以摸等同于手牌数的牌。',
             jlsg_zhijiao_info: '限定技，回合结束阶段开始时，你可以令一名其他角色获得你的本回合因弃置而进入弃牌堆的牌。',
@@ -6967,7 +7024,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               check: function (event) {
                 return event.num <= 3;
               },
-              prompt: '是否发动技能【无畏】，展示牌中每有一张基本牌便可视为对一名角色使用一张【杀】（每名角色限一次）',
+              // prompt: '是否发动技能【无畏】，展示牌中每有一张基本牌便可视为对一名角色使用一张【杀】（每名角色限一次）',
               content: function () {
                 'step 0'
                 trigger.cancel();
@@ -8079,10 +8136,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:true",
               srlose: true,
               unique: true,
-              trigger: { player: 'dieBegin' },
+              trigger: { player: 'die' },
+              forceDie: true,
               direct: true,
               content: function () {
                 "step 0"
+                debugger;
                 player.chooseTarget('是否发动【天殇】？', function (card, player, target) {
                   return player != target;
                 }).ai = function (target) {
@@ -8094,23 +8153,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return 1;
                   }
                   return 0;
-                }
+                };
                 "step 1"
-                if (result.bool) {
-                  var target = result.targets[0];
-                  player.logSkill('jlsg_tianshang', target);
-                  if (player.hasSkill('jlsg_huiqu')) {
-                    target.addSkill('jlsg_huiqu');
-                  } else {
-                    if (lib.config["extension_极略_oldCharacterReplace"]) {
-                      target.addSkill('jlsg_old_yiji');
-                    } else {
-                      target.addSkill('jlsg_yiji');
-                    }
-                  }
-                  target.gainMaxHp();
-                  target.recover();
+                if (!result.bool) {
+                  event.finish();return;
                 }
+                var target = result.targets[0];
+                player.logSkill('jlsg_tianshang', target);
+                if (player.hasSkill('jlsg_huiqu')) {
+                  target.addSkill('jlsg_huiqu');
+                } 
+                if (player.hasSkill('jlsg_old_yiji')) {
+                  target.addSkill('jlsg_old_yiji');
+                } 
+                if (player.hasSkill('jlsg_yiji')) {
+                  target.addSkill('jlsg_yiji');
+                }
+                "step 2"
+                target.gainMaxHp();
+                target.recover();
               },
               ai: {
                 expose: 0.5,
@@ -8221,28 +8282,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                var check1 = false;
-                var check2 = false;
-                for (var i = 0; i < game.players.length; i++) {
-                  if (game.players[i] != player) {
-                    if (game.players[i].num('e') && get.attitude(player, game.players[i]) < 0) check1 = true;
-                    if (game.players[i].num('j') && get.attitude(player, game.players[i]) > 0) check2 = true;
+                var check = player.canMoveCard(true);
+                var next = player.chooseToDiscard('弃置一张牌发动【慧觑】？');
+                next.set('ai', function (card) {
+                  if (check) {
+                    return 8 - get.value(card);
                   }
-                }
-                var next = player.chooseToDiscard('弃置一张牌发动【慧觑】？')
-                next.ai = function (card) {
-                  if (check1) {
-                    if (player.countCards('h') >= player.hp) return 8 - get.value(card);
-                    return 4 - get.value(card);
-                  }
-                  if (check2) return true;
-                  return false;
-                }
+                  return 4 - get.value(card);
+                });
                 next.logSkill = 'jlsg_huiqu';
                 'step 1'
                 if (result.bool) {
                   player.judge(function (card) {
-                    if (get.color(card) == 'red') return (check1 || check2) ? 1.5 : 0;
+                    if (get.color(card) == 'red') return (player.canMoveCard(true)) ? 1.5 : 0;
                     return 1;
                   });
                 } else {
@@ -8252,108 +8304,21 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (result.color) {
                   event.result = result.color;
                   if (result.color == 'red') {
-                    var check;
-                    for (var i = 0; i < game.players.length; i++) {
-                      if (get.attitude(player, game.players[i]) > 0 && game.players[i].num('j')) {
-                        check = true;
-                        break;
-                      }
-                    }
-                    player.chooseTarget('请选择目标', 2, true, function (card, player, target) {
-                      if (ui.selected.targets.length) {
-                        var from = ui.selected.targets[0];
-                        var judges = from.get('j');
-                        for (var i = 0; i < judges.length; i++) {
-                          if (!target.hasJudge(judges[i].viewAs || judges[i].name)) return true;
-                        }
-                        if (target.isMin()) return false;
-                        if ((from.get('e', '1') && !target.get('e', '1')) ||
-                          (from.get('e', '2') && !target.get('e', '2')) ||
-                          (from.get('e', '3') && !target.get('e', '3')) ||
-                          (from.get('e', '4') && !target.get('e', '4')) ||
-                          (from.get('e', '5') && !target.get('e', '5'))) return true;
-                        return true;
-                      } else {
-                        return target.countCards('ej') > 0;
-                      }
-                    }).ai = function (target) {
-                      if (check) return 0;
-                      var player = _status.event.player;
-                      if (ui.selected.targets.length == 0) {
-                        if (target.countCards('j') && get.attitude(player, target) > 0) return 10;
-                        if (get.attitude(player, target) < 0) {
-                          for (var i = 0; i < game.players.length; i++) {
-                            if (get.attitude(player, game.players[i]) > 0) {
-                              if ((target.get('e', '1') && !game.players[i].get('e', '1')) ||
-                                (target.get('e', '2') && !game.players[i].get('e', '2')) ||
-                                (target.get('e', '3') && !game.players[i].get('e', '3')) ||
-                                (target.get('e', '4') && !game.players[i].get('e', '4')) ||
-                                (target.get('e', '5') && !game.players[i].get('e', '5'))) return -get.attitude(player, target);
-                            }
-                          }
-                        }
-                        return 0;
-                      }
-                      return -get.attitude(player, target) * get.attitude(player, ui.selected.targets[0]);
-                    }
+                    player.moveCard();
+                    event.finish();
                   } else {
-                    player.chooseTarget('选择一名目标对其造成1点伤害，然后其摸一张牌。', true).ai = function (target) {
-                      return get.damageEffect(target, player, player);
+                    player.chooseTarget('选择一名目标对其造成1点伤害，然后摸一张牌。', true).ai = function (target) {
+                      return get.damageEffect(target, player, player) + 2;
                     }
                   }
                 }
                 'step 3'
-                if (!result.bool) {
-                  event.finish();
-                  return;
+                if (result.bool) {
+                  result.targets[0].damage(player);
+                  player.draw();
                 }
-                player.line2(result.targets);
+                // player.line2(result.targets);
                 event.targets = result.targets;
-                'step 4'
-                if (targets && targets.length > 0) {
-                  if (event.result == 'red') {
-                    if (targets.length == 2 && targets[0].countCards('ej') > 0) {
-                      player.choosePlayerCard('ej', function (button) {
-                        var player = _status.event.player;
-                        var targets0 = _status.event.targets0;
-                        var targets1 = _status.event.targets1;
-                        if (get.attitude(player, targets0) > get.attitude(player, targets1)) {
-                          return get.position(button.link) == 'j' ? 10 : 0;
-                        } else {
-                          if (get.position(button.link) == 'j') return -10;
-                          return get.equipValue(button.link);
-                        }
-                      }, targets[0]).set('targets0', targets[0]).set('targets1', targets[1]).set('filterButton', function (button) {
-                        var targets1 = _status.event.targets1;
-                        if (get.position(button.link) == 'j') {
-                          return !targets1.hasJudge(button.link.viewAs || button.link.name);
-                        } else {
-                          return !targets1.num('e', { subtype: get.subtype(button.link) });
-                        }
-                      });
-                    }
-                  } else {
-                    if (targets.length == 1) {
-                      targets[0].damage(player);
-                      player.draw();
-                    }
-                    event.finish();
-                    return;
-                  }
-                }
-                'step 5'
-                if (result.bool && result.links && result.links.length > 0) {
-                  var link = result.links[0];
-                  if (get.position(link) == 'e') {
-                    event.targets[1].equip(link);
-                  } else if (result.buttons[0].link.viewAs) {
-                    event.targets[1].addJudge({ name: link.viewAs }, [link]);
-                  } else {
-                    event.targets[1].addJudge(link);
-                  }
-                  event.targets[0].$give(link, event.targets[1]);
-                  game.delay();
-                }
               },
             },
             jlsg_jiwu: {
@@ -12668,7 +12633,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_guicai_info: '在任意角色的判定牌生效前，你可以选择一项：1、打出一张手牌代替之。2、亮出牌堆顶的一张牌代替之。',
             jlsg_langgu_info: '每当你造成或受到1次伤害后，你可以进行一次判定，若为黑色，你获得对方一张牌。',
             jlsg_zhuizun_info: '限定技，当你进入濒死状态时，你可以恢复体力至1点，令所有其他角色依次交给你一张手牌。然后当前回合结束后，你进行1个额外的回合。',
-            jlsg_tianshang_info: '限定技，你死亡时，可令一名其他角色获得你当前另外一项技能，增加1点体力上限并恢复1点体力。',
+            jlsg_tianshang_info: '限定技，你死亡时，可令一名其他角色获得你此武将牌上拥有的其他技能，然后其增加1点体力上限并恢复1点体力。',
             jlsg_yiji_info: '每当你受到一点伤害，可以观看牌堆顶的两张牌，并将其交给任意1~2名角色。',
             jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
             jlsg_huiqu_info: '回合开始阶段，你可以弃置一张手牌进行一次判定，若结果为红色，你将场上的一张牌移动到一个合理的位置；若结果为黑色，你对一名角色造成1点伤害，然后你摸一张牌。',
@@ -19971,7 +19936,12 @@ Visit Repository</a><br>
 2021.03.18更新<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
 &ensp; 加强SR曹操 招降<br>
-&ensp; TODO: 修复SR黄盖 舟焰<br>
+&ensp; 修改SR郭嘉 天殇 以与srlose选项兼容。更新了描述。<br>
+&ensp; 修改SR郭嘉 慧觑 优化AI UX，重写移动代码。<br>
+&ensp; 修复SR黄盖 舟焰<br>
+&ensp; 修复SK孙乾 随骥<br>
+&ensp; 修复SK曹冲 称象 点数最大为13<br>
+&ensp; 修改SK胆守 拼点来源，更新时机<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
