@@ -938,12 +938,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 0"
                 if (target.countCards('he')) {
                   target.chooseToDiscard("化戈：请弃置至少一张牌，弃置的牌中每有【杀】，你便摸一张牌", 'he', [1, Infinity], true).ai = function (card) {
-                    if (ui.selected.cards.length) {
-                      if (card.name == 'sha') return 1 - get.value(card);
-                      return 0;
-                    } else {
-                      return 12.5 - get.value(card);
-                    }
+                    if (card.name == 'sha') return 6 - get.value(card);
+                    return  - get.value(card);
                   };
                 } else {
                   event.finish();
@@ -19942,6 +19938,7 @@ Visit Repository</a><br>
 &ensp; 修复SK孙乾 随骥<br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
+&ensp; 优化SK卞夫人 化戈 AI<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
