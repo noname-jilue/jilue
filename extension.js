@@ -190,6 +190,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_dongyun',
             'jlsgsk_yujin',
             'jlsgsk_simazhao',
+            'jlsgsk_kuaiyue',
           ],
           am: [
             'jlsgsoul_lvbu',
@@ -295,9 +296,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               "jlsgsk_zhanglu",
               "jlsgsk_quancong",
               "jlsgsk_chengyu",
-
+              "jlsgsk_kuaiyue",
             ],
-            rare: [
+            rare: [ // 稀有
               "jlsgsk_simashi",
               "jlsgsk_xianglang",
               "jlsgsk_luji",
@@ -470,9 +471,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_guanyu: ['male', 'wei', 4, ['jlsg_wusheng', 'jlsg_danqi'], []],
             jlsgsk_zhangbao: ['male', 'qun', 3, ['jlsg_zhoufu', 'jlsg_yingbing'], []],
             jlsgsk_guanxing: ["male", 'shu', 4, ["jlsg_yongji", "jlsg_wuzhi"], []],
+            jlsgsk_kuaiyue: ["male", 'qun', 3, ["jlsg_yidu", "jlsg_zhubao"], []],
             jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
           },
-          characterIntro: {},
+          characterIntro: {
+            jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
+          },
           skill: {
             jlsg_zhengyi: {
               audio: "ext:极略:2",
@@ -6517,6 +6521,71 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (card) player.gain(card, 'gain2', 'log');
               }
             },
+            // 真有你的啊 用别人的字做技能名
+            jlsg_yidu: {
+              audio: "ext:极略:1",
+              trigger:{
+                player:'loseAfter',
+                global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter'],
+              },
+              frequent:true,
+              filter:function(event,player){
+                if (_status.currentPhase == player || !_status.currentPhase.countCards('h')) return false;
+                var evt=event.getl(player);
+                return evt && evt.hs && evt.hs.length > 0;
+              },
+              content: function () {
+                var suits = trigger.getl(player).hs.map(card=>get.suit(card));
+                var num = _status.currentPhase.countCards('h', 
+                  (card) => suits.contains(get.suit(card))
+                );
+                player.draw(num);
+              },
+              ai:{
+                threaten:0.5,
+                effect:{
+                  target:function(card, player, target, result2, islink){
+                    if (_status.currentPhase == target) return;
+                    if(card.name=='guohe'||card.name=='liuxinghuoyu') return 1 - 0.1 * _status.currentPhase.countCards('h');
+                  }
+                },
+                noh:true,
+                skillTagFilter:function(player,tag){
+                  if(tag=='noh'){
+                    if (_status.currentPhase == player) return false;
+                    return _status.currentPhase.countCards('h') > 4;
+                  }
+                }
+              }
+            },
+            jlsg_zhubao: {
+              audio: "ext:极略:1",
+              frequent:true,
+              trigger:{
+                global:['loseAfter', 'equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter'],
+              },
+              filter:function(event,player){
+                if (_status.currentPhase != player || !player.countCards('h')) return false;
+                return game.hasPlayer(p => {
+                  if (p == player) return false;
+                  var evt = event.getl(p);
+                  return evt && evt.hs && evt.hs.length > 0;
+                });
+              },
+              content: function () {
+                var suits = [];
+                game.filterPlayer(p=>p!=player).forEach(p=>{
+                  var evt = trigger.getl(p);
+                  if (evt && evt.hs) {
+                    suits.addArray(evt.hs.map( card=>get.suit(card) ));
+                  }
+                });
+                var num = player.countCards('h', 
+                  (card) => suits.contains(get.suit(card))
+                );
+                player.draw(num);
+              },
+            },
             jlsg_hubu: {
               audio: "ext:极略:1",
               trigger: { player: 'damageEnd', source: 'damageEnd' },
@@ -6606,6 +6675,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_guanyu: '☆SK关羽',
             jlsgsk_zhangbao: 'SK张宝',
             jlsgsk_guanxing: 'SK关兴',
+            jlsgsk_kuaiyue: 'SK蒯越',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -6711,7 +6781,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yongjiBuff: '勇继',
             jlsg_wuzhi: '武志',
             jlsg_wuzhi2: '武志',
-
+            jlsg_yidu: '异度',
+            jlsg_zhubao: '诛暴',
+            
+            jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）',
+            jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）',
             jlsg_yongji_info: '锁定技，当你于出牌阶段使用【杀】造成伤害后，你摸X张牌（X为你已损失的体力值且至多为3），且本回合可额外使用一张【杀】。',
             jlsg_wuzhi_info: '锁定技，弃牌阶段结束后，若你本回合内【杀】的使用次数未达到上限，你失去1点体力并从牌堆中获得一张【杀】',
             jlsg_wusheng_info: '你可以将一张红色牌当杀使用或打出。',
@@ -13147,7 +13221,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               forced: true,
               content: function () {
-                'step 0'
                 player.draw();
               },
               group: ['jlsg_huju2'],
@@ -13177,7 +13250,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   game.trySkillAudio('jlsg_hujuStill');
                   player.loseHp();
                 } else {
-                  game.trySkillAudio('jlsg_hujuWake');
+                  player.logSkill('jlsg_hujuWake');
                   player.loseMaxHp();
                   player.removeSkill('jlsg_huju');
                   player.addSkill('zhiheng');
@@ -13190,7 +13263,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               unique: true,
             },
             jlsg_hujuWake: {
+              skillAnimation:true,
               audio: "ext:极略:true",
+              inherit: 'jlsg_huju2',
               unique: true,
             },
             jlsg_hufu: {
@@ -14172,7 +14247,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (game.players[i].storage.jlsg_suohun_mark) {
                     player.line(game.players[i], 'fire');
                     game.delay(1.5);
-                    game.players[i].damage(game.players[i].storage.jlsg_suohun_mark);
+                    game.players[i].damage(game.players[i].storage.jlsg_suohun_mark, player);
                     game.players[i].storage.jlsg_suohun_mark = 0;
                     game.players[i].unmarkSkill('jlsg_suohun_mark');
                   }
@@ -19925,13 +20000,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0318",
+      version: "2.2.0319",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.18更新<br>
-&ensp; 修复SR黄月英 合谋 时机<br>
+2021.03.19更新<br>
+&ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复SR黄月英 合谋 时机<br>
+&ensp; 增加SK神孙权 虎踞 觉醒动画<br>
 &ensp; 修改SR郭嘉 天殇 以与srlose选项兼容。更新了描述。<br>
 &ensp; 修改SR郭嘉 慧觑 优化AI UX，重写移动代码。<br>
 &ensp; 修复SR黄盖 舟焰<br>
