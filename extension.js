@@ -2765,13 +2765,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 1'
                 if (result.bool) {
                   player.logSkill('jlsg_xiemu', trigger.player);
-                  trigger.player.addSkill('jlsg_xiemu3');
-                  event.card = result.cards[0];
+                  trigger.player.addTempSkill('jlsg_xiemu3');
                   player.lose(result.cards, ui.cardPile, 'insert');
                   game.log(player, '将一张牌置于牌堆顶');
                   player.$throw(1, 1000);
-                } else {
-                  event.finish();
                 }
               },
               group: 'jlsg_xiemu2',
@@ -2779,6 +2776,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_xiemu2: {
               trigger: { global: 'phaseEnd' },
               audio: "ext:极略:1",
+              logTarget:'player',
+              prompt2: function (event, player) {
+                if (player == event.player) {
+                  return "摸一张牌";
+                } else {
+                  return `令${get.translation(event.player)}摸一张牌`;
+                }
+              },
+              frequent: function(event, player) {
+                return event.player == player;
+              },
               filter: function (event, player) {
                 return event.player.hasSkill('jlsg_xiemu3');
               },
@@ -2787,11 +2795,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return 0;
               },
               content: function () {
-                'step 0'
-                player.logSkill('jlsg_xiemu', trigger.player);
+                // player.logSkill('jlsg_xiemu', trigger.player);
                 trigger.player.draw();
-                "step 1"
-                trigger.player.removeSkill('jlsg_xiemu3');
               },
             },
             jlsg_xiemu3: {},
@@ -6702,7 +6707,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fengyi: '风仪',
             jlsg_yalv: '雅虑',
             jlsg_xiemu: '协穆',
-            jlsg_xiemu2: "协穆·摸牌",
+            jlsg_xiemu2: '协穆',
             jlsg_zhejie: '折节',
             jlsg_fengya: '风雅',
             jlsg_yijian: '义谏',
@@ -10301,11 +10306,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 order: 9,
                 result: {
                   player: function (player) {
-                    return player.isTurnedOver() ? 3 : -3;
+                    return player.isTurnedOver() ? 4 : -3;
                   },
-                  target: function (target, player) {
+                  target: function (player, target) {
                     if (target.hasSkillTag('noturn')) return 0;
-                    return target.isTurnedOver() ? 3 : -3;
+                    return target.isTurnedOver() ? 4 : -3;
                   }
                 }
               }
@@ -18940,12 +18945,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             ["spade", 8, "jlsgqs_qixingbaodao"],
             ["diamond", 3, "jlsgqs_xiujian"],
             ["spade", 12, "jlsgqs_yuxi"],
-            ["heart", 4, "jlsgqs_meizi"],
-            ["heart", 6, "jlsgqs_meizi"],
-            ["diamond", 5, "jlsgqs_meizi"],
-            ["diamond", 12, "jlsgqs_meizi"],
-            ["heart", 9, "jlsgqs_meizi"],
-            ["heart", 11, "jlsgqs_meizi"],
+            ["heart", 4, "jlsgqs_mei"],
+            ["heart", 6, "jlsgqs_mei"],
+            ["diamond", 5, "jlsgqs_mei"],
+            ["diamond", 12, "jlsgqs_mei"],
+            ["heart", 9, "jlsgqs_mei"],
+            ["heart", 11, "jlsgqs_mei"],
             ["heart", 5, "jlsgqs_qingmeizhujiu"],
             ["diamond", 3, "jlsgqs_qingmeizhujiu"],
             ["diamond", 8, "jlsgqs_qingmeizhujiu"],
@@ -20007,6 +20012,7 @@ Visit Repository</a><br>
 2021.03.19更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复七杀卡包中牌堆没有梅的问题<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
 &ensp; 增加SK神孙权 虎踞 觉醒动画<br>
 &ensp; 修改SR郭嘉 天殇 以与srlose选项兼容。更新了描述。<br>
@@ -20014,8 +20020,10 @@ Visit Repository</a><br>
 &ensp; 修复SR黄盖 舟焰<br>
 &ensp; 修复SK孙乾 随骥<br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
+&ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
+&ensp; 修复SR陆逊 代劳 AI<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
