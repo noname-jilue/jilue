@@ -187,6 +187,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsr_guojia',
             'jlsgsr_diaochan',
             'jlsgsk_chengyu',
+            'jlsgsk_sunqian',
             'jlsgsk_dongyun',
             'jlsgsk_yujin',
             'jlsgsk_simazhao',
@@ -202,7 +203,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_kongrong',
             'jlsgsk_lukang',
             'jlsgsk_miheng',
-            'jlsgsk_sunqian',
             'jlsgsk_xianglang',
             'jlsgsk_guanlu',
             'jlsgsk_zhanglu',
@@ -6867,7 +6867,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             // jlsg_hongyuan_info: '出牌阶段限一次，你可以弃置两张手牌，将一名角色装备区的牌移动到另一名其他角色对应的区域（不可覆盖）。',
             jlsg_hongyuan_info: '出牌阶段限一次，你可以弃置至多X张手牌，然后选择一名角色获得场上的X张牌（X为你已损失的体力值）。',
             jlsg_huaqiang_info: '出牌阶段限一次，你可以弃置X种不同花色的手牌，然后对一名其他角色造成1点伤害（X为你的体力值且至多为4）。',
-            jlsg_chaohuang_info: '出牌阶段限一次，你可以失去1点体力，然后视为对你攻击范围内的任意名角色依次使用一张【杀】（不计入出牌阶段的使用限制）。',
+            // jlsg_chaohuang_info: '出牌阶段限一次，你可以失去1点体力，然后视为对你攻击范围内的任意名角色依次使用一张【杀】（不计入出牌阶段的使用限制）。',
+            jlsg_chaohuang_info: '出牌阶段限一次，你可以失去1点体力视为使用一张杀，（不计入出牌阶段的使用限制）指定你攻击范围内的任意名角色为目标。',
             jlsg_huilian_info: '出牌阶段限一次，你可以令一名其他角色进行一次判定并获得生效后的判定牌。若结果为红桃，该角色恢复1点体力。',
             jlsg_wenliang_info: '一名角色的红色判定牌生效后，你可以摸一张牌。',
             jlsg_qianhuan_info: '变化技，锁定技，你的每个回合开始时，随机展示3张未上场且你拥有的武将，你获得其中的2个技能（觉醒技、主公技、限定技和变化技除外），直到你的下个回合开始。若该局游戏为双将模式，则移除你的另一名武将，将“2个”改为“4个”。',
@@ -8216,7 +8217,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 "step 0"
-                debugger;
                 player.chooseTarget('是否发动【天殇】？', function (card, player, target) {
                   return player != target;
                 }).ai = function (target) {
@@ -8233,20 +8233,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (!result.bool) {
                   event.finish();return;
                 }
-                var target = result.targets[0];
-                player.logSkill('jlsg_tianshang', target);
+                event.target = result.targets[0];
+                player.logSkill('jlsg_tianshang', event.target);
                 if (player.hasSkill('jlsg_huiqu')) {
-                  target.addSkill('jlsg_huiqu');
+                  event.target.addSkill('jlsg_huiqu');
                 } 
                 if (player.hasSkill('jlsg_old_yiji')) {
-                  target.addSkill('jlsg_old_yiji');
+                  event.target.addSkill('jlsg_old_yiji');
                 } 
                 if (player.hasSkill('jlsg_yiji')) {
-                  target.addSkill('jlsg_yiji');
+                  event.target.addSkill('jlsg_yiji');
                 }
                 "step 2"
-                target.gainMaxHp();
-                target.recover();
+                event.target.gainMaxHp();
+                event.target.recover();
               },
               ai: {
                 expose: 0.5,
@@ -15683,8 +15683,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               audio: "ext:极略:1",
               trigger: { player: 'phaseDrawBefore' },
-              check: function (card) {
-                return game.countPlayer() > 2;
+              filter:function(event,player){
+                return !event.numFixed;
+              },
+              check: function (event, player) {
+                return game.countPlayer() - event.num > 1;
               },
               content: function () {
                 "step 0"
@@ -20011,6 +20014,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 Visit Repository</a><br>
 2021.03.19更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
+&ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
@@ -20023,7 +20027,9 @@ Visit Repository</a><br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
+&ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
+&ensp; 修复SK张绣 朝凰 描述<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
