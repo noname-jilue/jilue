@@ -2007,14 +2007,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { player: 'gainEnd' },
               filter: function (event, player) {
-                return (event.cards[0].original == 'h' || event.cards[0].original == 'e' || event.cards[0].original == 'j');
+                // return (event.cards[0].original == 'h' || event.cards[0].original == 'e' || event.cards[0].original == 'j');
+                if(!event.source||event.source==player||!event.source.isIn()) return false;
+                var evt=event.getl(event.source);
+                return evt&&evt.cards2&&evt.cards2.length != 0;
               },
               direct: true,
               content: function () {
                 'step 0'
-
-                player.chooseTarget('素检：选择一名其他角色弃置你一张牌，然后你弃置其一张牌', function (card, player, target) {
-                  return player != target && target.countCards('he') > 0;
+                player.chooseTarget(function (card, player, target) {
+                  return player != target && target.countDiscardableCards(player, 'he') > 0;
                 }).ai = function (target) {
                   // if (!player.countCards('he')) return -get.attitude(player, target) && target.countCards('he');
                   // if (player.countCards('he') > 4) return get.attitude(player, target) && target.countCards('he');
@@ -3708,8 +3710,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                var prompt = (trigger.player == player) ? "'是否发动【刀侍】摸一张牌?" :
-                  `###是否对${get.translation(event.target)}发动【郡兵】？###摸一张牌并将装备区的一张牌交给该角色`;
+                var prompt = (trigger.player == player) ? "是否发动【刀侍】摸一张牌?" :
+                  `###是否对${get.translation(event.target)}发动【刀侍】？###摸一张牌并将装备区的一张牌交给该角色`;
                 trigger.player.chooseBool(prompt).ai = function () {
                   if (trigger.player == player) return true;
                   if (get.attitude(trigger.player, player) > 0 && player.countCards('e') < 2)
@@ -12304,7 +12306,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                if (!target.countDiscardableCards('h')) {
+                if (!target.countDiscardableCards(target, 'h')) {
                   target.damage(player);
                   target.recover();
                   event.finish();
@@ -13418,7 +13420,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return false;
               },
               discard: false,
-              prepare: "give2",
+              // prepare: "give2",
               check: function (card) {
                 if (ui.selected.cards.length > 1) return 0;
                 if (ui.selected.cards.length && ui.selected.cards[0].name == 'du') return 0;
@@ -19932,11 +19934,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         intro: "是否要求SR武将弃置技能",
         init: true,
       },
-      // qsRelic: {
-      //   name: "七杀宝物",
-      //   intro: "锁定技，当一张七杀宝物进入你的装备区时，若你同时装备了+1马与-1马，你选择并将装备区内的一张坐骑牌置入弃牌堆；<br>锁定技，当+1马（-1马）进入你的装备区时，你将装备区内的-1马（+1马）或七杀宝物置入弃牌堆。",
-      //   init: false,
-      // },
+      qsRelic: {
+        name: "七杀宝物特殊规则",
+        intro: "锁定技，当你同时装备了七杀宝物、进攻马与防御马时，你选择将你装备区中的一张坐骑或是七杀宝物置入弃牌堆。",
+        init: false,
+      },
       jlsg_identity_music_image: {
         name: "身份模式背景＆音乐",
         init: false
@@ -20001,29 +20003,33 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         translate: {},
       },
       intro: `<div>\
-<img src="${lib.assetURL}extension/极略/logo.png" alt="极略三国" style="width:100%" onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
+<img src="${lib.assetURL}extension/极略/logo.webp" alt="极略三国" style="width:100%" onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <li>极略全部武将·附带七杀卡包+极略三英武将，不需要请记得关闭。<li>帮助中查看更多内容
 </div>`,
       author: "可乐，赵云，青冢，萧墨(17岁)",
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0319",
+      version: "2.2.0320",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.19更新<br>
+2021.03.20更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
 &ensp; 修复 SK曹仁 立绘<br>
+&ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
+&ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
+&ensp; 修复SK邓芝 素俭 触发条件<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
 &ensp; 增加SK神孙权 虎踞 觉醒动画<br>
 &ensp; 修改SR郭嘉 天殇 以与srlose选项兼容。更新了描述。<br>
 &ensp; 修改SR郭嘉 慧觑 优化AI UX，重写移动代码。<br>
 &ensp; 修复SR黄盖 舟焰<br>
 &ensp; 修复SK孙乾 随骥<br>
+&ensp; 修复SK神刘备 激诏动画<br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
@@ -20031,6 +20037,8 @@ Visit Repository</a><br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
+&ensp; 修复SK周仓 刀侍 技能提示<br>
+&ensp; 修复SR曹操 治世<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
