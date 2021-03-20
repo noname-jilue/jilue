@@ -20015,6 +20015,7 @@ Visit Repository</a><br>
 2021.03.19更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
+&ensp; 修复 SK曹仁 立绘<br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
