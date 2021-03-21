@@ -56,6 +56,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       var CharacterReplaceExclude = {
         jlsgsk_luzhi: 'yl_luzhi',
         jlsgsk_simashi: 'jin_simashi',
+        jlsgsk_jiangqin: 'jiangqing',
       };
       var trivialSolveCharacterReplace = function (name, prefix= '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -192,6 +193,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_yujin',
             'jlsgsk_simazhao',
             'jlsgsk_kuaiyue',
+            'jlsgsk_zhoutai',
           ],
           am: [
             'jlsgsoul_lvbu',
@@ -313,6 +315,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               "jlsgsk_chendao",
               "jlsgsk_zhuran",
               "jlsgsk_lukang",
+              "jlsgsk_zhoutai",
               "jlsgsk_kongrong",
               "jlsgsk_caochong",
               "jlsgsk_simazhao",
@@ -472,6 +475,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_zhangbao: ['male', 'qun', 3, ['jlsg_zhoufu', 'jlsg_yingbing'], []],
             jlsgsk_guanxing: ["male", 'shu', 4, ["jlsg_yongji", "jlsg_wuzhi"], []],
             jlsgsk_kuaiyue: ["male", 'qun', 3, ["jlsg_yidu", "jlsg_zhubao"], []],
+            jlsgsk_zhoutai: ["male", 'wu', 4, ["jlsg_buqu", "jlsg_fenji"], []],
             jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
           },
           characterIntro: {
@@ -1812,7 +1816,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 player.chooseToDiscard('h', `咒缚：是否弃置一张手牌，令${get.translation(trigger.player)}进行判定？`).set("ai", function (card) {
-                  return get.attitude(player, trigger.player) >= 0 ? 0 : 6 - get.useful(card);
+                  return get.attitude(player, trigger.player) > -1 ? 0 : 6 - get.useful(card);
                   // return 2 + get.effect(trigger.player, { name: 'sha' }, game.me) - get.value(card);
                 }).set('logSkill', 'jlsg_zhoufu');
                 'step 1'
@@ -6593,6 +6597,28 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.draw(num);
               },
             },
+            jlsg_buqu: {
+              audio: "ext:极略:2",
+              inherit: 'buqu',
+            },
+            jlsg_fenji: {
+              audio: "ext:极略:1",
+              trigger:{
+                global:'shaBegin',
+              },
+              filter: function(event,player){
+                return event.card.name=='sha';
+              },
+              check: function (event, player) {
+                return get.attitude(player, event.player) > 2;
+              },
+              content: function() {
+                'step 0'
+                player.loseHp();
+                'step 1'
+                trigger.target.draw(2);
+              }
+            },
             jlsg_hubu: {
               audio: "ext:极略:1",
               trigger: { player: 'damageEnd', source: 'damageEnd' },
@@ -6683,6 +6709,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_zhangbao: 'SK张宝',
             jlsgsk_guanxing: 'SK关兴',
             jlsgsk_kuaiyue: 'SK蒯越',
+            jlsgsk_zhoutai: 'SK周泰',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -6790,7 +6817,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wuzhi2: '武志',
             jlsg_yidu: '异度',
             jlsg_zhubao: '诛暴',
+            jlsg_fenji: '奋激',
             
+            jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
             jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）',
             jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）',
             jlsg_yongji_info: '锁定技，当你于出牌阶段使用【杀】造成伤害后，你摸X张牌（X为你已损失的体力值且至多为3），且本回合可额外使用一张【杀】。',
@@ -20010,18 +20039,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0320",
+      version: "2.2.0321",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.20更新<br>
+2021.03.21更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
+&ensp; 新增武将 <div style="display:inline" data-nature="woodmm">SK周泰</div><br>
 &ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
 &ensp; 修复 SK曹仁 立绘<br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复SK司马师 同将替换<br>
+&ensp; 修复SK蒋钦 同将替换<br>
 &ensp; 修复SR华佗 阵亡语音<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
 &ensp; 修复SK邓芝 素俭 触发条件<br>
@@ -20038,6 +20069,7 @@ Visit Repository</a><br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 优化SR吕布 极武 描述<br>
+&ensp; 优化SK张宝 咒缚 AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
