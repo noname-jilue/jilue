@@ -16667,20 +16667,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         var jlsg_sy = {
           name: 'jlsg_sy',
           character: {
-            jlsgsy_zhangrang: ['male', 'shen', 7, ['jlsgsy_chanxian', 'jlsgsy_baonuzhangrang'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            jlsgsy_zhangrangbaonu: ['male', 'shen', 4, ['jlsgsy_chanxian', 'jlsgsy_luanzheng', 'jlsgsy_canlue'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
-            jlsgsy_dongzhuo: ['male', 'shen', 8, ['jlsgsy_zhongyu', 'jlsgsy_linnue', 'jlsgsy_baozheng', 'jlsgsy_baonudongzhuo'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            jlsgsy_dongzhuobaonu: ['male', 'shen', 4, ['jlsgsy_zhongyu', 'jlsgsy_linnue', 'jlsgsy_baozheng', 'jlsgsy_nishi', 'jlsgsy_hengxing'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            // jlsgsy_lvbu: ['male', 'shen', 8, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_baonulvbu'], ['qun', 'boss', 'bossallowed'], 'qun'],
+            // jlsgsy_lvbubaonu: ['male', 'shen', 4, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_xiuluo', 'jlsgsy_shenwei', 'jlsgsy_shenji'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            jlsgsy_dongzhuo: ['male', 'shen', 8, ['jlsgsy_zongyu', 'jlsgsy_lingnue', 'jlsgsy_baozheng', 'jlsgsy_baonudongzhuo'], ['qun', 'boss', 'bossallowed'], 'qun'],
+            jlsgsy_dongzhuobaonu: ['male', 'shen', 4, ['jlsgsy_zongyu', 'jlsgsy_lingnue', 'jlsgsy_baozheng', 'jlsgsy_nishi', 'jlsgsy_hengxing'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
             jlsgsy_zhangjiao: ['male', 'shen', 8, ['jlsgsy_bujiao', 'jlsgsy_taiping', 'jlsgsy_baonuzhangjiao'], ['qun', 'boss', 'bossallowed'], 'qun'],
             jlsgsy_zhangjiaobaonu: ['male', 'shen', 4, ['jlsgsy_bujiao', 'jlsgsy_taiping', 'jlsgsy_yaohuo', 'jlsgsy_sanzhi'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
-            jlsgsy_caifuren: ['female', 'shen', 7, ['jlsgsy_dihui', 'jlsgsy_baonucaifuren'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            jlsgsy_caifurenbaonu: ['female', 'shen', 4, ['jlsgsy_dihui', 'jlsgsy_luansi', 'jlsgsy_huoxin'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            jlsgsy_zhangrang: ['male', 'shen', 7, ['jlsgsy_chanxian', 'jlsgsy_baonuzhangrang'], ['qun', 'boss', 'bossallowed'], 'qun'],
+            jlsgsy_zhangrangbaonu: ['male', 'shen', 4, ['jlsgsy_chanxian', 'jlsgsy_luanzheng', 'jlsgsy_canlue'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
             jlsgsy_weiyan: ['male', 'shen', 8, ['jlsgsy_shiao', 'jlsgsy_baonuweiyan'], ['shu', 'boss', 'bossallowed'], 'shu'],
             jlsgsy_weiyanbaonu: ['male', 'shen', 4, ['jlsgsy_shiao', 'jlsgsy_fangu', 'jlsgsy_kuangxi'], ['shu', 'hiddenboss', 'bossallowed'], 'shu'],
-            jlsgsy_simayi: ['male', 'shen', 7, ['jlsgsy_bolue', 'jlsgsy_baonusimayi'], ['jin', 'boss', 'bossallowed'], 'jin'],
-            jlsgsy_simayibaonu: ['male', 'shen', 4, ['jlsgsy_bolue', 'jlsgsy_jinji', 'jlsgsy_biantian', 'jlsgsy_tianyou'], ['jin', 'hiddenboss', 'bossallowed'], 'jin'],
             jlsgsy_sunhao: ['male', 'shen', 8, ['jlsgsy_mingzheng', 'jlsgsy_baonusunhao'], ['wu', 'boss', 'bossallowed'], 'wu'],
             jlsgsy_sunhaobaonu: ['male', 'shen', 4, ['jlsgsy_shisha', 'jlsgsy_huangyin', 'jlsgsy_zuijiu', 'jlsgsy_guiming'], ['wu', 'hiddenboss', 'bossallowed'], 'wu'],
+            jlsgsy_caifuren: ['female', 'shen', 7, ['jlsgsy_dihui', 'jlsgsy_baonucaifuren'], ['qun', 'boss', 'bossallowed'], 'qun'],
+            jlsgsy_caifurenbaonu: ['female', 'shen', 4, ['jlsgsy_dihui', 'jlsgsy_luansi', 'jlsgsy_huoxin'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            jlsgsy_simayi: ['male', 'shen', 7, ['jlsgsy_bolue', 'jlsgsy_baonusimayi'], ['jin', 'boss', 'bossallowed'], 'jin'],
+            jlsgsy_simayibaonu: ['male', 'shen', 4, ['jlsgsy_bolue', 'jlsgsy_jinji', 'jlsgsy_biantian', 'jlsgsy_tianyou'], ['jin', 'hiddenboss', 'bossallowed'], 'jin'],
           },
           skill: {
             jlsgsy_baonu: {
@@ -16722,6 +16724,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               group: ['jlsgsy_baonu2'],
+            },
+            jlsgsy_baonulvbu: {
+              inherit: 'jlsgsy_baonu',
+              animationStr: '把你们全宰了！',
+            },
+            jlsgsy_wushuang: {
+              inherit: 'wushuang',
+              audio: "ext:极略:1",
+            },
+            jlsgsy_xiuluo:{
+              audio: "ext:极略:1",
+              inherit: 'xiuluo',
+            },
+            jlsgsy_shenwei:{
+              audio: "ext:极略:1",
+              inherit: 'shenwei',
+            },
+            jlsgsy_shenji:{
+              audio: "ext:极略:1",
+              inherit: 'shenji',
             },
             jlsgsy_guiming: {
               audio: "ext:极略:1", // audio: ['jlsgsy_guiming'],
@@ -17125,7 +17147,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
             },
-            jlsgsy_zhongyu: {
+            jlsgsy_zongyu: {
               audio: "ext:极略:1", // audio: ['zhongyu'],
               enable: 'phaseUse',
               filter: function (event, player) {
@@ -17158,7 +17180,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
             },
-            jlsgsy_linnue: {
+            jlsgsy_lingnue: {
               audio: "ext:极略:1", // audio: ['linnue'],
               trigger: { source: 'damageEnd' },
               unique: true,
@@ -18000,6 +18022,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           translate: {
             jlsg_sy: 'SK三英',
+            jlsgsy_lvbu: '善战无前',
+            jlsgsy_lvbubaonu: '善战无前',
             jlsgsy_dongzhuo: '狱魔祸世',
             jlsgsy_dongzhuobaonu: '狱魔祸世',
             jlsgsy_zhangrang: '祸乱之源',
@@ -18015,8 +18039,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_sunhao: '末世暴君',
             jlsgsy_sunhaobaonu: '末世暴君',
 
-            jlsgsy_zhongyu: '纵欲',
-            jlsgsy_linnue: '凌虐',
+            jlsgsy_xiuluo: '修罗',
+            jlsgsy_shenwei: '神威',
+            jlsgsy_shenji: '神戟',
+            jlsgsy_zongyu: '纵欲',
+            jlsgsy_lingnue: '凌虐',
             jlsgsy_luanzheng: '乱政',
             jlsgsy_chanxian: '馋陷',
             jlsgsy_baozheng: '暴政',
@@ -18046,11 +18073,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_luanji: '乱击',
             jlsgsy_quanheng: '权衡',
 
+            
+            // jlsgsy_xiuluo_info:'回合开始阶段，你可以弃一张手牌来弃置你判定区中的一张相同花色的延时锦囊牌。',
+            // jlsgsy_shenwei_info:'锁定技，摸牌阶段，你额外摸两张牌，你的手牌上限+2。',
+            // jlsgsy_shenji_info:'若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
             jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
             jlsgsy_chanxian_info: '出牌阶段限1次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
             jlsgsy_canlue_info: '你每从其他角色处获得一张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置一张牌',
-            jlsgsy_zhongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用一张【酒】',
-            jlsgsy_linnue_info: '出牌阶段，你每使用【杀】对目标角色造成1次伤害，可以进行1次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
+            jlsgsy_zongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用一张【酒】',
+            jlsgsy_lingnue_info: '出牌阶段，你每使用【杀】对目标角色造成1次伤害，可以进行1次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
             jlsgsy_baozheng_info: '锁定技，其他角色摸牌阶段结束时，若该角色手牌数大于你，须选择一项：交给你一张方块牌；或受到你造成的1点伤害。',
             jlsgsy_nishi_info: '锁定技，摸牌阶段，你摸X张牌(X为你的当前体力值且至多为4)',
             jlsgsy_hengxing_info: '当其他角色使用【杀】指定你为目标时，你可以弃置x张牌(x为你当前体力值)，则该【杀】对你无效',
