@@ -53,9 +53,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           // trigger.audioed = true;
         },
       };
-      // TODO: 司马师
       var CharacterReplaceExclude = {
         jlsgsk_luzhi: 'yl_luzhi',
+        jlsgsk_simashi: 'jin_simashi',
       };
       var trivialSolveCharacterReplace = function (name, prefix= '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -12764,7 +12764,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_quanheng_info: '出牌阶段限一次，你可以将至少一张手牌当【无中生有】或【杀】使用，若你以此法使用的牌被【无懈可击】或【闪】响应时，你摸等量的牌。',
             jlsg_xionglve_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的两张牌，你获得其中一张牌，然后将另一张牌置于你的武将牌上，称为「略」。出牌阶段，你可以将一张基本牌或锦囊牌的「略」当与之同类别的任意一张牌（延时类锦囊牌除外）使用，将一张装备牌的「略」置于一名其他角色装备区内的相应位置。',
             jlsg_fuzheng_info: '主公技，回合开始阶段开始时，你可以令至多两名其他吴势力角色各摸一张牌，然后这些角色依次将一张手牌置于牌堆顶。',
-            jlsg_jiwu_info: '出牌阶段限一次，你可以将你的手牌调整至一张，若如此做，本回合你的攻击范围无限，且你下一次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以至多额外指定任意两名其他角色为目标。',
+            jlsg_jiwu_info: '出牌阶段限一次，你可以将你的手牌调整至一张，若如此做，本回合你的攻击范围无限，且你下一次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以额外指定至多两名目标。',
             jlsg_old_jiwu_info: '出牌阶段限一次，若你的手牌数大于一，若如此做，本回合你的攻击范围无限，且你下1次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以至多额外指定任意两名其他角色为目标。',
 
             jlsg_sheji_info: '当一名装备区有武器牌的其他角色对另一名角色造成伤害后，你可以弃置一张牌，然后获得该角色的武器牌。你可以将装备牌当无距离限制的【杀】使用或打出，你以此法使用的【杀】须连续使用两张【闪】才能抵消。',
@@ -20021,6 +20021,8 @@ Visit Repository</a><br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复SK司马师 同将替换<br>
+&ensp; 修复SR华佗 阵亡语音<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
 &ensp; 修复SK邓芝 素俭 触发条件<br>
 &ensp; 修复SR黄月英 合谋 时机<br>
@@ -20035,6 +20037,7 @@ Visit Repository</a><br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
+&ensp; 优化SR吕布 极武 描述<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
