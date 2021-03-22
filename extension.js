@@ -469,7 +469,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_zangba: ['male', 'wei', 4, ['jlsg_hengjiang'], []],
             jlsgsk_hejin: ['male', 'qun', 4, ['jlsg_zhuanshan'], []],
             jlsgsk_wangyi: ['female', 'wei', 3, ['jlsg_zhenlie', 'jlsg_miji'], []],
-            jlsgsk_zuoci: ['male', 'qun', 3, ['jlsg_qianhuan'], ['zhu',]],
+            jlsgsk_zuoci: ['male', 'qun', 3, ['jlsg_qianhuan'], []],
 
             jlsgsk_guanyu: ['male', 'wei', 4, ['jlsg_wusheng', 'jlsg_danqi'], []],
             jlsgsk_zhangbao: ['male', 'qun', 3, ['jlsg_zhoufu', 'jlsg_yingbing'], []],
@@ -5298,7 +5298,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.node.name.style.display = 'none';
                 player.node.name2.style.display = 'none';
                 "step 1"
+                debugger; 
                 player.init('jlsgsk_zuoci');
+                if (!player.ai.shown) {
+                  player.ai.shown = 0;
+                }
               },
             },
             jlsg_jinglun: {
@@ -10680,7 +10684,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger.finish();
                 trigger.untrigger();
                 event.cards = get.cards(2);
-                player.chooseCardButton(event.cards, true);
+                player.chooseCardButton("选择一张牌置入手牌", event.cards, true);
                 'step 1'
                 if (result.bool) {
                   player.gain(result.links[0]);
@@ -20091,6 +20095,7 @@ Visit Repository</a><br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复SR周瑜 英才 动画<br>
+&ensp; 修复AI对SK左慈的混乱态度<br>
 &ensp; 修复SR夏侯惇 忠候 AI选择<br>
 &ensp; 修复SK司马师 同将替换<br>
 &ensp; 修复SK蒋钦 同将替换<br>
@@ -20112,6 +20117,7 @@ Visit Repository</a><br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 优化SR吕布 极武 描述<br>
 &ensp; 优化SK张宝 咒缚 AI<br>
+&ensp; 优化SR孙权 雄略 UX<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
