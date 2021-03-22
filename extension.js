@@ -12358,13 +12358,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 order: 8,
                 result: {
                   target: function (player, target) {
-                    if (target.hp == 1 && target.countCards('h') == 0) return -2;
-                    if (!target.isHealthy() && target.hasCard(function (card) {
-                      return get.type(card) == 'basic';
-                    }, 'h')) return 0.6;
-                    if (target.hp > 1) return 0.4;
-                    if (target.hasSkillTag('maixie')) return 0.5;
-                    return 0;
+                    var result = 0;
+                    if (target.hasSkillTag('maixie_hp') || target.hasSkillTag('maixie')) result += 0.5;
+                    if (target.hp == 1 && (target.countCards('h') <= 1 || target.maxHp == 1)) result -= 2;
+                    if (target.hp < target.maxHp) {
+                      result += Math.min(0.4, target.countCards('h') * 0.1);
+                    }
+                    // if (!target.isHealthy() && target.hasCard(function (card) {
+                    //   return get.type(card) == 'basic';
+                    // }, 'h')) return 0.6;
+                    // if (target.hp > 1) return 0.4;
+                    
+                    return result;
                   }
                 }
               }
@@ -12436,8 +12441,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.goto(2);
                 } else {
                   var prompt = `是否失去1点体力视为${get.translation(trigger.player)}使用一张${get.translation(trigger.card)}？`;
-                  player.chooseBool(prompt).set('choice', 
-                  get.attitude(player, trigger.player) >= 6);
+                  player.chooseBool(prompt, get.attitude(player, trigger.player) >= 6);
                 }
                 'step 1'
                  if (!result.bool) {
@@ -18554,9 +18558,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               enable: true,
               selectTarget: -1,
               filterTarget: true,
+              ignoreTarget:function(card,player,target){
+                return target.isHealthy() && target.hp == 1;
+              },
               modTarget: true,
               content: function () {
-                if (target.hp > 1) target.draw(2);
+                if (target.hp > 1) target.draw(2, 'nodelay');
                 else {
                   target.recover();
                 }
@@ -20082,6 +20089,7 @@ Visit Repository</a><br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复SR夏侯惇 忠候 AI选择<br>
 &ensp; 修复SK司马师 同将替换<br>
 &ensp; 修复SK蒋钦 同将替换<br>
 &ensp; 修复SR华佗 阵亡语音<br>
@@ -20097,6 +20105,7 @@ Visit Repository</a><br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
+&ensp; 优化七杀 望梅止渴 动画<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 优化SR吕布 极武 描述<br>
@@ -20104,7 +20113,7 @@ Visit Repository</a><br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
-&ensp; 修复SR曹操 治世<br>
+&ensp; 修复SR曹操 治世 优化AI<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.17更新<br>
 &ensp; 增加神将 同将替换<br>
