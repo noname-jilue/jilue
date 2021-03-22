@@ -9852,6 +9852,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 2'
                 ui.arena.classList.remove('thrownhighlight');
                 player.gain(event.cards, 'gain2');
+                event.cards2[0].clone.hide();
                 game.delay();
               }
             },
@@ -20089,6 +20090,7 @@ Visit Repository</a><br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复SR周瑜 英才 动画<br>
 &ensp; 修复SR夏侯惇 忠候 AI选择<br>
 &ensp; 修复SK司马师 同将替换<br>
 &ensp; 修复SK蒋钦 同将替换<br>
