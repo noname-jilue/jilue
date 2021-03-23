@@ -1086,30 +1086,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_xiongyi: {
-              group: ['jlsg_xiongyi1', 'jlsg_xiongyi2'],
-            },
-            jlsg_xiongyi1: {
               audio: "ext:极略:2",
               forced: true,
-              priority: 10,
-              trigger: { player: 'phaseBeginStart' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               filter: function (event, player) {
-                return player.hp == 1;
+                return player.hp == 1 || player.countCards('h') == 0;
               },
               content: function () {
-                player.recover();
-              }
-            },
-            jlsg_xiongyi2: {
-              audio: "ext:极略:2",
-              forced: true,
-              priority: 11,
-              trigger: { player: 'phaseBeginStart' },
-              filter: function (event, player) {
-                return player.countCards('h') == 0;
-              },
-              content: function () {
-                player.draw(2);
+                if (player.hp == 1) {
+                  player.recover();
+                }
+                if (player.countCards('h') == 0) {
+                  player.draw(2);
+                }
               }
             },
             jlsg_sijian: {
@@ -1973,8 +1962,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 player.storage.jlsg_hemeng_usable--;
-                target.viewCards('和盟', player.get('h'));
-                target.gainPlayerCard(player, 'visible', true);
+                target.viewCards('和盟', player.getCards('h'));
+                target.gainPlayerCard(player,'h', 'visible', true);
                 'step 1'
                 player.viewCards('和盟', target.get('he'));
                 target.isUnderControl();
@@ -2017,7 +2006,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                player.chooseTarget(function (card, player, target) {
+                player.chooseTarget(get.prompt2('jlsg_sujian'), function (card, player, target) {
                   return player != target && target.countDiscardableCards(player, 'he') > 0;
                 }).ai = function (target) {
                   // if (!player.countCards('he')) return -get.attitude(player, target) && target.countCards('he');
@@ -2716,17 +2705,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               frequent: true,
               content: function () {
                 'step 0'
-                // FIXME
                 event.cards = get.cards(2);
-                player.chooseCardButton('雅虑:请选择牌堆顶的牌,先选择的在上', 2, event.cards, true);
+                game.cardsGotoOrdering(event.cards);
+                var dialog = ui.create.dialog("雅虑：是否调换牌堆顶两张牌的顺序？",event.cards,'hidden');
+                player.chooseBool(dialog, get.value(event.cards[0]) < get.value(event.cards[1]));
+                // player.chooseCardButton('雅虑:请选择牌堆顶的牌,先选择的在上', 2, event.cards, true);
                 'step 1'
-                for (var i = 1; i >= 0; i--) {
-                  event.cards.remove(result.buttons[i].link);
-                  ui.cardPile.insertBefore(result.buttons[i].link, ui.cardPile.firstChild);
+                if (!result.bool) {
+                  event.cards.reverse();
                 }
-                player.chooseBool('是否摸一张牌？').ai = function () {
-                  return 1;
+                for (var card of event.cards) {
+                  ui.cardPile.insertBefore(card, ui.cardPile.firstChild);
                 }
+                player.chooseBool('是否摸一张牌？', () => true);
                 'step 2'
                 if (result.bool) {
                   player.draw();
@@ -6935,10 +6926,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_diezhang2: "迭嶂",
             jlsg_diezhang3: "迭嶂",
             jlsg_diezhang_info: "出牌阶段，当你使用牌时，若此牌的点数大于本回合你上一张使用的牌，你可以摸一张牌。",
-            jlsg_xiongyi2: "雄异·摸牌",
-            jlsg_xiongyi1: "雄异·回血",
             jlsg_xiongyi: "雄异",
-            jlsg_xiongyi_info: "锁定技，你的回合开始时，若你的体力值为1，你恢复1点体力；若你没有手牌，你摸两张牌。",
+            jlsg_xiongyi_info: "锁定技，准备阶段，若你的体力值为1，你恢复1点体力；若你没有手牌，你摸两张牌。",
             jlsg_sijian: "死谏",
             jlsg_gangzhi: "刚直",
             jlsg_sijian_info: "当你失去所有手牌后，你可以弃置一名其他角色的X张牌(X为你的体力值)。",
@@ -20079,6 +20068,7 @@ Visit Repository</a><br>
 &ensp; 加强SR曹操 招降<br>
 &ensp; 修复SK孙策主公技协力丢失 重写了相关代码<br>
 &ensp; 修复SR周瑜 英才 动画<br>
+&ensp; 修复SK邓芝 和盟 给牌位置<br>
 &ensp; 修复AI对SK左慈的混乱态度<br>
 &ensp; 修复SR夏侯惇 忠候 AI选择<br>
 &ensp; 修复SK司马师 同将替换<br>
@@ -20096,6 +20086,8 @@ Visit Repository</a><br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
+&ensp; 优化SK马良 雅虑 UX<br>
+&ensp; 优化SK邓芝 素俭 UX<br>
 &ensp; 优化七杀 望梅止渴 动画<br>
 &ensp; 优化SK郭女王 俭约 自动发动<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
@@ -20103,6 +20095,7 @@ Visit Repository</a><br>
 &ensp; 优化SR吕布 极武 描述<br>
 &ensp; 优化SK张宝 咒缚 AI<br>
 &ensp; 优化SR孙权 雄略 UX<br>
+&ensp; 优化SK马腾 雄异 记录<br>
 &ensp; 优化SK费祎 衍息 UX 修复AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
