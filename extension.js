@@ -5825,6 +5825,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 });
               },
               logTarget: 'player',
+              frequent: function (event, player) {
+                return event.player == player;
+              },
               check: function (event, player) {
                 if (jlsg.isFriend(player, event.player)) return !jlsg.needKongcheng(event.player, true);
                 return get.attitude(player, event.player) > 0;
@@ -12247,8 +12250,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 // console.log(trigger);
-                if (!trigger.player.inRangeOf(player) || !trigger.target.inRangeOf(player)) {
-                  var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player))
+                if (!trigger.player.inRangeOf(player) || (trigger.target != player && !trigger.target.inRangeOf(player))) {
+                  var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function () {
                     if (jlsg.isFriend(player, trigger.player)) {
                       if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return true;
@@ -12261,7 +12264,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                     return false;
                   };
-                  next.logSkill = ['jlsg_zhaoxiang', trigger.player];
                 } else {
                   var next = player.chooseToDiscard(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function (card) {
@@ -12279,10 +12281,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                     return 0;
                   };
-                  next.logSkill = ['jlsg_zhaoxiang', trigger.player];
                 }
                 'step 1'
                 if (result.bool) {
+                  player.logSkill('jlsg_zhaoxiang', trigger.player);
                   if (trigger.player.countCards('h')) {
                     trigger.player.chooseCard('交给' + get.translation(player) + '一张牌或令打出的杀无效').set('ai', function (card) {
                       if (_status.event.getParent().player.hasSkill('jiu')) {
@@ -20063,11 +20065,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0321",
+      version: "2.2.0323",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.21更新<br>
+2021.03.23更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 新增武将 <div style="display:inline" data-nature="woodmm">SK周泰</div><br>
 &ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
@@ -20095,6 +20097,7 @@ Visit Repository</a><br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
 &ensp; 修改SK胆守 拼点来源，更新时机<br>
 &ensp; 优化七杀 望梅止渴 动画<br>
+&ensp; 优化SK郭女王 俭约 自动发动<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
 &ensp; 优化SK神貂蝉 天资 发动AI<br>
 &ensp; 优化SR吕布 极武 描述<br>
