@@ -431,7 +431,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_miheng: ['male', 'qun', 3, ['jlsg_shejian', 'jlsg_kuangao'], []],
             jlsgsk_zumao: ['male', 'wu', 4, ['jlsg_yinbing'], []],
             jlsgsk_huaxiong: ['male', 'qun', 5, ['jlsg_fenwei', 'jlsg_shiyong'], []],
-            jlsgsk_sunce: ['male', 'wu', 4, ['jlsg_angyang', 'jlsg_weifeng'], ['zhu',]],
+            jlsgsk_sunce: ['male', 'wu', 4, ['jlsg_angyang', 'jlsg_weifeng', 'jlsg_xieli'], ['zhu',]],
             jlsgsk_caoren: ['male', 'wei', 4, ['jlsg_jushou'], []],
             jlsgsk_gongsunzan: ['male', 'qun', 4, ['jlsg_yicong', 'jlsg_muma'], []],
             jlsgsk_sunqian: ['male', 'shu', 3, ['jlsg_suiji', 'jlsg_fengyi'], []],
@@ -1205,15 +1205,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yanxi: {
               audio: "ext:极略:2",
               trigger: { player: ['phaseBegin', 'phaseEnd'] },
+              frequent: true,
               filter: function (event, player) {
                 return player.countCards('e') <= 0;
               },
               content: function () {
                 player.draw();
               },
-              ai: {
-                expose: 0.2,
-              }
             },
             jlsg_zhige: {
               audio: "ext:极略:1",
@@ -2545,74 +2543,57 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               zhuSkill: true,
               trigger: { player: 'chooseToCompareBegin' },
               filter: function (event, player) {
-                return player.hasZhuSkill('jlsg_xieli');
+                return player.hasZhuSkill('jlsg_xieli') && game.hasPlayer(p=>p != player && p.group == 'wu');
               },
-              check: function () {
-                return 1
+              check: function (event, player) {
+                return game.hasPlayer(p=>p != player && p.group == 'wu' && get.attitude(player, p) > 1);
               },
               content: function () {
                 'step 0'
-                var targets = get.players();
-                targets.remove(player);
-                event.targets = targets;
+                event.targets = game.filterPlayer(p => p != player && p.group == 'wu');
                 event.cards = [];
                 'step 1'
-                if (event.targets.length) {
-                  var current = event.targets.shift();
-                  if (current.group == 'wu' && current.num('h')) {
-                    current.chooseCard('是否帮' + get.translation(player) + '打出一张拼点牌？').ai = function (card) {
-                      if (get.attitude(current, player) > 0) return card.number > 8 && 7 - get.value(card);
-                      return 0;
-                    }
-                    event.current = current;
-                  } else {
-                    event.redo();
-                  }
-                } else {
+                var current = event.targets.shift();
+                event.current = current;
+                if (!current) {
                   event.goto(3);
+                } else if (!current.countCards('h')) {
+                  event.redo();
+                } else {
+                  current.chooseCard('是否帮' + get.translation(player) + '打出一张拼点牌？').ai = function (card) {
+                    if (get.attitude(current, player) > 2) {
+                      return get.number(card, player) > 8 && 7 - get.value(card);
+                    } else if (get.attitude(current, player) < -2 && event.cards.length == 0 && 
+                      !event.targets.some(p => p.countCards('h') && get.attitude(p, player) > 2)) {
+                      // 使坏
+                      return get.number(card, player) < 5 && 7 - get.value(card);
+                    }
+                    return 0;
+                  }
                 }
                 'step 2'
                 if (result.bool) {
                   event.cards = event.cards.concat(result.cards[0]);
-                  event.current.lose(result.cards[0], ui.special);
-                  event.current.$give(1, player);
+                  event.current.lose(result.cards[0], ui.ordering).set('getlx',false);
+                  // event.current.$give(1, player);
+                  event.current.$throw(1, 1000);
                 }
-                if (event.targets.length) {
-                  event.goto(1);
-                }
+                event.goto(1);
                 'step 3'
                 if (event.cards.length) {
                   var dialog = ui.create.dialog('协力', event.cards);
-                  player.chooseButton(dialog, true);
+                  player.chooseButton(dialog, true).set('ai', function(button){
+                    return get.number(button.link, player);
+                  });
                 } else {
                   event.finish();
                 }
                 'step 4'
-                var cards2 = [];
-                cards2.push(result.buttons[0].link);
-                event.cards.remove(result.buttons[0].link);
-                if (player.countCards('h')) {
-                  player.storage.jlsg_xieli = player.get('h');
-                  player.lose(player.get('h'), ui.special)._triggered = null;
-                  player.addTempSkill('jlsg_xieli_handCards', 'chooseToCompareAfter')
-                }
-                player.gain(cards2);
-                player.discard(event.cards);
+                if(!trigger.fixedResult) trigger.fixedResult={};
+                trigger.fixedResult[player.playerid] = result.buttons[0].link;
+                // player.gain(result.buttons[0].link);
+                // player.discard(event.cards);
               },
-              subSkill: {
-                handCards: {
-                  trigger: { player: 'chooseToCompareEnd' },
-                  popup: false,
-                  forced: true,
-                  filter: function (event, player) {
-                    return player.storage.jlsg_xieli != undefined;
-                  },
-                  content: function () {
-                    player.gain(player.storage.jlsg_xieli);
-                    delete player.storage.jlsg_xieli;
-                  }
-                }
-              }
             },
             jlsg_jushou: {
               audio: "ext:极略:1",
@@ -7945,7 +7926,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               trigger: { source: 'damageBegin1' },
               filter: function (event, player) {
-                return !player.isTurnedOver() && player.isPhaseUsing() && event.card && event.card.name == 'sha';
+                return !player.isTurnedOver() && player.isPhaseUsing() && event.card && event.card.name == 'sha'; // && event.notLink();
               },
               priority: 10,
               check: function (event, player) {
@@ -20094,6 +20075,7 @@ Visit Repository</a><br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
 &ensp; 加强SR曹操 招降<br>
+&ensp; 修复SK孙策主公技协力丢失 重写了相关代码<br>
 &ensp; 修复SR周瑜 英才 动画<br>
 &ensp; 修复AI对SK左慈的混乱态度<br>
 &ensp; 修复SR夏侯惇 忠候 AI选择<br>
@@ -20118,6 +20100,7 @@ Visit Repository</a><br>
 &ensp; 优化SR吕布 极武 描述<br>
 &ensp; 优化SK张宝 咒缚 AI<br>
 &ensp; 优化SR孙权 雄略 UX<br>
+&ensp; 优化SK费祎 衍息 UX 修复AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
