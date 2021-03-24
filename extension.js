@@ -1311,6 +1311,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               check: function (event, player) {
                 return 1;
               },
+              frequent: true,
               content: function () {
                 "step 0"
                 player.chooseCardButton(trigger.source, trigger.source.getCards('hej')).set('filterButton', function (button) {
@@ -1330,7 +1331,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 });
                 "step 1"
                 if (result.bool) {
-                  trigger.source.discard(result.links[0]);
+                  trigger.source.discard(result.links[0], player);
                 }
               },
               ai: {
@@ -1363,7 +1364,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 });
                 'step 1'
                 if (result.bool) {
-                  target.discard(result.links[0]);
+                  target.discard(result.links[0], player);
                 }
               },
               ai: {
@@ -2150,7 +2151,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               group: ['jlsg_kuangyan1', 'jlsg_kuangyan2']
             },
             jlsg_kuangyan1: {
-              inherit: 'jlsg_kuangyan',
               audio: "ext:极略:true",
               priority: -1,
               trigger: { player: 'damageBegin3' },
@@ -2173,9 +2173,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                 }
               },
+              group: null,
             },
             jlsg_kuangyan2: {
-              inherit: 'jlsg_kuangyan',
               audio: "ext:极略:true",
               trigger: { player: 'damageBegin3' },
               filter: function (event, player) {
@@ -2194,7 +2194,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   },
                 }
-              }
+              },
+              group: null,
             },
             jlsg_chaochen: {
               audio: "ext:极略:2",
@@ -5270,7 +5271,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.node.name.style.display = 'none';
                 player.node.name2.style.display = 'none';
                 "step 1"
-                debugger; 
                 player.init('jlsgsk_zuoci');
                 if (!player.ai.shown) {
                   player.ai.shown = 0;
@@ -6588,6 +6588,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function(event,player){
                 return event.card.name=='sha';
               },
+              logTarget: 'target',
               check: function (event, player) {
                 return get.attitude(player, event.player) > 2;
               },
@@ -6694,6 +6695,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_sujian: '素检',
             jlsg_yexi: '夜袭',
             jlsg_kuangyan: '狂言',
+            jlsg_kuangyan1: '狂言',
             jlsg_kuangyan2: '狂言',
             jlsg_chaochen: '朝臣',
             jlsg_chaochen2: '朝臣',
@@ -9535,7 +9537,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               trigger: { global: 'phaseEnd' },
               filter: function (event, player) {
-                return event.player.getStorage("jlsg_guoshi").length > 0;
+                return event.player.getStorage("jlsg_guoshi").filterInD('d').length > 0;
               },
               init: function () {
                 for (var i = 0; i < game.players.length; i++) {
@@ -9546,8 +9548,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 var att = get.attitude(player, trigger.player);
-                var prompt = '是否对' + get.translation(trigger.player) + '发动【国士】？';
-                player.chooseCardButton(trigger.player.getStorage("jlsg_guoshi").filterInD('d')).ai = function (button) {
+                player.chooseCardButton(get.prompt('jlsg_guoshi', trigger.player), trigger.player.getStorage("jlsg_guoshi").filterInD('d')).ai = function (button) {
                   if (att > 0) return 1;
                   return 0;
                 }
@@ -11032,7 +11033,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 'step 2'
                 if (result.bool) {
-                  // player.logSkill('jlsg_jiuzhu', trigger.player);
+                  player.logSkill('jlsg_jiuzhu');
                   player.gain(event.card, 'gain2');
                   if (_status.currentPhase != player) {
                     player.chooseBool('是否对' + get.translation(_status.currentPhase) + '使用一张无视防具的杀？').ai = function () {
@@ -12239,7 +12240,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 // console.log(trigger);
-                if (!trigger.player.inRangeOf(player) || (trigger.target != player && !trigger.target.inRangeOf(player))) {
+                if (!trigger.player.inRangeOf(player) && (trigger.target != player && !trigger.target.inRangeOf(player))) {
                   var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function () {
                     if (jlsg.isFriend(player, trigger.player)) {
@@ -12724,7 +12725,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yiji_info: '每当你受到一点伤害，可以观看牌堆顶的两张牌，并将其交给任意1~2名角色。',
             jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
             jlsg_huiqu_info: '回合开始阶段，你可以弃置一张手牌进行一次判定，若结果为红色，你将场上的一张牌移动到一个合理的位置；若结果为黑色，你对一名角色造成1点伤害，然后你摸一张牌。',
-            jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其与杀的目标均在你的攻击范围内，你须先弃置一张手牌。',
+            jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其或杀的目标在你的攻击范围内，你须先弃置一张手牌。',
             jlsg_zhishi_info: '出牌阶段限一次，你可以令一名其他角色选择一项：1、弃置一张基本牌，然后回复一点。2、受到你造成的一点伤害，然后回复一点体力。',
             jlsg_old_zhishi_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色，你选择其中一项执行：1.你展示一张【杀】令其弃置一张【杀】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害；2.你展示一张【闪】令其弃置一张【闪】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害。',
             jlsg_jianxiong_info: '主公技。每当其他魏势力受到不为你的1次伤害后，该角色可以弃置一张手牌，然后令你获得对其造成伤害的牌。',
@@ -14671,7 +14672,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger.finish();
                 trigger.untrigger();
                 player.judge(function (card) {
-                  return get.color(card) == 'black' ? 1 : -1;
+                  return get.color(card) == 'black' ? 1.5 : -1;
                 })
                 "step 1"
                 if (result.bool) {
@@ -14990,7 +14991,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 effect: {
                   target: function (card, player, target, current) {
                     if (get.tag(card, 'thunderDamage')) {
-                      if (target.hp == target.Maxhp) return 'zerotarget';
+                      if (target.isHealthy()) return 'zerotarget';
                       if (target.hp == 1) return [0, 2];
                       return [0, 1];
                     }
@@ -20054,24 +20055,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0323",
+      version: "2.2.0324",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.23更新<br>
+2021.03.24更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 新增武将 <div style="display:inline" data-nature="woodmm">SK周泰</div><br>
 &ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
 &ensp; 修复 SK曹仁 立绘<br>
 &ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
 &ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
-&ensp; 加强SR曹操 招降<br>
 &ensp; 修复SK孙策主公技协力丢失 重写了相关代码<br>
 &ensp; 修复SR周瑜 英才 动画<br>
 &ensp; 修复SK邓芝 和盟 给牌位置<br>
 &ensp; 修复AI对SK左慈的混乱态度<br>
 &ensp; 修复SR夏侯惇 忠候 AI选择<br>
 &ensp; 修复SK司马师 同将替换<br>
+&ensp; 修复SK许攸 选将报错<br>
 &ensp; 修复SK蒋钦 同将替换<br>
 &ensp; 修复SR华佗 阵亡语音<br>
 &ensp; 修复七杀卡包中牌堆没有梅的问题<br>
@@ -20082,6 +20083,7 @@ Visit Repository</a><br>
 &ensp; 修改SR郭嘉 慧觑 优化AI UX，重写移动代码。<br>
 &ensp; 修复SR黄盖 舟焰<br>
 &ensp; 修复SK孙乾 随骥<br>
+&ensp; 修复SK蒋钦 忘私&尚义 弃置来源<br>
 &ensp; 修复SK神刘备 激诏动画<br>
 &ensp; 修复SK曹冲 称象 点数最大为13<br>
 &ensp; 修复SK马良 协穆 技能记录 优化UX<br>
@@ -20096,8 +20098,10 @@ Visit Repository</a><br>
 &ensp; 优化SK张宝 咒缚 AI<br>
 &ensp; 优化SR孙权 雄略 UX<br>
 &ensp; 优化SK马腾 雄异 记录<br>
+&ensp; 优化SR吕蒙 国士 UX<br>
 &ensp; 优化SK费祎 衍息 UX 修复AI<br>
 &ensp; 修复SR陆逊 代劳 AI<br>
+&ensp; 修复SK神张角 雷魂 AI<br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
 &ensp; 修复SR曹操 治世 优化AI<br>
