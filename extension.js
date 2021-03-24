@@ -480,6 +480,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
+            jlsgsk_dongxi: "董袭（195年前－213或217年），字元世或玄岱，扬州会稽余姚（今浙江余姚）人，东汉末年群雄孙策麾下将领；是江东十二虎臣之一。历任别部司马、扬武都尉、威越校尉，最后官至偏将军。",
           },
           skill: {
             jlsg_zhengyi: {
@@ -540,7 +541,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               group: ['jlsg_zhengyi_sha', 'jlsg_zhengyi_shan', 'jlsg_zhengyi_tao', 'jlsg_zhengyi_sha2', 'jlsg_zhengyi_shan2', 'jlsg_zhengyi_tao2'],
               subSkill: {
                 sha: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", 
                   enable: ['chooseToUse', 'chooseToRespond'],
                   filter: function (event, player) {
                     if (_status.currentPhase == player) return false;
@@ -565,7 +566,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 shan: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: ['chooseToUse', 'chooseToRespond'],
                   filter: function (event, player) {
                     if (_status.currentPhase == player) return false;
@@ -590,7 +591,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 tao: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: 'chooseToUse',
                   filter: function (event, player) {
                     if (_status.currentPhase == player) return false;
@@ -615,7 +616,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 sha2: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: ['chooseToUse', 'chooseToRespond'],
                   filter: function (event, player) {
                     if (_status.currentPhase != player) return false;
@@ -640,7 +641,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 shan2: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: ['chooseToRespond'],
                   filter: function (event, player) {
                     if (_status.currentPhase != player) return false;
@@ -662,7 +663,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 tao2: {
-                  audio: "ext:极略:1", // audio: ["jieyue1", 2],
+                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: ['chooseToUse', 'chooseToRespond'],
                   filter: function (event, player) {
                     if (_status.currentPhase != player) return false;
@@ -9045,13 +9046,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                target.chooseControl('调整手牌', '对你出杀').ai = function () {
+                var prompt = `选择将手牌数调整至${get.cnNumber(player.countCards('h'))}张，或令${get.translation(player)}视为对你使用一张杀`;
+                target.chooseControl('调整手牌', '对你出杀').set('ai', function () {
                   if (target.countCards('h') > player.countCards('h') && target.countCards('h', 'shan')) return '对你出杀';
                   if (target.countCards('h') < player.countCards('h')) return '调整手牌';
                   if (target.countCards('h') - player.countCards('h') >= 2) return '对你出杀';
                   if (get.effect(target, { name: 'sha' }, player, target) > 0) return '对你出杀';
                   return '调整手牌';
-                }
+                }).set('prompt', prompt);
                 'step 1'
                 if (result.control == '调整手牌') {
                   if (target.countCards('h') > player.countCards('h')) {
@@ -17288,14 +17290,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               unique: true,
               trigger: { global: 'phaseUseBegin' },
               filter: function (event, player) {
-                return event.player != player;
+                return event.player != player && event.player.countCards('h') != 0;
               },
               content: function () {
-                var hs = trigger.player.get('h');
-                if (hs.length) {
-                  player.gain(hs.randomGet(), trigger.player);
-                  trigger.player.$give(1, player);
-                  trigger.player.draw();
+                'step 0'
+                trigger.player.chooseCards('h',true, '布教：将一张手牌交给'+get.translation(player));
+                'step 1'
+                if (result.bool) {
+                  trigger.target.give(result.cards, player);
+                  trigger.target.draw();
                 }
               }
             },
@@ -20059,6 +20062,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.03.25更新<br>
+&ensp; 修复 SK于禁 配音<br>
+&ensp; 优化SR孙尚香 决裂 提示<br>
+&ensp; 修复三英神张角 布教<br>
+<span style="font-size: large;">历史：</span><br>
 2021.03.24更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
 &ensp; 新增武将 <div style="display:inline" data-nature="woodmm">SK周泰</div><br>
@@ -20105,33 +20113,6 @@ Visit Repository</a><br>
 &ensp; 修复SK张绣 朝凰 描述<br>
 &ensp; 修复SK周仓 刀侍 技能提示<br>
 &ensp; 修复SR曹操 治世 优化AI<br>
-<span style="font-size: large;">历史：</span><br>
-2021.03.17更新<br>
-&ensp; 增加神将 同将替换<br>
-&ensp; 重写了SK神郭嘉 天启<br>
-&ensp; 优化 SK神郭嘉 天机<br>
-&ensp; 天启在没有天机时不会再报错，优化了AI和UX<br>
-&ensp; 重写了SR夏侯惇 忠候<br>
-&ensp; 忠候现在与国战兼容。目前使用的AI比较简单。<br>
-&ensp; 忠候描述进行了一些修改，请注意查看<br>
-&ensp; 优化三英神暴怒逻辑<br>
-&ensp; 优化SK程昱 胆谋<br>
-&ensp; 优化SK张任 伏射 提示<br>
-&ensp; 优化SK神赵云 绝境配音<br>
-&ensp; 优化SR曹操 治世 询问<br>
-&ensp; 修复SK张鲁 米道<br>
-&ensp; 修复SR赵云 救主<br>
-&ensp; 修复SK黄月英 木牛<br>
-&ensp; 修复SK管辂 纵情<br>
-&ensp; 修复SK许攸 配音映射<br>
-&ensp; 修复SK神孙尚香 贤助 配音<br>
-&ensp; 修复SK于吉 选卡<br>
-&ensp; 修复SR张辽 无畏 优化AI<br>
-&ensp; 修复SK张宝 咒缚AI<br>
-&ensp; 修复SK程昱 捧日<br>
-&ensp; 移除SK神关羽 武神的错误配音<br>
-&ensp; 修复龙魂方片效果<br>
-&ensp; 修复SK卢植 同将替换<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
