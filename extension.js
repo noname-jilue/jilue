@@ -491,11 +491,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               chooseButton: {
                 dialog: function (event, player) {
-                  var list = ['sha', 'sha', 'sha', 'sha', 'jiu', 'tao'];
-                  var list2 = [];
-                  var nature = ['', 'thunder', 'fire', 'ice', '', ''];
-                  for (var i = 0; i < list.length; i++) {
-                    list2.push(['基本', '', list[i], nature[i]]);
+                  var list = [];
+                  for(var i of lib.inpile){
+                    if(get.type(i) != 'basic' || i=='shan') continue;
+                    list.push(['basic','',i]);
+                    if(i=='sha'){
+                      list.push(['basic','',i,'fire']);
+                      list.push(['basic','',i,'thunder']);
+                      list.push(['basic','',i,'ice']);
+                    }
                   }
                   return ui.create.dialog('整毅', [list, 'vcard']);
                 },
