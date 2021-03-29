@@ -485,9 +485,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           skill: {
             jlsg_zhengyi: {
               audio: "ext:极略:2",
-              enable: 'phaseUse',
+              enable:['chooseToUse','chooseToRespond'],
+              hiddenCard:function(player,name){
+                if(get.type(name) != 'basic' || name == 'shan') return false;
+                return _status.currentPhase == player ? player.countCards('h') - player.hp == 1 : player.hp - player.countCards('h') == 1;
+              },
               filter: function (event, player) {
-                return player.num('h') - 1 == player.hp;
+                if (_status.currentPhase == player && player.countCards('h') - player.hp != 1) return false;
+                if (_status.currentPhase != player && player.hp - player.countCards('h') != 1) return false;
+                for(var i of lib.inpile){
+                  if(get.type(i) != 'basic' || i=='shan') continue;
+                  if(event.filterCard({name:i},player,event)) return true;
+                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat=>event.filterCard({name:i,nature:nat},player,event))) {
+                    return true;
+                  }
+                }
+                return false;
               },
               chooseButton: {
                 dialog: function (event, player) {
@@ -504,7 +517,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return ui.create.dialog('整毅', [list, 'vcard']);
                 },
                 filter: function (button, player) {
-                  return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
+                  var evt=_status.event.getParent();
+                  return evt.filterCard({name:button.link[2],nature:button.link[3]},player,evt);
                 },
                 check: function (button) {
                   var player = _status.event.player;
@@ -520,18 +534,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return (button.link[2] == 'sha') ? 1 : -1;
                 },
                 backup: function (links, player) {
+                  var fuc = function (result, player) {
+                    if (player.countCards('h') > player.hp) {
+                      player.chooseToDiscard(true);
+                    } else {
+                      player.draw('nodelay');
+                    }
+                  };
                   return {
                     filterCard: false,
                     selectCard: 0,
                     popname: true,
-                    viewAs: { name: links[0][2] },
-                    onuse: function (result, player) {
-                      player.chooseToDiscard(true);
-                    }
+                    viewAs: { name: links[0][2], nature: links[0][3] },
+                    onuse: fuc,
+                    onrespond: fuc,
                   }
                 },
                 prompt: function (links, player) {
-                  return '选择' + get.translation(links[0][2]) + '的目标';
+                  return '选择' + get.translation({ name: links[0][2], nature: links[0][3] }) + '的目标';
                 }
               },
               ai: {
@@ -540,157 +560,47 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player: 1,
                 },
                 threaten: 1.3,
+                respondSha: true,
+                respondShan: true,
                 fireattack: true,
               },
-              group: ['jlsg_zhengyi_sha', 'jlsg_zhengyi_shan', 'jlsg_zhengyi_tao', 'jlsg_zhengyi_sha2', 'jlsg_zhengyi_shan2', 'jlsg_zhengyi_tao2'],
+              group: ['jlsg_zhengyi_shan'],
               subSkill: {
-                sha: {
-                  audio: "jlsg_zhengyi", 
-                  enable: ['chooseToUse', 'chooseToRespond'],
-                  filter: function (event, player) {
-                    if (_status.currentPhase == player) return false;
-                    return player.num('h') + 1 == player.hp;
-                  },
-                  filterCard: function () { return false },
-                  selectCard: -1,
-                  check: () => true,
-                  viewAs: { name: 'sha' },
-                  onuse: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
-                  },
-                  onrespond: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (_status.currentPhase == player) return false;
-                      return player.num('h') + 1 == player.hp;
-                    },
-                    respondSha: true
-                  }
-                },
                 shan: {
                   audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
                   enable: ['chooseToUse', 'chooseToRespond'],
                   filter: function (event, player) {
-                    if (_status.currentPhase == player) return false;
-                    return player.num('h') + 1 == player.hp;
+                    return _status.currentPhase == player 
+                      ? player.countCards('h') - player.hp == 1
+                      : player.hp - player.countCards('h') == 1;
                   },
                   filterCard: function () { return false },
                   selectCard: -1,
                   check: () => true,
                   viewAs: { name: 'shan' },
                   onrespond: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
+                    if (_status.currentPhase == player) {
+                      player.chooseToDiscard(true);
+                    } else {
+                      player.draw("nodelay");
+                    }
                   },
                   onuse: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
+                    if (_status.currentPhase == player) {
+                      player.chooseToDiscard(true);
+                    } else {
+                      player.draw("nodelay");
+                    }
                   },
                   ai: {
                     skillTagFilter: function (player) {
-                      if (_status.currentPhase == player) return false;
-                      return player.num('h') + 1 == player.hp;
+                      return _status.currentPhase == player 
+                      ? player.countCards('h') - player.hp == 1
+                      : player.hp - player.countCards('h') == 1;
                     },
                     respondShan: true
                   }
                 },
-                tao: {
-                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
-                  enable: 'chooseToUse',
-                  filter: function (event, player) {
-                    if (_status.currentPhase == player) return false;
-                    return player.num('h') + 1 == player.hp;
-                  },
-                  filterCard: function () { return false },
-                  selectCard: -1,
-                  check: () => true,
-                  viewAs: { name: 'tao' },
-                  onuse: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
-                  },
-                  onrespond: function (result, player) {
-                    if (player.num('h') != player.hp) player.draw("nodelay");
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (_status.currentPhase == player) return false;
-                      return player.num('h') + 1 == player.hp;
-                    },
-                    save: true
-                  }
-                },
-                sha2: {
-                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
-                  enable: ['chooseToUse', 'chooseToRespond'],
-                  filter: function (event, player) {
-                    if (_status.currentPhase != player) return false;
-                    return player.num('h') - 1 == player.hp && event.parent.name != 'phaseUse';
-                  },
-                  filterCard: function () { return false },
-                  selectCard: -1,
-                  check: () => true,
-                  viewAs: { name: 'sha' },
-                  onuse: function (result, player) {
-                    player.chooseToDiscard(true);
-                  },
-                  onrespond: function (result, player) {
-                    player.chooseToDiscard(true);
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (_status.currentPhase != player) return false;
-                      return player.num('h') - 1 == player.hp && event.parent.name != 'phaseUse';
-                    },
-                    respondSha: true
-                  }
-                },
-                shan2: {
-                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
-                  enable: ['chooseToRespond'],
-                  filter: function (event, player) {
-                    if (_status.currentPhase != player) return false;
-                    return player.num('h') - 1 == player.hp && event.parent.name != 'phaseUse';
-                  },
-                  filterCard: function () { return false },
-                  selectCard: -1,
-                  check: () => true,
-                  viewAs: { name: 'shan' },
-                  onrespond: function (result, player) {
-                    player.chooseToDiscard(true);
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (_status.currentPhase != player) return false;
-                      return player.num('h') - 1 == player.hp;
-                    },
-                    respondShan: true
-                  }
-                },
-                tao2: {
-                  audio: "jlsg_zhengyi", // audio: ["jieyue1", 2],
-                  enable: ['chooseToUse', 'chooseToRespond'],
-                  filter: function (event, player) {
-                    if (_status.currentPhase != player) return false;
-                    return player.num('h') - 1 == player.hp && event.parent.name != 'phaseUse';
-                  },
-                  filterCard: function () { return false },
-                  selectCard: 0,
-                  check: () => true,
-                  viewAs: { name: 'tao' },
-                  onuse: function (result, player) {
-                    player.chooseToDiscard(true);
-                  },
-                  onrespond: function (result, player) {
-                    player.chooseToDiscard(true);
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (_status.currentPhase != player) return false;
-                      return player.num('h') - 1 == player.hp;
-                    },
-                    save: true
-                  }
-                }
               }
             },
             jlsg_wusheng: {
@@ -952,7 +862,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (target.countCards('he')) {
                   target.chooseToDiscard("化戈：请弃置至少一张牌，弃置的牌中每有【杀】，你便摸一张牌", 'he', [1, Infinity], true).ai = function (card) {
                     if (card.name == 'sha') return 6 - get.value(card);
-                    return  - get.value(card);
+                    return  -get.useful(card);
                   };
                 } else {
                   event.finish();
@@ -2654,9 +2564,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                   if (trigger.player.countCards('h') <= 2 && get.attitude(player, trigger.player) > 3 && player.countCards('h') > 3) return 6 - get.value(card);
                   return 0;
-                }).logSkill = ['jlsg_suiji', trigger.player];
+                });
                 'step 1'
                 if (result.bool) {
+                  player.logSkill('jlsg_suiji', trigger.player);
                   trigger.player.gain(result.cards, player, 'giveAuto');
                 } else {
                   event.finish();
@@ -4630,35 +4541,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               mod: {
                 cardname: function (card, player, name) {
                   if (card.name == 'tao') return 'sha';
-                },
-              },
-              group: "jlsg_lieyi1",
-              audio: "ext:极略:1",
-              trigger: {
-                player: ["useCard1"],
-              },
-              firstDo: true,
-              forced: true,
-              filter: function (event, player) {
-                return event.card.name == 'sha';
-              },
-              content: function () {
-              },
-            },
-            jlsg_lieyi1: {
-              mod: {
-                cardname: function (card, player, name) {
                   if (card.name == 'shan') return 'jiu';
                 },
               },
-              audio: "ext:极略:true",
+              audio: "ext:极略:1",
               trigger: {
-                player: ["useCard1"],
+                player: "useCard",
               },
-              firstDo: true,
               forced: true,
               filter: function (event, player) {
-                return event.card.name == 'jiu';
+                return event.card.name == 'sha' && event.cards && event.cards.length == 1 && event.cards[0].name == 'tao'
+                  || event.card.name == 'jiu' && event.cards && event.cards.length == 1 && event.cards[0].name == 'shan';
               },
               content: function () {
               },
@@ -5862,7 +5755,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               multitarget: true,
               multiline: true,
               precontent: function () {
-                player.draw(2);
+                player.draw(2, 'nodelay');
               },
               content: function () {
                 'step 0'
@@ -6595,7 +6488,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               logTarget: 'target',
               check: function (event, player) {
-                return get.attitude(player, event.player) > 2;
+                return get.attitude(player, event.target) > 2;
               },
               content: function() {
                 'step 0'
@@ -6963,10 +6856,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yaoming4: "邀名",
             jlsg_yaoming_info: "出牌阶段，当你使用或打出一张花色与本阶段皆不相同的牌时：第一种，你可以摸一张牌；第二种，你可以弃置一名其他角色的一张牌；第三种，你可以将场上一张牌移至另一位置；第四种，你可以对一名其他角色造成一点伤害。",
             jlsg_zhengyi: "整毅",
-            jlsg_zhengyi_sha: "整毅·杀",
             jlsg_zhengyi_shan: "整毅·闪",
-            jlsg_zhengyi_tao: "整毅·桃",
-            jlsg_zhengyi_phaseUse: "整毅",
             jlsg_zhengyi_info: "你出牌阶段出牌时，若你的手牌数等于你的体力值+1，你可以视为使用任意一张基本牌，然后弃一张牌；你的回合外，当你需要使用或打出一张基本牌时，若你的手牌数等于你的体力值-1，则你可以摸一张牌并视为使用或打出了此牌。",
             jlsg_kuangfu: "狂斧",
             jlsg_kuangfu_info: "当你使用【杀】对目标角色造成伤害后，你可以获得其装备区里的一张牌。",
@@ -14176,33 +14066,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_wushen: {
               mod: {
-                cardEnabled: function (card, player) {
-                  if (card.name == 'sha' || card.name == 'tao') return false;
-                },
-                cardUsable: function (card, player) {
-                  if (card.name == 'sha' || card.name == 'tao') return false;
-                },
-                cardRespondable: function (card, player) {
-                  if (card.name == 'sha' || card.name == 'tao') return false;
-                },
-                cardSavable: function (card, player) {
-                  if (card.name == 'sha' || card.name == 'tao') return false;
+                cardname:function(card,player,name){
+                  if(['sha','tao'].contains(card.name)) return 'juedou';
                 },
               },
-              // audio: "ext:极略:1",
-              enable: 'chooseToUse',
+              audio: "ext:极略:1",
+              trigger:{player:'useCard'},
+              forced: true,
               filter: function (event, player) {
-                return player.countCards('h', { name: ['sha', 'tao'] }) > 0;
+                return event.card.name=='juedou'
+                  && event.cards && event.cards.length == 1 && ['sha','tao'].contains(event.cards[0].name);
               },
               filterCard: { name: ['sha', 'tao'] },
               viewAs: { name: 'juedou' },
-              check: function () {
-                return 1
+              content: function () {
               },
               ai: {
                 effect: {
                   target: function (card, player, target, current) {
-                    if (get.tag(card, 'respondSha') && current < 0) return 0.6
+                    if (get.tag(card, 'respondSha') && current < 0) return 1.5;
                   }
                 },
                 order: 4,
@@ -14211,7 +14093,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_suohun: {
-              audio: "ext:极略:2",
+              audio: "ext:极略:1",
               trigger: { player: 'damageBegin' },
               filter: function (event, player) {
                 return event.source && event.source != player;
@@ -14249,7 +14131,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_suohun2: {
               skillAnimation: true,
-              audio: "ext:极略:1",
+              audio: "jlsg_suohun",
               trigger: { player: 'dyingBegin' },
               priority: 10,
               forced: true,
@@ -14683,7 +14565,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 1"
                 if (result.bool) {
                   player.chooseTarget('选择一个目标对其造成一点雷电伤害').ai = function (target) {
-                    if (player.hp == 1) return target == player ? 1 : -1;
+                    // if (player.hp == 1) return target == player ? 1 : -1;
                     return get.damageEffect(target, player, player, 'thunder');
                   }
                 } else {
@@ -14789,195 +14671,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               }
             },
-            jlsg_mod_dianjie: {
-              audio: "ext:极略:2",
-              trigger: {
-                player: ["useCard", "respond"],
-              },
-              group: "jlsg_mod_dianjie2",
-              filter: function (event, player) {
-                return event.card.name == 'shan' && _status.currentPhase != player && !player.storage.jlsg_mod_shendao;
-              },
-              content: function () {
-                player.useSkill('jlsg_mod_dianjie_buff');
-              },
-              ai: {
-                useShan: true,
-                effect: {
-                  target: function (card, player, target, current) {
-                    if (_status.currentPhase == target) return;
-                    if (get.tag(card, 'respondShan')) {
-                      var hastarget = game.hasPlayer(function (current) {
-                        return get.attitude(target, current) < 0;
-                      });
-                      if (!hastarget) return;
-                      var be = target.countCards('e', { color: 'black' });
-                      if (target.countCards('h', 'shan') && be) {
-                        if (!target.hasSkill('jlsg_shendao')) return 0;
-                        return [0, hastarget ? target.countCards('he') / 2 : 0];
-                      }
-                      if (target.countCards('h', 'shan') && target.countCards('h') > 2) {
-                        if (!target.hasSkill('jlsg_shendao')) return 0;
-                        return [0, hastarget ? target.countCards('h') / 4 : 0];
-                      }
-                      if (target.countCards('h') > 3 || (be && target.countCards('h') >= 2)) {
-                        return [0, 0];
-                      }
-                      if (target.countCards('h') == 0) {
-                        return [1.5, 0];
-                      }
-                      if (target.countCards('h') == 1 && !be) {
-                        return [1.2, 0];
-                      }
-                      if (!target.hasSkill('jlsg_shendao')) return [1, 0.05];
-                      return [1, Math.min(0.5, (target.countCards('h') + be) / 4)];
-                    }
-                  },
-                },
-              },
-            },
-            jlsg_mod_dianjie2: {
-              audio: "ext:极略:2",
-              trigger: {
-                player: "phaseUseBefore",
-              },
-              prompt: "是否发动【电界】跳过出牌阶段？",
-              check: function (event, player) {
-                if (!player.needsToDiscard()) return true;
-                return game.hasPlayer(function (current) {
-                  return get.attitude(player, current) < 0 && current.hp == 1 && get.damageEffect(current, player, player, 'thunder') > 0;
-                }) && player.needsToDiscard() <= 2;
-              },
-              content: function () {
-                trigger.cancel();
-                player.useSkill('jlsg_mod_dianjie_buff');
-              },
-            },
-            jlsg_mod_dianjie_buff: {
-              forced: true,
-              content: function () {
-                "step 0"
-                player.judge(function (card) {
-                  return get.color(card) == 'black' ? 1 : 0;
-                });
-                "step 1"
-                event.judge = result.judge;
-                if (result.judge > 0) {
-                  player.chooseTarget('选择1个目标对其造成1点雷电伤害').ai = function (target) {
-                    if (player.hp <= 1 && player.hasSkill('jlsg_leihun')) return target == player ? 6 : -1;
-                    return get.damageEffect(target, player, player, "thunder");
-                  }
-                } else {
-                  player.chooseTarget('选择1至2个目标将其横置', [1, 2], function (card, player, target) {
-                    return !target.isLinked();
-                  }).ai = function (target) {
-                    return -get.attitude(player, target);
-                  }
-                }
-                'step 2'
-                if (!result.bool) {
-                  event.finish();
-                  return;
-                }
-                //player.logSkill('jlsg_dianjie',result.targets);
-                player.line(result.targets, 'thunder');
-                if (event.judge > 0) {
-                  result.targets[0].damage(player, 'thunder');
-                } else {
-                  for (var i = 0; i < result.targets.length; i++) {
-                    result.targets[i].link();
-                  }
-                }
-              },
-            },
-            jlsg_mod_shendao: {
-              trigger: {
-                global: "judge",
-              },
-              audio: "ext:极略:true",
-              check: function (event, player) {
-                var judge = event.judge(event.player.judging[0]);
-                if (_status.currentPhase != player) return 1;
-                if (get.attitude(player, event.player) < 0) return judge >= 0;
-                if (get.attitude(player, event.player) > 0) return judge < 0;
-                return 0;
-              },
-              content: function () {
-                "step 0"
-                event.cards = get.cards(2);
-                event.videoId = lib.status.videoId++;
-                game.broadcastAll(function (player, id, cards) {
-                  var str;
-                  if (player == game.me && !_status.auto) {
-                    str = '神道：选择一张牌作为' + trigger.judgestr + '的判定牌';
-                  } else {
-                    str = '神道';
-                  }
-                  var dialog = ui.create.dialog(str, cards);
-                  dialog.videoId = id;
-                }, player, event.videoId, event.cards);
-                event.time = get.utc();
-                game.addVideo('showCards', player, ['神道', get.cardsInfo(event.cards)]);
-                game.addVideo('delay', null, 2);
-                "step 1"
-                var next = player.chooseButton(true);
-                next.set('dialog', event.videoId);
-                next.set('filterButton', function (button) {
-                  return true;
-                });
-                next.set('judging', trigger.player.judging[0]);
-                next.set('ai', function (button) {
-                  var judging = _status.event.judging;
-                  var result = trigger.judge(button.link) - trigger.judge(judging);
-                  var att = get.attitude(player, trigger.player);
-                  var cards = _status.event.getParent().cards;
-                  var bool = true;
-                  for (var i = 0; i < cards.length; i++) {
-                    var result2 = trigger.judge(cards[i]) - trigger.judge(judging);
-                    if (att > 0 && result2 > result) {
-                      bool = false;
-                    } else if (att < 0 && result2 < result) {
-                      bool = false;
-                    }
-                  }
-                  if (bool && _status.currentPhase != player) {
-                    return Math.max(1, 10 - get.value(button.link));
-                  }
-                  if (att == 0 || result == 0) return 0;
-                  if (att > 0) {
-                    return result;
-                  } else {
-                    return -result;
-                  }
-                });
-                "step 2"
-                if (result.bool && result.links) {
-                  player.storage.jlsg_mod_shendao = true;
-                  event.cards.remove(result.links[0]);
-                  player.respond('noOrdering', 'highlight', result.links[0]);
-                } else {
-                  event.finish();
-                }
-                var time = 1000 - (get.utc() - event.time);
-                if (time > 0) {
-                  game.delay(0, time);
-                }
-                "step 4"
-                delete player.storage.jlsg_mod_shendao;
-                trigger.player.judging[0] = result.links[0];
-                trigger.orderingCards.addArray(result.links);
-                "step 3"
-                game.broadcastAll('closeDialog', event.videoId);
-                if (_status.currentPhase != player && event.cards.length) {
-                  player.gain(event.cards, 'log', 'gain2');
-                }
-              },
-              ai: {
-                tag: {
-                  rejudge: 1,
-                },
-              },
-            },
             jlsg_leihun: {
               audio: "ext:极略:1",
               trigger: {
@@ -14985,8 +14678,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               forced: true,
               filter: function (event) {
-                if (event.nature == 'thunder') return true;
-                return false;
+                return event.nature == 'thunder';
               },
               content: function () {
                 trigger.cancel();
@@ -18303,7 +17995,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 "step 0"
-                if (target.get('h').length == 0 || player.get('h').length == 0) {
+                if (!target.countCards('h') || !player.countCards('h')) {
                   event.finish();
                   return;
                 }
@@ -18326,7 +18018,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (ai.get.recoverEffect(evt.target, evt.player, evt.player) > 0) return get.number(card);
                   return -1;
                 };
-                game.delay(2);
+                game.delayx(2);
                 "step 2"
                 if (result.bool) {
                   player.showCards(result.cards[0]);
@@ -18387,7 +18079,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               effect: function () {
                 if (result.bool == false) {
-                  player.addTempSkill('jlsgqs_shuiyanqijun');
+                  player.addTempSkill('jlsgqs_shuiyanqijun_skill');
                 }
               },
               ai: {
@@ -18609,8 +18301,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 basic: {
                   order: function (card, player) {
-                    if (player.hasSkillTag('pretao')) return 5;
-                    return 2;
+                    return get.order({name:'tao'}) - 0.5;
+                    // if (player.hasSkillTag('pretao')) return 5;
+                    // return 2;
                   },
                   useful: [8, 6.5],
                   value: [8, 6.5],
@@ -18618,7 +18311,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 result: {
                   target: function (player, target) {
                     // if(player==target&&player.hp<=0) return 2;
-                    var nh = target.num('h');
+                    if (target.hp == target.maxHp && target.hp == 1) {
+                      return 0;
+                    }
+                    var nh = target.countCards('h');
                     var keep = false;
                     if (nh <= target.hp) {
                       keep = true;
@@ -18800,6 +18496,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             _jlsgqs_yuxi2: {
               equipSkill: true,
               trigger: { player: 'shaHit' },
+              forced: true,
               filter: function (event, player) {
                 if (player != event.player) return false;
                 var card = event.target.get('e', '5');
@@ -18809,14 +18506,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 return false;
               },
-              prompt: function (event, player) {
-                var str = '';
-                str += '是否获得' + get.translation(event.target) + '装备区中的【玉玺】？';
-                return str;
-              },
-              check: function (event, player) {
-                return 1;
-              },
+              // prompt: function (event, player) {
+              //   var str = '';
+              //   str += '是否获得' + get.translation(event.target) + '装备区中的【玉玺】？';
+              //   return str;
+              // },
+              // check: function (event, player) {
+              //   return 1;
+              // },
               content: function () {
                 var card = trigger.target.get('e', '5');
                 if (card) {
@@ -18934,7 +18631,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               }
             },
-            jlsgqs_shuiyanqijun: {
+            jlsgqs_shuiyanqijun_skill: {
               audio: 'ext:极略:1',
               trigger: { player: 'phaseUseBegin' },
               hidden: true,
@@ -20067,9 +19764,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.03.25更新<br>
-&ensp; 修复 SK于禁 配音<br>
+&ensp; 重写SK于禁 整毅<br>
 &ensp; 优化SR孙尚香 决裂 提示<br>
+&ensp; 优化SK程昱 捧日 动画<br>
 &ensp; 修复三英神张角 布教<br>
+&ensp; 修复SK周泰 奋激 AI<br>
+&ensp; 修复七杀 梅 配音 优化AI<br>
+&ensp; 优化SK卞夫人 化戈 AI<br>
+&ensp; 修复七杀水淹七军错误显示debuff技能<br>
+&ensp; 修复七杀玉玺获得为锁定技<br>
+&ensp; 重写SK神关羽 武神，修复武神&索魂配音<br>
+&ensp; 重写SK吉平 烈医，修复配音<br>
+&ensp; 修复SK孙乾 随骥 配音<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.24更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
