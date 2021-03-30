@@ -6717,7 +6717,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_shangdao_info: '锁定技，一名其他角色的准备阶段开始时，若其手牌数大于你，你展示牌堆顶牌并获得之。',
             jlsg_hengjiang_info: '弃牌阶段开始时，你可以令你的手牌上限+1或-1，若如此做，此阶段结束时，你可以弃置场上的至多X张牌（X为此阶段你弃置的牌数）。',
             jlsg_zhuanshan_info: '回合开始/结束阶段开始时，你可以令一名角色摸一张牌，然后将该角色的一张牌置于牌堆顶。',
-            jlsg_hemeng_info: '出牌阶段，若你有手牌，可令一名其他角色观看你的手牌并获得其中一张，然后你观看该角色的手牌并获得其一张牌。每阶段限X+1次，X为你此阶段开始时已损失的体力值。',
+            jlsg_hemeng_info: '出牌阶段，若你有手牌，可令一名其他角色观看你的手牌并获得其中一张，然后你观看该角色的手牌并获得其一张牌。每阶段限X+一次，X为你此阶段开始时已损失的体力值。',
             jlsg_sujian_info: '每当你从其他角色处获得一次牌时，可令一名其他角色弃置你一张牌，然后你弃置其一张牌。',
             jlsg_yexi_info: '回合结束阶段，你可以多弃一张手牌， 然后指定你以外的一名角色选择一项:1.使用黑色【杀】时无视防具。2.使用红色【杀】时无视距离。该角色在他的下个出牌阶段中得到此效果。',
             jlsg_kuangyan_info: '锁定技，你受到1点无属性伤害时，该伤害对你无效，你受到两点或以上伤害时，该伤害+1。',
@@ -6763,10 +6763,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_midao_info: '出牌阶段限一次，你可以令手牌数大于你的其他角色依次交给你一张牌，然后若你的手牌数为全场最多，你失去1点体力。',
             jlsg_yishe_info: '出牌阶段限一次，你可以与一名手牌数不大于你的其他角色交换手牌。',
             jlsg_pudu_info: '限定技，出牌阶段，你可以获得所有其他角色的手牌，然后依次交给其他角色一张牌，直到你的手牌数不为全场最多。',
-            jlsg_zongqing_info: '摸牌阶段开始时，你可以进行1次判定，若如此做，此阶段摸牌后你须展示之，然后弃置其中与该判定牌颜色不同的牌。若以此法弃置的牌为黑色，视为你使用一张【酒】；若以此法弃置的牌为红色，视为你使用一张【桃】。',
+            jlsg_zongqing_info: '摸牌阶段开始时，你可以进行一次判定，若如此做，此阶段摸牌后你须展示之，然后弃置其中与该判定牌颜色不同的牌。若以此法弃置的牌为黑色，视为你使用一张【酒】；若以此法弃置的牌为红色，视为你使用一张【桃】。',
             jlsg_bugua_info: '当一名角色将要进行判定时，你可以展示牌堆顶的一张牌，然后选择一项：1.将一张手牌置于牌堆顶，或令其将一张手牌置于牌堆顶。当一名角色的判定牌为红色且生效后，你可以令其摸一张牌：当一名角色的判定牌为黑色且生效后，你可以令其弃一张牌。',
             jlsg_zhaoxin_info: '当你受到伤害后，你可以展示所有手牌，然后摸X张牌（X为缺少的花色数）。',
-            jlsg_zhihe_info: '出牌阶段限1次，你可以展示所有手牌，并将其中每种花色的牌弃置至一张，然后将手牌数翻倍。',
+            jlsg_zhihe_info: '出牌阶段限一次，你可以展示所有手牌，并将其中每种花色的牌弃置至一张，然后将手牌数翻倍。',
             jlsg_caijie_info: '其他角色的回合开始阶段开始时，若其手牌数不小于你，你可以与其拼点，若你赢，你摸两张牌；若你没赢，视为其对你使用一张【杀】。',
             jlsg_jilei_info: '当你受到伤害后，你可以令伤害来源展示所有手牌并弃置其中类别相同且最多（或之一）的所有牌。',
             jlsg_yanliang_info: '一名角色的回合开始阶段开始时，你可以弃置一张红色牌，令其本回合的摸牌阶段改为在出牌阶段后进行；或弃置一张黑色牌，令其本回合的摸牌阶段改为在弃牌阶段后进行。',
@@ -6848,7 +6848,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_bibu_info: "其他角色的回合结束时：若你的手牌数大于体力值，你可以将一张手牌交给一名其他角色；若你的手牌数不大于体力值，你可以摸一张牌。",
             jlsg_kuangzheng_info: "你的回合结束时，你可以将一名角色的武将牌恢复至游戏开始时的状态（即将其武将牌翻转至正面朝上并重置之）。",
             jlsg_duanlan: "断缆",
-            jlsg_duanlan_info: "出牌阶段限1次，你可以弃置其他角色区域内的1至3张牌，然后选择一项： 1、失去1点体力;2、弃置一张大于这些牌点数之和的牌。",
+            jlsg_duanlan_info: "出牌阶段限一次，你可以弃置其他角色区域内的1至3张牌，然后选择一项： 1、失去1点体力;2、弃置一张大于这些牌点数之和的牌。",
             jlsg_yaoming: "邀名",
             jlsg_yaoming1: "邀名",
             jlsg_yaoming2: "邀名",
@@ -11844,7 +11844,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   intro: {
                     name: '合谋·顺手',
-                    content: '回合限1次,可将一张♥︎牌当顺手牵羊使用.'
+                    content: '回合限一次,可将一张♥︎牌当顺手牵羊使用.'
                   }
                 },
                 diamond: {
@@ -11874,7 +11874,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   intro: {
                     name: '合谋·火攻',
-                    content: '回合限1次,可将一张♦︎牌当火攻使用.'
+                    content: '回合限一次,可将一张♦︎牌当火攻使用.'
                   }
                 },
                 club: {
@@ -11898,7 +11898,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   intro: {
                     name: '合谋·借刀',
-                    content: '回合限1次,可将一张♣︎牌当借刀杀人使用.'
+                    content: '回合限一次,可将一张♣︎牌当借刀杀人使用.'
                   }
                 },
                 spade: {
@@ -11918,7 +11918,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   intro: {
                     name: '合谋·决斗',
-                    content: '回合限1次,可将一张♠︎牌当决斗使用.'
+                    content: '回合限一次,可将一张♠︎牌当决斗使用.'
                   }
                 },
               }
@@ -12310,8 +12310,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content:function(){
                 'step 0'
-                // player.addTempSkill('jlsg_zhonghou_phase');
                 if (trigger.player == player) {
+                  if (player.isPhaseUsing()) {
+                    player.addTempSkill('jlsg_zhonghou_phase');
+                  }
                   event.goto(2);
                 } else {
                   var prompt = `是否失去1点体力视为${get.translation(trigger.player)}使用一张${get.translation(trigger.card)}？`;
@@ -12319,6 +12321,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 1'
                  if (!result.bool) {
+                   trigger.player.addTempSkill('jlsg_zhonghou_phase');
                    trigger.cancel();
                    trigger.getParent().goto(0);
                    event.finish();
@@ -12329,16 +12332,29 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               global: ['jlsg_zhonghou_shan', 'jlsg_zhonghou_global'],
             },
+            jlsg_zhonghou_phase: {
+
+            },
             jlsg_zhonghou_global: {
               enable:["chooseToUse","chooseToRespond"],
               hiddenCard:function (player,name){
-                  return get.type(name) == 'basic';
+                  return get.type(name) == 'basic' && name != 'shan';
               },
               filter: function (event, player) {
-                return game.hasPlayer(function (target) {
+                if (player.hasSkill('jlsg_zhonghou_phase')) return false;
+                var criterion0 = game.hasPlayer(function (target) {
                   return (player == target && (target.hasSkill('jlsg_zhonghou') || target.hiddenSkills.contains('jlsg_zhonghou')) ||
                   player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou')) && !target.isDying();
                 });
+                if (!criterion0) return false;
+                for(var i of lib.inpile){
+                  if(get.type(i) != 'basic' || i=='shan') continue;
+                  if(event.filterCard({name:i},player,event)) return true;
+                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat=>event.filterCard({name:i,nature:nat},player,event))) {
+                    return true;
+                  }
+                }
+                return false;
               },
               chooseButton:{
                 dialog:function(){
@@ -12392,10 +12408,26 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
               },
+              ai: {
+                fireAttack:true,
+                respondSha:true,
+                skillTagFilter:function(player,tag) {
+                  if (player.hasSkill('jlsg_zhonghou_phase')) return false;
+                  return game.hasPlayer(function (target) {
+                    return (player == target && (target.hasSkill('jlsg_zhonghou') || target.hiddenSkills.contains('jlsg_zhonghou')) ||
+                    player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou')) && !target.isDying();
+                  });
+                },
+              },
             },
             jlsg_zhonghou_shan: {
-              filter: function () {
-                return lib.skill.jlsg_zhonghou_global.filter.apply(this, arguments);
+              enable:['chooseToUse','chooseToRespond'],
+              filter: function (event, player) {
+                if (player.hasSkill('jlsg_zhonghou_phase')) return false;
+                return game.hasPlayer(function (target) {
+                  return (player == target && (target.hasSkill('jlsg_zhonghou') || target.hiddenSkills.contains('jlsg_zhonghou')) ||
+                  player.inRangeOf(target) && target.hasSkill('jlsg_zhonghou')) && !target.isDying();
+                });
               },
               filterCard: function () {
                 return false;
@@ -12407,9 +12439,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               viewAs: {
                 name: "shan",
               },
-              // ai: {
-              //   respondShan: true,
-              // }
+              ai: {
+                respondShan: true,
+              }
             },
             jlsg_ganglie: {
               audio: "ext:极略:1",
@@ -12488,7 +12520,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             zh_mark: '忠候',
             jlsg_zhonghou: '忠侯',
             jlsg_zhonghou_global: '忠侯',
-            jlsg_zhonghou_shan: '忠侯·闪',
+            jlsg_zhonghou_shan: '忠侯',
             jlsg_ganglie: '刚烈',
             jlsg_liuyun: '流云',
             jlsg_lingbo: '凌波',
@@ -12615,42 +12647,42 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_huxiao_info: '出牌阶段，当你使用杀造成伤害时，若你的武将牌正面向上，你可以令此伤害+1并摸一张牌。若如此做，则此杀结算完毕后，将你的武将牌翻面并结束当前回合。',
             jlsg_old_huxiao_info: '出牌阶段，当你使用杀造成伤害时，若你的武将牌正面向上，你可以令此伤害+1并摸一张牌。若如此做，则此杀结算完毕后，将你的武将牌翻面并结束当前回合。',
             jlsg_guicai_info: '在任意角色的判定牌生效前，你可以选择一项：1、打出一张手牌代替之。2、亮出牌堆顶的一张牌代替之。',
-            jlsg_langgu_info: '每当你造成或受到1次伤害后，你可以进行一次判定，若为黑色，你获得对方一张牌。',
+            jlsg_langgu_info: '每当你造成或受到一次伤害后，你可以进行一次判定，若为黑色，你获得对方一张牌。',
             jlsg_zhuizun_info: '限定技，当你进入濒死状态时，你可以恢复体力至1点，令所有其他角色依次交给你一张手牌。然后当前回合结束后，你进行1个额外的回合。',
             jlsg_tianshang_info: '限定技，你死亡时，可令一名其他角色获得你此武将牌上拥有的其他技能，然后其增加1点体力上限并恢复1点体力。',
             jlsg_yiji_info: '每当你受到一点伤害，可以观看牌堆顶的两张牌，并将其交给任意1~2名角色。',
-            jlsg_old_yiji_info: '当你受到1次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行1次判定：判定牌为红桃，恢复1点体力。',
+            jlsg_old_yiji_info: '当你受到一次伤害，可以观看牌堆顶的两张牌，并将其交给任意名角色，若你将所有的牌交给了同一名角色，你进行一次判定：判定牌为红桃，恢复1点体力。',
             jlsg_huiqu_info: '回合开始阶段，你可以弃置一张手牌进行一次判定，若结果为红色，你将场上的一张牌移动到一个合理的位置；若结果为黑色，你对一名角色造成1点伤害，然后你摸一张牌。',
             jlsg_zhaoxiang_info: '当一名其他角色使用【杀】指定目标后，你可以令其选择一项：1、交给你一张牌。2、令此【杀】对该目标无效；若其或杀的目标在你的攻击范围内，你须先弃置一张手牌。',
             jlsg_zhishi_info: '出牌阶段限一次，你可以令一名其他角色选择一项：1、弃置一张基本牌，然后回复一点。2、受到你造成的一点伤害，然后回复一点体力。',
-            jlsg_old_zhishi_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色，你选择其中一项执行：1.你展示一张【杀】令其弃置一张【杀】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害；2.你展示一张【闪】令其弃置一张【闪】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害。',
-            jlsg_jianxiong_info: '主公技。每当其他魏势力受到不为你的1次伤害后，该角色可以弃置一张手牌，然后令你获得对其造成伤害的牌。',
+            jlsg_old_zhishi_info: '出牌阶段限一次，你可以指定一名有手牌的其他角色，你选择其中一项执行：1.你展示一张【杀】令其弃置一张【杀】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害；2.你展示一张【闪】令其弃置一张【闪】，若其执行，你与其恢复1点体力，否则你对其造成1点伤害。',
+            jlsg_jianxiong_info: '主公技。每当其他魏势力受到不为你的一次伤害后，该角色可以弃置一张手牌，然后令你获得对其造成伤害的牌。',
             jlsg_jiuzhu_info: '每当一张非转化的【闪】进入弃牌堆时，你可以用一张不为【闪】的牌替换之。若此时不是你的回合，你可以视为对当前回合角色使用一张无视防具的【杀】。',
             jlsg_tuwei_info: '每当一张非转化的【杀】进入弃牌堆时，若你是此【杀】的目标或使用者，你可以弃置一张能造成伤害的牌，然后弃置此牌目标或使用者的共计两张牌。',
             // jlsg_xujin_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的5张牌，并令一名角色获得其中1种花色的所有牌，再将其余的牌置入弃牌堆。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
             jlsg_xujin_info: '摸牌阶段开始时，你展示牌堆顶的五张牌，然后，你可以放弃摸牌并将其中一种花色的牌交给一名角色。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
-            jlsg_paoxiao_info: '出牌阶段，当你使用【杀】对目标角色造成1次伤害并结算完毕后，你可以摸一张牌，然后选择一项：使用一张无视距离的【杀】，或令该角色弃置你的一张牌。',
+            jlsg_paoxiao_info: '出牌阶段，当你使用【杀】对目标角色造成一次伤害并结算完毕后，你可以摸一张牌，然后选择一项：使用一张无视距离的【杀】，或令该角色弃置你的一张牌。',
             jlsg_benxi_info: '锁定技，你计算与其他角色的距离时始终-1.你使用【杀】指定目标后，目标角色须弃置一张装备牌，否则此【杀】不可被【闪】响应。',
-            jlsg_yaozhan_info: '出牌阶段限1次，你可以与一名其他角色拼点：若你赢，你摸一张牌并视为对其使用一张【杀】（此【杀】不计入每回合的使用限制）；若你没赢，该角色可以对你使用一张【杀】。',
-            jlsg_wenjiu_info: '出牌阶段限1次，你可以将一张黑色手牌置于你的武将牌上，称为「酒」。当你使用【杀】选择目标后，你可以将一张「酒」置入弃牌堆，然后当此【杀】造成伤害时，该伤害+1；当此【杀】被【闪】响应后，你摸一张牌。',
+            jlsg_yaozhan_info: '出牌阶段限一次，你可以与一名其他角色拼点：若你赢，你摸一张牌并视为对其使用一张【杀】（此【杀】不计入每回合的使用限制）；若你没赢，该角色可以对你使用一张【杀】。',
+            jlsg_wenjiu_info: '出牌阶段限一次，你可以将一张黑色手牌置于你的武将牌上，称为「酒」。当你使用【杀】选择目标后，你可以将一张「酒」置入弃牌堆，然后当此【杀】造成伤害时，该伤害+1；当此【杀】被【闪】响应后，你摸一张牌。',
             jlsg_shuixi_info: '回合开始阶段开始时，你可以展示一张手牌并选择一名其他角色，令其选择一项：弃置一张与之相同花色的手牌，或失去1点体力。若该角色因此法失去体力，则此回合的出牌阶段，你不能使用【杀】。',
             jlsg_sanfen_info: '出牌阶段限一次，你可以选择两名其他角色，其中一名你选择的角色须对另一名角色使用一张【杀】，然后另一名角色须对你使用一张【杀】，你弃置不如此做者一张牌。（使用杀有距离限制）',
             jlsg_guanxing_info: '回合开始/结束阶段开始时，你可以观看牌堆顶的X张牌（X为存活角色的数量，且最多为3），将其中任意数量的牌以任意顺序置于牌堆顶，其余以任意顺序置于牌堆底。',
             jlsg_weiwo_info: '锁定技，当你有手牌时，你防止受到的属性伤害；当你没有手牌时，你防止受到的非属性伤害。',
-            jlsg_shouji_info: '出牌阶段限1次，你可以弃置一张牌并选择两名角色，然后根据你弃置牌的花色，视为其中一名角色对另一名角色使用一张牌：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
+            jlsg_shouji_info: '出牌阶段限一次，你可以弃置一张牌并选择两名角色，然后根据你弃置牌的花色，视为其中一名角色对另一名角色使用一张牌：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
             jlsg_hemou_info: '其他角色的出牌阶段开始时，你可以将一张手牌正面朝上交给该角色，该角色本阶段限一次，可将一张与之相同花色的手牌按下列规则使用：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
             jlsg_qicai_info: '每当你失去一次手牌时，你可以进行判定，若结果为红色，你摸一张牌。',
             jlsg_rende_info: '任一角色的回合结束阶段结束时，你可以将任意数量的手牌交给该角色，然后该角色进行1个额外的出牌阶段。',
-            jlsg_chouxi_info: '出牌阶段限1次，你可以弃置一张手牌并展示牌堆顶的两张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
-            jlsg_yongbing_info: '主公技，当一名其他蜀势力角色使用【杀】造成1次伤害后，该角色可令你摸一张牌。',
+            jlsg_chouxi_info: '出牌阶段限一次，你可以弃置一张手牌并展示牌堆顶的两张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
+            jlsg_yongbing_info: '主公技，当一名其他蜀势力角色使用【杀】造成一次伤害后，该角色可令你摸一张牌。',
             jlsg_yinmeng_info: '出牌阶段限X次，若你有手牌，你可以展示一名其他男性角色的一张手牌，然后展示你的一张手牌，若两张牌类型相同，你与其各摸一张牌；若不同，你弃置其展示的牌，X为你所损失的体力且至少为1',
             jlsg_xiwu_info: '当你使用的【杀】被目标角色的【闪】响应后，你可以摸一张牌，然后弃置其一张手牌。',
-            jlsg_juelie_info: '出牌阶段限1次，你可以令一名手牌数与你不同的其他角色选择一项：将手牌数调整至与你相等；或视为你对其使用一张【杀】（不计入出牌阶段的使用限制）。',
+            jlsg_juelie_info: '出牌阶段限一次，你可以令一名手牌数与你不同的其他角色选择一项：将手牌数调整至与你相等；或视为你对其使用一张【杀】（不计入出牌阶段的使用限制）。',
             jlsg_xianger_info: "一名其他男性角色的回合开始时，你可以交给其两张基本牌。若如此做，该角色跳过出牌阶段，然后可以视为对你使用一张【杀】，否则下回合的出牌阶段受到你的1点伤害；若其在此阶段未造成伤害，则跳过弃牌阶段，且你摸一张牌。",
             jlsg_fangxin_info: '当你需要使用一张【桃】时，你可以将一张梅花牌当【兵粮寸断】或将一张方片牌当【乐不思蜀】对自己使用，若如此做，视为你使用了一张【桃】。',
             jlsg_xiyu_info: '你的回合开始时，你可以弃置一名角色的一张牌，然后该角色进行一个额外的出牌阶段。',
             jlsg_wanrou_info: '你的方片牌或你判定区的牌进入弃牌堆时，你可以令一名角色摸一张牌。',
-            jlsg_zhouyan_info: '出牌阶段，你可以令一名角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成1次伤害后，你可以摸一张牌。',
+            jlsg_zhouyan_info: '出牌阶段，你可以令一名角色摸一张牌，若如此做，视为你对其使用一张【火攻】，你可以重复此流程直到你以此法未造成伤害。每当你使用【火攻】造成一次伤害后，你可以摸一张牌。',
             jlsg_zhaxiang_info: '出牌阶段，你可以将一张手牌扣置，然后令一名其它角色选择一项：交给你一张牌并弃置你扣置的牌；或展示你扣置的牌并获得之。若你扣置的牌为【杀】，则视为你对其使用一张火属性的【杀】（不计入出牌阶段的使用限制且不可被响应）。',
             jlsg_old_zhaxiang_info: '出牌阶段限一次，你可以指定一名其它角色，视为该角色对你使用一张【杀】，然后你摸两张牌并视为对其使用一张【杀】（你的此【杀】无视防具）。',
             jlsg_shixue_info: '当你使用【杀】指定目标后，你可以摸两张牌；若如此做，当此【杀】被【闪】响应后，你须弃置两张牌。',
@@ -12662,7 +12694,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_jiexi_info: '出牌阶段，你可以与一名其他角色拼点，若你赢，视为对其使用一张【过河拆桥】。你可重复此流程直到你以此法拼点没赢。',
             jlsg_old_jiexi_info: '若你的武将牌正面朝上，你可以指定一名有手牌的角色进行拼点：若你赢，你视为对其使用一张【过河拆桥】，否则本回合不可发动此技能；锁定技，若你的武将牌正面朝上并触发技能〈劫袭〉后，且你的手牌数小于4时，你将武将牌背面朝上并摸一张牌；若你的武将牌背面朝上，你不能成为【南蛮入侵】和【闪电】的目标。',
             jlsg_youxia_info: '出牌阶段，若你的武将牌正面朝上，你可以将你的武将牌翻面，然后从一至两名其他角色处各获得一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【决斗】的目标。',
-            jlsg_old_youxia_info: '出牌阶段限1次，你可以将你的武将牌翻面，然后从1至2名其他角色的区域各弃置一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【兵粮寸断】的目标。',
+            jlsg_old_youxia_info: '出牌阶段限一次，你可以将你的武将牌翻面，然后从1至2名其他角色的区域各弃置一张牌；锁定技，若你的武将牌背面朝上，你不能成为【杀】和【兵粮寸断】的目标。',
 
             jlsg_huailing_info: '若你的武将牌背面朝上，其他角色使用一张锦囊牌指定大于一个目标时，你可以令一名其他角色不受到该牌的效果，然后你将武将牌正面朝上；锁定技，若你的武将牌背面朝上，你不能成为【决斗】和【过河拆桥】的目标。',
             jlsg_dailao_info: '出牌阶段限一次，你可以令一名其他角色与你将武将牌翻面，然后其选择一项：与你各摸一张牌；或与你各弃置一张牌。',
@@ -12672,7 +12704,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_xionglve_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的两张牌，你获得其中一张牌，然后将另一张牌置于你的武将牌上，称为「略」。出牌阶段，你可以将一张基本牌或锦囊牌的「略」当与之同类别的任意一张牌（延时类锦囊牌除外）使用，将一张装备牌的「略」置于一名其他角色装备区内的相应位置。',
             jlsg_fuzheng_info: '主公技，回合开始阶段开始时，你可以令至多两名其他吴势力角色各摸一张牌，然后这些角色依次将一张手牌置于牌堆顶。',
             jlsg_jiwu_info: '出牌阶段限一次，你可以将你的手牌调整至一张，若如此做，本回合你的攻击范围无限，且你下一次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以额外指定至多两名目标。',
-            jlsg_old_jiwu_info: '出牌阶段限一次，若你的手牌数大于一，若如此做，本回合你的攻击范围无限，且你下1次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以至多额外指定任意两名其他角色为目标。',
+            jlsg_old_jiwu_info: '出牌阶段限一次，若你的手牌数大于一，若如此做，本回合你的攻击范围无限，且你下一次使用的【杀】造成的伤害+1。锁定技，若你的装备区没有牌，你使用【杀】可以至多额外指定任意两名其他角色为目标。',
 
             jlsg_sheji_info: '当一名装备区有武器牌的其他角色对另一名角色造成伤害后，你可以弃置一张牌，然后获得该角色的武器牌。你可以将装备牌当无距离限制的【杀】使用或打出，你以此法使用的【杀】须连续使用两张【闪】才能抵消。',
             jlsg_xingyi_info: '出牌阶段限一次，你可以获得一名有手牌的其他角色一张手牌，然后令其恢复1点体力。',
@@ -14963,7 +14995,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
                 prompt: function (links, player) {
-                  return '亮出牌堆顶的一张牌，并将此牌当' + get.translation(links[0][2]) + '使用或打出。若亮出的牌不为' + get.translation(links[0][0]) + '牌，你须先失去1点体力。(你的出牌阶段限1次。)';
+                  return '亮出牌堆顶的一张牌，并将此牌当' + get.translation(links[0][2]) + '使用或打出。若亮出的牌不为' + get.translation(links[0][0]) + '牌，你须先失去1点体力。(你的出牌阶段限一次。)';
                 }
               },
               group: ['jlsg_tianqi_shan', 'jlsg_tianqi_wuxie'],
@@ -16271,7 +16303,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_old_shendao: '神道',
 
             jlsg_feiying_info: '锁定技，若你的武将牌正面朝上，你使用【杀】无距离限制；若你的武将牌正面朝下，你不能成为【杀】的目标。',
-            jlsg_guixin_info: '当你受到1次伤害后，你可以获得每名其他角色区域里的一张牌，再摸X张牌（X为阵亡/败退的角色数），然后翻面。',
+            jlsg_guixin_info: '当你受到一次伤害后，你可以获得每名其他角色区域里的一张牌，再摸X张牌（X为阵亡/败退的角色数），然后翻面。',
             jlsg_qinyin_info: '弃牌阶段开始时，你可以选择一项：1.摸两张牌，然后令所有角色各失去一点体力；2.弃两张牌，然后令所有角色各恢复一点体力。',
             jlsg_yeyan_info: '限定技，出牌阶段，你可以弃置至少一种花色不同的手牌，然后对一至2名角色各造成等量的火属性伤害，若你以此法弃置的手牌花色数不少于3，你将失去3点体力。',
             jlsg_huju_info: '锁定技，其他角色的回合开始时，你摸一张牌。你的回合开始时，若你的手牌数为最多（或之一），你选择一项：1、失去一点体力；2、减一点体力上限，失去〖虎踞〗，并获得技能〖制衡〗和〖虎缚〗。',
@@ -17759,10 +17791,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             // jlsgsy_shenwei_info:'锁定技，摸牌阶段，你额外摸两张牌，你的手牌上限+2。',
             // jlsgsy_shenji_info:'若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
             jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
-            jlsgsy_chanxian_info: '出牌阶段限1次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
+            jlsgsy_chanxian_info: '出牌阶段限一次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
             jlsgsy_canlue_info: '你每从其他角色处获得一张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置一张牌',
             jlsgsy_zongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用一张【酒】',
-            jlsgsy_lingnue_info: '出牌阶段，你每使用【杀】对目标角色造成1次伤害，可以进行1次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
+            jlsgsy_lingnue_info: '出牌阶段，你每使用【杀】对目标角色造成一次伤害，可以进行一次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
             jlsgsy_baozheng_info: '锁定技，其他角色摸牌阶段结束时，若该角色手牌数大于你，须选择一项：交给你一张方块牌；或受到你造成的1点伤害。',
             jlsgsy_nishi_info: '锁定技，摸牌阶段，你摸X张牌(X为你的当前体力值且至多为4)',
             jlsgsy_hengxing_info: '当其他角色使用【杀】指定你为目标时，你可以弃置x张牌(x为你当前体力值)，则该【杀】对你无效',
@@ -17770,17 +17802,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonuzhangrang_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张让并立即开始你的回合',
             jlsgsy_bujiao_info: '锁定技，其他角色出牌阶段开始时，该角色须交给你一张手牌，然后摸一张牌',
             jlsgsy_taiping_info: '每当你受到1点伤害后，你可以令一名其他角色获得1枚‘平’标记，其他角色每有1枚‘平’标记，手牌上限便-1，一名角色回合结束后，弃置其拥有的所有‘平’标记',
-            jlsgsy_sanzhi_info: '出牌阶段限1次，你可以弃置任意类型不同的牌各一张并对等量的其他角色各造成1点伤害',
-            jlsgsy_yaohuo_info: '出牌阶段限1次，你可以指定一名有手牌的其他角色弃置与其手牌等量的牌，然后选择1项：1、获得其所有手牌；2、令其失去所有技能你获得之(你不能获得主公技，限定技，觉醒技)直到回合结束',
+            jlsgsy_sanzhi_info: '出牌阶段限一次，你可以弃置任意类型不同的牌各一张并对等量的其他角色各造成1点伤害',
+            jlsgsy_yaohuo_info: '出牌阶段限一次，你可以指定一名有手牌的其他角色弃置与其手牌等量的牌，然后选择1项：1、获得其所有手牌；2、令其失去所有技能你获得之(你不能获得主公技，限定技，觉醒技)直到回合结束',
             jlsgsy_baonuzhangjiao_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张角并立即开始你的回合',
-            jlsgsy_dihui_info: '出牌阶段限1次，你可令场上(除你外)体力值最多的(或之一)的一名角色对另一名角色造成1点伤害，然后你可以执行下列1项：摸一张牌或者弃置受到伤害角色的一张牌',
-            jlsgsy_luansi_info: '出牌阶段限1次，你可以令两名有手牌的其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
+            jlsgsy_dihui_info: '出牌阶段限一次，你可令场上(除你外)体力值最多的(或之一)的一名角色对另一名角色造成1点伤害，然后你可以执行下列1项：摸一张牌或者弃置受到伤害角色的一张牌',
+            jlsgsy_luansi_info: '出牌阶段限一次，你可以令两名有手牌的其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
             jlsgsy_huoxin_info: '你每造成或受到一次伤害，你可令该角色交给你一张装备区内的装备牌 ，否则其失去一点体力',
             jlsgsy_baonucaifuren_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒蔡夫人并立即开始你的回合',
             jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用一张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的一名其他角色使用一张【杀】',
             jlsgsy_kuangxi_info: '出牌阶段，当你使用非延时锦囊牌指定其他角色为目标后，你可以终止此牌的结算，改为视为对这些目标依次使用一张【杀】(不计入出牌阶段的使用限制)',
             jlsgsy_baonuweiyan_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒魏延并立即开始你的回合',
-            jlsgsy_fangu_info: '锁定技，每当你受到1次伤害后，当前回合结束，你执行1个额外回合',
+            jlsgsy_fangu_info: '锁定技，每当你受到一次伤害后，当前回合结束，你执行1个额外回合',
 
             jlsgsy_bolue_info: '出牌阶段限一次，你可以进行判定并获得判定牌，并根据结果获得以下技能直到本回合结束:红桃：奇才；方块：权衡；黑桃：强袭；梅花：乱击',
             jlsgsy_qiangxi_info: '出牌阶段限一次，你可以失去一点体力或弃置一张武器牌，然后对你攻击范围内的一名其他角色造成一点伤害。',
@@ -17797,7 +17829,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_tianyou2: '天佑',
             jlsgsy_tianyou_info: '回合结束阶段开始时，你可以把牌堆顶的一张牌置于你的武将牌上，称为【佑】。直到你的下个回合开始时，将之置入弃牌堆。当你的武将牌上有牌时，你不能成为与【佑】颜色相同牌的目标',
             jlsgsy_mingzheng: '明政',
-            jlsgsy_mingzheng_info: '锁定技，任意角色摸牌阶段摸牌时，额外摸一张牌，当你受到1次伤害后，失去该技能，并获得技能【嗜杀】（锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀）',
+            jlsgsy_mingzheng_info: '锁定技，任意角色摸牌阶段摸牌时，额外摸一张牌，当你受到一次伤害后，失去该技能，并获得技能【嗜杀】（锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀）',
             jlsgsy_shisha: '嗜杀',
             jlsgsy_shisha_info: '锁定技，你使用的杀不可被【闪】响应，其他角色可以弃置两张牌来抵消你对其使用的杀',
             jlsgsy_baonusunhao: '暴怒',
@@ -17805,7 +17837,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_huangyin: '荒淫',
             jlsgsy_huangyin_info: '每当你从牌堆获得牌之前，可放弃之，改为从任意名其他角色出处获得共计等量的牌',
             jlsgsy_zuijiu: '醉酒',
-            jlsgsy_zuijiu_info: '出牌阶段限1次，你可以展示所有手牌，若黑色牌不少于红色牌，则视为你使用了一张【酒】',
+            jlsgsy_zuijiu_info: '出牌阶段限一次，你可以展示所有手牌，若黑色牌不少于红色牌，则视为你使用了一张【酒】',
             jlsgsy_guiming: '归命',
             jlsgsy_guiming_info: '限定技，当你进入濒死状态时，你可以令场上体力最少的一名角色将体力补至体力上限，然后回复体力至4点',
             jlsgsy_huoxin2: '祸心',
@@ -18653,7 +18685,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             _jlsgqs_yuxi2: '玉玺',
             jlsgqs_yuxi: '玉玺',
             jlsgqs_kongmingdeng_info: '任意角色处于濒死状态时，你可以将你装备区的【孔明灯】当【桃】使用；锁定技，当你从装备区中失去【孔明灯】时，回复1点体力',
-            jlsgqs_muniu_info: '出牌阶段限1次，你可以将一张手牌交给一名其他角色，然后摸一张牌；锁定技，当你从装备区中失去【木牛流马】时，须弃置一张基本牌或者失去1点体力',
+            jlsgqs_muniu_info: '出牌阶段限一次，你可以将一张手牌交给一名其他角色，然后摸一张牌；锁定技，当你从装备区中失去【木牛流马】时，须弃置一张基本牌或者失去1点体力',
             jlsgqs_taipingyaoshu_info: '出牌阶段限一次，你可以令一名角色摸一张牌；锁定技，当【太平要术】置入你的装备区时，你须弃置一张红色手牌或者失去1点体力',
             jlsgqs_dunjiatianshu_info: '锁定技，若你的装备区没有坐骑牌，其他角色计算与你的距离时，始终+1，你计算与其他角色的距离时，始终-1；锁定技，若你的装备区有坐骑牌，你的手牌上限+1',
             jlsgqs_qixingbaodao_info: '当你使用的【杀】被目标角色的【闪】响应后，你可以将装备区的【七星宝刀】交给该名角色，然后获得其装备区的一张牌',
@@ -19763,7 +19795,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.25更新<br>
+2021.03.29更新<br>
 &ensp; 重写SK于禁 整毅<br>
 &ensp; 优化SR孙尚香 决裂 提示<br>
 &ensp; 优化SK程昱 捧日 动画<br>
@@ -19776,6 +19808,8 @@ Visit Repository</a><br>
 &ensp; 重写SK神关羽 武神，修复武神&索魂配音<br>
 &ensp; 重写SK吉平 烈医，修复配音<br>
 &ensp; 修复SK孙乾 随骥 配音<br>
+&ensp; 重制七杀 梅 贴图<br>
+&ensp; 修复忠候闪与用多次的问题<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.24更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
