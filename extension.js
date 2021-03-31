@@ -10200,9 +10200,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.turnOver();
                 target.turnOver();
                 'step 1'
-                target.chooseToDiscard('he').set('prompt2', `或点「取消」，令你与${get.translation(player)}各摸一张牌`);;
+                target.chooseToDiscard('he').set('prompt2', `或点「取消」，令你与${get.translation(player)}各摸一张牌`).set('ai',
+                function(card){
+                  var unusefulness = get.unuseful(card);
+                  var att = get.attitude(target, player);
+                  if (-2 < att && att < 2) return -1;
+                  if (!player.hasSkill('jlsg_ruya')) {
+                    if (att > 0) return unusefulness;
+                    return unusefulness + get.effect(player, {name:'guohe'}, player, target) / 2;
+                  }
+                  if (att < 0 || player.countDiscardableCards(player, 'h') != player.countCards('h')) return -1;
+                  if (player.isTurnedOver()  && player.countCards('h') == 1) {
+                    unusefulness += 8;
+                  }
+                  return unusefulness;
+                });
                 'step 2'
                 if (result.bool) {
+                  target.addExpose(0.1);
                   player.chooseToDiscard('he', true);
                 } else {
                   game.asyncDraw([player, target]);
@@ -13257,16 +13272,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 target.draw(num);
                 target.showHandcards();
                 "step 1"
-                var num = target.countCards('h', function (card) {
-                  return get.type(card) != 'basic';
-                });
-                target.discard(target.get('h', function (card) {
+                var cards = target.getCards(target.getCards('h', function (card) {
                   return get.type(card) != 'basic';
                 }));
-                if (num) target.damage(num);
+                // var num = target.countCards('h', function (card) {
+                //   return get.type(card) != 'basic';
+                // });
+                // target.discard(target.get('h', function (card) {
+                //   return get.type(card) != 'basic';
+                // }));
+                if (cards) {
+                  target.damage(cards.length);
+                  target.discard(cards);
+                }
               },
               ai: {
-                order: 5,
+                order: 8,
                 expose: 0.3,
                 threaten: 1.8,
                 result: {
@@ -18227,6 +18248,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               },
               ai: {
+                wuxie:function(target,card,player,viewer){
+                  if (target.hasSha() && get.attitude(target, player) < -2 && Math.random()< 0.5) {
+                    return;
+                  }
+                  if (get.attitude(viewer,target)>0 && get.effect(target,'shunshou', player, viewer) > 0) {
+                    return 0;
+                  }
+                },
                 basic: {
                   order: 6,
                   useful: 3
@@ -19791,14 +19820,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0324",
+      version: "2.2.0331",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.03.29更新<br>
+2021.03.31更新<br>
 &ensp; 重写SK于禁 整毅<br>
 &ensp; 优化SR孙尚香 决裂 提示<br>
 &ensp; 优化SK程昱 捧日 动画<br>
+&ensp; 大幅优化SR陆逊 代劳 AI<br>
 &ensp; 修复三英神张角 布教<br>
 &ensp; 修复SK周泰 奋激 AI<br>
 &ensp; 修复七杀 梅 配音 优化AI<br>
@@ -19810,6 +19840,8 @@ Visit Repository</a><br>
 &ensp; 修复SK孙乾 随骥 配音<br>
 &ensp; 重制七杀 梅 贴图<br>
 &ensp; 修复忠候闪与用多次的问题<br>
+&ensp; 优化七杀 草船借箭 无懈逻辑<br>
+&ensp; 优化SK神贾诩 湮灭<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.24更新<br>
 &ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
