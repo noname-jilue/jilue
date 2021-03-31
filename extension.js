@@ -12346,6 +12346,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 1'
                  if (!result.bool) {
                    trigger.player.addTempSkill('jlsg_zhonghou_phase');
+                   game.log(player, Math.random() < 0.5 ? '丑拒了' : '蠢拒了', trigger.player);
                    player.chat('拒绝');
                    trigger.cancel();
                    trigger.getParent().goto(0);
@@ -12419,6 +12420,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       return false;
                     },
                     selectCard: -1,
+                    onuse: function (event, player) {
+                      player.logSkill('jlsg_zhonghou');
+                    },
+                    onrespond: function (event, player) {
+                      player.logSkill('jlsg_zhonghou');
+                    },
                     // ai1:function(card){
                     //   var player=_status.event.player;
                     //   var hasEnemy=game.hasPlayer(function(current){
@@ -12465,6 +12472,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               selectCard: -1,
               viewAs: {
                 name: "shan",
+              },
+              onuse: function (event, player) {
+                player.logSkill('jlsg_zhonghou');
+              },
+              onrespond: function (event, player) {
+                player.logSkill('jlsg_zhonghou');
               },
               ai: {
                 respondShan: true,
@@ -19844,6 +19857,7 @@ Visit Repository</a><br>
 &ensp; 大幅优化SR陆逊 代劳 AI<br>
 &ensp; 修复三英神张角 布教<br>
 &ensp; 重写SR大乔 婉柔<br>
+&ensp; 优化了SR夏侯惇的选择提示。SR夏侯惇蠢拒了你。<br>
 &ensp; 修复SK周泰 奋激 AI<br>
 &ensp; 修复七杀 梅 配音 优化AI<br>
 &ensp; 优化SK卞夫人 化戈 AI<br>
