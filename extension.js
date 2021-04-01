@@ -1650,8 +1650,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               usable: 1,
               prompt2: '你可以移动场上的一张牌',
-              frequent: true,
-              direct: true,
+              // frequent: true,
               check: function (event, player) {
                 return player.canMoveCard(true);
               },
@@ -5352,19 +5351,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               marktext: "祭",
               intro: {
                 mark: function (dialog, content, player) {
-                  var num = 0;
-                  for (var i = 0; i < ui.discardPile.childNodes.length; i++) {
-                    if (get.name(ui.discardPile.childNodes[i]) == 'shandian') {
-                      num++;
-                    }
-                  }
-                  for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
-                    if (get.name(ui.cardPile.childNodes[i]) == 'shandian') {
-                      num++;
-                    }
-                  }
-                  dialog.add("牌堆的闪电：" + num + "个");
-                }
+                  var num = Array.from(ui.cardPile.childNodes).filter(card => get.name(card) == 'shandian').length;
+                  num += Array.from(ui.discardPile.childNodes).filter(card => get.name(card) == 'shandian').length;
+                  return `剩余${get.cnNumber(num)}张闪电`;
+                },
+                markcount:function(storage,player) {
+                  var num = Array.from(ui.cardPile.childNodes).filter(card => get.name(card) == 'shandian').length;
+                  return num + Array.from(ui.discardPile.childNodes).filter(card => get.name(card) == 'shandian').length;
+                },
               },
               filter: function (event, player) {
                 return event.card.name == 'shan' && event.player != player;
@@ -6762,6 +6756,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yonglie_info: '当你攻击范围内的一名角色受到【杀】造成的伤害后，你可以失去1点体力，然后对伤害来源造成1点伤害。',
             jlsg_hengshi_info: '弃牌阶段开始时，你可以摸等同于手牌数的牌。',
             jlsg_zhijiao_info: '限定技，回合结束阶段开始时，你可以令一名其他角色获得你的本回合因弃置而进入弃牌堆的牌。',
+            // jlsg_jiwux_info: '出牌阶段开始时，你可以展示一张【杀】，令其获得以下效果之一（离开手牌区后失效）：1、此【杀】不计入次数限制，且此杀被【闪】响应时你从牌堆中获得一张【杀】；2、此【杀】无距离限制且可以额外指定1个目标；，若此【杀】未造成伤害，你令你手牌中所有【杀】获得随机一项【戟舞】效果；3、此【杀】的伤害值+1,且你使用此【杀】指定目标后，可以弃置一张【杀】令此【杀】结算时视为拥有其余两项【戟舞】效果。',
             jlsg_jiwux_info: '出牌阶段开始时，你可以展示一张【杀】，令其获得以下效果之一（离开手牌区后失效）：1、此【杀】不计入次数限制；2、此【杀】无距离限制，且可以额外指定1个目标；3、此【杀】的伤害值+1。',
             jlsg_daoshi_info: '一名角色的回合结束阶段开始时，若其装备区有牌，其可以摸一张牌，然后将其装备区的一张牌交给你。',
             jlsg_lirang_info: '一名角色的回合开始阶段结束时，其可以将一张与所有「礼」花色均不同的手牌置于你的武将牌上作为「礼」，然后摸一张牌。你可以将两张「礼」当【桃】使用。',
@@ -18049,6 +18044,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               subtype: 'equip5',
               skills: ['jlsgqs_xiujian'],
               chongzhu: true,
+              loseDelay: false,
               onLose: function () {
                 player.draw();
               },
@@ -18487,7 +18483,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 var prompt = "将" + cards.map(card => get.translation(card)).join("或") + "置入弃牌堆";
                 player.chooseCard('e', prompt, card => cards.contains(card), true);
                 'step 1'
-                player.lose(card, false, 'visible').set('type', 'equip').set('getlx', false);
+                player.lose(result.cards, false, 'visible').set('type', 'equip').set('getlx', false);
               },
             },
             jlsgqs_kongmingdeng: {
@@ -18495,28 +18491,27 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               popname: true,
               enable: ['chooseToUse', 'chooseToRespond'],
               filterCard: function (card) {
-                var names = card.name;
-                return names.indexOf('jlsgqs_kongmingdeng') != -1;
+                return _status.event.player.getCards('e', 'jlsgqs_kongmingdeng').contains(card);
               },
-              check: function () {
-                return 1
-              },
-              filter: function (event, player) {
-                var card = player.get('e', '5');
-                if (card) {
-                  var name = card.name;
-                  if (name && name.indexOf('jlsgqs_kongmingdeng') == -1) return false;
-                  return _status.event.type == 'dying';
-                }
-              },
-              viewAsFilter: function (player) {
-                var card = player.get('e', '5');
-                if (card) {
-                  var name = card.name;
-                  return name && name.indexOf('jlsgqs_kongmingdeng') != -1;
-                }
-              },
+              check: () => true,
+              selectCard: -1,
               position: 'e',
+              // filter: function (event, player) {
+              //   var card = player.get('e', '5');
+              //   if (card) {
+              //     var name = card.name;
+              //     if (name && name.indexOf('jlsgqs_kongmingdeng') == -1) return false;
+              //     return _status.event.type == 'dying';
+              //   }
+              // },
+              viewAsFilter: function (player) {
+                return player.countCards('e', 'jlsgqs_kongmingdeng') && _status.event.type == 'dying';
+                // var card = player.get('e', '5');
+                // if (card) {
+                //   var name = card.name;
+                //   return name == 'jlsgqs_kongmingdeng';
+                // }
+              },
               viewAs: { name: 'tao' },
               prompt: '将孔明灯当【桃】使用',
               ai: {
@@ -19846,10 +19841,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0331",
+      version: "2.2.0401",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.04.01更新<br>
+&ensp; 修复七杀特殊规则弃置装备<br>
+&ensp; 优化七杀 袖箭 技能动画<br>
+&ensp; 优化SK张宁 雷祭 技能标记<br>
+&ensp; 优化七杀 孔明灯 UX<br>
+<span style="font-size: large;">历史：</span><br>
 2021.03.31更新<br>
 &ensp; 重写SK于禁 整毅<br>
 &ensp; 优化SR孙尚香 决裂 提示<br>
@@ -19872,53 +19873,6 @@ Visit Repository</a><br>
 &ensp; 修复七杀 太平要术 描述<br>
 &ensp; 优化七杀 草船借箭 无懈逻辑<br>
 &ensp; 优化SK神贾诩 湮灭<br>
-<span style="font-size: large;">历史：</span><br>
-2021.03.24更新<br>
-&ensp; 新增武将 <div style="display:inline" data-nature="metalmm">SK蒯越</div><br>
-&ensp; 新增武将 <div style="display:inline" data-nature="woodmm">SK周泰</div><br>
-&ensp; 重制了关兴、神孙尚香、所有三英武将的立绘<br>
-&ensp; 修复 SK曹仁 立绘<br>
-&ensp; 再次加入了七杀宝物的特殊规则 可以在拓展选项中打开<br>
-&ensp; 不同于极略三国中加强宝物，<span style="text-shadow: #F03030 1px 0 10px;">此特殊规则削弱七杀宝物，</span>请仔细阅读。<br>
-&ensp; 修复SK孙策主公技协力丢失 重写了相关代码<br>
-&ensp; 修复SR周瑜 英才 动画<br>
-&ensp; 修复SK邓芝 和盟 给牌位置<br>
-&ensp; 修复AI对SK左慈的混乱态度<br>
-&ensp; 修复SR夏侯惇 忠候 AI选择<br>
-&ensp; 修复SK司马师 同将替换<br>
-&ensp; 修复SK许攸 选将报错<br>
-&ensp; 修复SK蒋钦 同将替换<br>
-&ensp; 修复SR华佗 阵亡语音<br>
-&ensp; 修复七杀卡包中牌堆没有梅的问题<br>
-&ensp; 修复SK邓芝 素俭 触发条件<br>
-&ensp; 修复SR黄月英 合谋 时机<br>
-&ensp; 增加SK神孙权 虎踞 觉醒动画<br>
-&ensp; 修改SR郭嘉 天殇 以与srlose选项兼容。更新了描述。<br>
-&ensp; 修改SR郭嘉 慧觑 优化AI UX，重写移动代码。<br>
-&ensp; 修复SR黄盖 舟焰<br>
-&ensp; 修复SK孙乾 随骥<br>
-&ensp; 修复SK蒋钦 忘私&尚义 弃置来源<br>
-&ensp; 修复SK神刘备 激诏动画<br>
-&ensp; 修复SK曹冲 称象 点数最大为13<br>
-&ensp; 修复SK马良 协穆 技能记录 优化UX<br>
-&ensp; 修改SK胆守 拼点来源，更新时机<br>
-&ensp; 优化SK马良 雅虑 UX<br>
-&ensp; 优化SK邓芝 素俭 UX<br>
-&ensp; 优化七杀 望梅止渴 动画<br>
-&ensp; 优化SK郭女王 俭约 自动发动<br>
-&ensp; 优化SK卞夫人 化戈 AI<br>
-&ensp; 优化SK神貂蝉 天资 发动AI<br>
-&ensp; 优化SR吕布 极武 描述<br>
-&ensp; 优化SK张宝 咒缚 AI<br>
-&ensp; 优化SR孙权 雄略 UX<br>
-&ensp; 优化SK马腾 雄异 记录<br>
-&ensp; 优化SR吕蒙 国士 UX<br>
-&ensp; 优化SK费祎 衍息 UX 修复AI<br>
-&ensp; 修复SR陆逊 代劳 AI<br>
-&ensp; 修复SK神张角 雷魂 AI<br>
-&ensp; 修复SK张绣 朝凰 描述<br>
-&ensp; 修复SK周仓 刀侍 技能提示<br>
-&ensp; 修复SR曹操 治世 优化AI<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
