@@ -536,6 +536,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 backup: function (links, player) {
                   var fuc = function (result, player) {
+                    player.logSkill('jlsg_zhengyi');
                     if (player.countCards('h') > player.hp) {
                       player.chooseToDiscard(true);
                     } else {
@@ -543,7 +544,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   };
                   return {
-                    audio: 'jlsg_zhengyi',
+                    // audio: 'jlsg_zhengyi',
                     filterCard: false,
                     selectCard: 0,
                     popname: true,
@@ -6491,6 +6492,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 var num = player.countCards('h', 
                   (card) => suits.contains(get.suit(card))
                 );
+                if (num > 10) num = 10;
                 player.draw(num);
               },
             },
@@ -6721,6 +6723,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
             jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）',
             jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）',
+            jlsg_zhubao_append: '<span style="font-family: yuanli">每次至多摸十张。</span>',
             jlsg_yongji_info: '锁定技，当你于出牌阶段使用【杀】造成伤害后，你摸X张牌（X为你已损失的体力值且至多为3），且本回合可额外使用一张【杀】。',
             jlsg_wuzhi_info: '锁定技，弃牌阶段结束后，若你本回合内【杀】的使用次数未达到上限，你失去1点体力并从牌堆中获得一张【杀】',
             jlsg_wusheng_info: '你可以将一张红色牌当杀使用或打出。',
@@ -6878,7 +6881,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yaoming_info: "出牌阶段，当你使用或打出一张花色与本阶段皆不相同的牌时：第一种，你可以摸一张牌；第二种，你可以弃置一名其他角色的一张牌；第三种，你可以将场上一张牌移至另一位置；第四种，你可以对一名其他角色造成一点伤害。",
             jlsg_yaoming_3_info: "你可以移动场上的一张牌",
             jlsg_zhengyi: "整毅",
-            jlsg_zhengyi_shan: "整毅·闪",
+            jlsg_zhengyi_shan: "整毅",
             jlsg_zhengyi_info: "你出牌阶段出牌时，若你的手牌数等于你的体力值+1，你可以视为使用任意一张基本牌，然后弃一张牌；你的回合外，当你需要使用或打出一张基本牌时，若你的手牌数等于你的体力值-1，则你可以摸一张牌并视为使用或打出了此牌。",
             jlsg_kuangfu: "狂斧",
             jlsg_kuangfu_info: "当你使用【杀】对目标角色造成伤害后，你可以获得其装备区里的一张牌。",
@@ -19866,6 +19869,7 @@ Visit Repository</a><br>
 2021.04.03更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
 &ensp; 修复SK蒯越 开局摸牌<br>
+&ensp; 限制SK蒯越摸牌以防摸穿牌库<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
