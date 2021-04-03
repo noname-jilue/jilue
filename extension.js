@@ -1561,7 +1561,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   types: [],
                 };
               },
-              group: ['jlsg_yaoming_strg', 'jlsg_yaoming_clear', 'jlsg_yaoming_1', 'jlsg_yaoming_2', 'jlsg_yaoming_3', 'jlsg_yaoming_4'],
+              group: ['jlsg_yaoming_strg', 'jlsg_yaoming_1', 'jlsg_yaoming_2', 'jlsg_yaoming_3', 'jlsg_yaoming_4'],
               subfrequent: ['1'],
               subSkill: {
                 strg: {
@@ -1575,19 +1575,34 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (['heart', 'diamond', 'spade', 'club'].contains(suit) &&
                       !player.storage.jlsg_yaoming.suits.contains(suit)) {
                       player.storage.jlsg_yaoming.suits.push(suit);
+                      player.addTempSkill('jlsg_yaoming_mark','phaseUseAfter');
+                      player.markSkill('jlsg_yaoming_mark');
                     }
                     if (!player.storage.jlsg_yaoming.types.contains(type)) {
                       player.storage.jlsg_yaoming.types.push(type);
                     }
                   }
                 },
-                clear: {
-                  trigger: { player: 'phaseAfter' },
-                  silent: true,
-                  content: function () {
-                    player.storage.jlsg_yaoming = { suits: [], types: [] }
-                  }
-                }
+                mark: {
+                  onremove:function(player){
+                    player.storage.jlsg_yaoming = { suits: [], types: [] };
+
+                  },
+                  intro:{
+                    content:function(storage, player){
+                      var str = '使用过的花色：';
+                      str += player.storage.jlsg_yaoming.suits.reduce((a,b)=>a+get.translation(b), '');
+                      return str;
+                    },
+                  },
+                },
+                // clear: {
+                //   trigger: { player: 'phaseAfter' },
+                //   silent: true,
+                //   content: function () {
+                //     player.storage.jlsg_yaoming = { suits: [], types: [] }
+                //   }
+                // }
               },
             },
             jlsg_yaoming_: {
@@ -19850,6 +19865,7 @@ Visit Repository</a><br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
+&ensp; 新增 SK全琮 邀名 花色提示<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.31更新<br>
 &ensp; 重写SK于禁 整毅<br>
