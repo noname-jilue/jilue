@@ -543,6 +543,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   };
                   return {
+                    audio: 'jlsg_zhengyi',
                     filterCard: false,
                     selectCard: 0,
                     popname: true,
@@ -6436,7 +6437,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               frequent:true,
               filter:function(event,player){
-                if (_status.currentPhase == player || !_status.currentPhase.countCards('h')) return false;
+                var currPlayer = _status.currentPhase;
+                if (!currPlayer || currPlayer == player || !currPlayer.countCards('h')) return false;
                 var evt=event.getl(player);
                 return evt && evt.hs && evt.hs.length > 0;
               },
@@ -19863,6 +19865,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 Visit Repository</a><br>
 2021.04.03更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
+&ensp; 修复SK蒯越 开局摸牌<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
