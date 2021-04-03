@@ -57,6 +57,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         jlsgsk_luzhi: 'yl_luzhi',
         jlsgsk_simashi: 'jin_simashi',
         jlsgsk_jiangqin: 'jiangqing',
+        jlsgsk_guanyu: 'jsp_guanyu',
       };
       var trivialSolveCharacterReplace = function (name, prefix= '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -19856,16 +19857,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0401",
+      version: "2.2.0403",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.04.01更新<br>
+2021.04.03更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
 &ensp; 新增 SK全琮 邀名 花色提示<br>
+&ensp; 更正⭐SK关羽同将替换<br>
 <span style="font-size: large;">历史：</span><br>
 2021.03.31更新<br>
 &ensp; 重写SK于禁 整毅<br>
