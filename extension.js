@@ -544,7 +544,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     }
                   };
                   return {
-                    // audio: 'jlsg_zhengyi',
+                    audio: false,
                     filterCard: false,
                     selectCard: 0,
                     popname: true,
@@ -10395,10 +10395,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               srlose: true,
               enable: ['chooseToUse', 'chooseToRespond'],
-              // filterCard: function () {
-              //   return false;
-              // },
-              // selectCard: -1,
+              filterCard: function () {
+                return false;
+              },
+              selectCard: -1,
               viewAs: { name: 'shan' },
               viewAsFilter: function (player) {
                 return player.isTurnedOver();
@@ -19870,6 +19870,8 @@ Visit Repository</a><br>
 &ensp; 修复七杀特殊规则弃置装备<br>
 &ensp; 修复SK蒯越 开局摸牌<br>
 &ensp; 限制SK蒯越摸牌以防摸穿牌库<br>
+&ensp; 修复SK于禁 配音 logskill<br>
+&ensp; 修复SR陆逊 诱敌<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
