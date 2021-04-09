@@ -13318,9 +13318,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 target.draw(num);
                 target.showHandcards();
                 "step 1"
-                var cards = target.getCards(target.getCards('h', function (card) {
+                var cards = target.getCards('h', function (card) {
                   return get.type(card) != 'basic';
-                }));
+                });
                 // var num = target.countCards('h', function (card) {
                 //   return get.type(card) != 'basic';
                 // });
@@ -13328,8 +13328,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 //   return get.type(card) != 'basic';
                 // }));
                 if (cards) {
-                  target.damage(cards.length);
-                  target.discard(cards);
+                  target.discard(cards, player);
+                  target.damage(cards.length, player);
                 }
               },
               ai: {
@@ -16375,7 +16375,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yeyan_info: '限定技，出牌阶段，你可以弃置至少一种花色不同的手牌，然后对一至2名角色各造成等量的火属性伤害，若你以此法弃置的手牌花色数不少于3，你将失去3点体力。',
             jlsg_huju_info: '锁定技，其他角色的回合开始时，你摸一张牌。你的回合开始时，若你的手牌数为最多（或之一），你选择一项：1、失去一点体力；2、减一点体力上限，失去〖虎踞〗，并获得技能〖制衡〗和〖虎缚〗。',
             jlsg_hufu_info: '出牌阶段限一次，你可以令一名其他角色弃置X张牌（X为其装备区的牌数）。',
-            jlsg_yanmie_info: '出牌阶段，你可以弃置一张黑桃牌，令一名其他角色先弃置所有手牌再摸等量的牌并展示之，然后你可以弃置其中所有非基本牌，并对其造成等量的伤害。',
+            jlsg_yanmie_info: '出牌阶段，你可以弃置一张黑桃牌，令一名其他角色先弃置所有手牌再摸等量的牌并展示之。你弃置其中所有非基本牌，并对其造成等量的伤害。',
             jlsg_shunshi_info: '当你成为其他角色使用基本牌的目标后，你可以令你与除该角色以外的一至三名其他角色各摸一张牌，然后这些角色也成为此牌的目标。',
             jlsg_junwang_info: '锁定技，其他角色的出牌阶段开始时，若其手牌数不小于你，其须交给你一张手牌。',
             jlsg_jizhao_info: '出牌阶段对一名无标记的其他角色限一次，你可以交给其至少一张手牌，并令其获得一个「诏」标记；拥有「诏」标记的角色回合结束时，若其本回合内未造成过伤害，其受到你造成的一点伤害并失去「诏」标记。',
@@ -16573,9 +16573,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_huangyin: {
               audio: "ext:极略:1", // audio: ['jlsgsy_huangyin'],
               trigger: { player: 'drawBegin' },
-              priority: -99,
+              // priority: -99,
               direct: true,
-              unique: true,
+              // unique: true,
               check: function (event, player) {
                 var hasAtt = 0;
                 for (var i = 0; i < game.players.length; i++) {
@@ -16601,7 +16601,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 1"
                 player.chooseTarget(function (card, player, target) {
                   return player != target && target.num('hej');
-                }, '请选择获得牌的目标').ai = function (target) {
+                }, '###是否发动【荒淫】?###请选择获得牌的目标').ai = function (target) {
                   if (target.num('j')) return ai.get.attitude(player, target);
                   if (target.num('he')) return -ai.get.attitude(player, target);
                   return -ai.get.attitude(player, target);
@@ -19875,8 +19875,10 @@ Visit Repository</a><br>
 &ensp; 修复七杀特殊规则弃置装备<br>
 &ensp; 修复SK蒯越 开局摸牌报错<br>
 &ensp; 修复三英神张角 布教报错<br>
+&ensp; 修复SK神贾诩 湮灭，更正描述<br>
 &ensp; 限制SK蒯越摸牌以防摸穿牌库<br>
 &ensp; 修复SK于禁 配音 logskill<br>
+&ensp; 修复三英神孙皓 荒淫 报错<br>
 &ensp; 将SR吕布强度评价上调至a+(关闭SRlose时)<br>
 &ensp; 修复SR陆逊 诱敌<br>
 &ensp; 修复开启srlose武将强度评级错误<br>
