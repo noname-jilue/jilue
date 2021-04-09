@@ -162,6 +162,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsoul_huangyueying',
           ],
           ap: [
+            'jlsgsr_lvbu',
             'jlsgsk_zuoci',
             'jlsgsoul_caocao',
             'jlsgsoul_dianwei',
@@ -227,7 +228,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_sunluyu',
             'jlsgsk_mizhu',
             'jlsgsr_xiahoudun',
-            'jlsgsr_lvbu',
             'jlsgsk_zhangren',
             'jlsgsk_zhangbu',
             'jlsgsk_heqi',
@@ -377,7 +377,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               var nameIdx = rank[theRank].indexOf(name);
               if (nameIdx != -1 && theRank != 'd') {
                 rank[theRank].splice(nameIdx, 1);
-                rank[ranks[i + 1]].push(name);
+                if (name == 'jlsgsr_lvbu') {
+                  rank.b.push(name);
+                } else {
+                  rank[ranks[i + 1]].push(name);
+                }
+                break;
               }
             }
           } // config.srlose
@@ -6381,7 +6386,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 // player.getStat().card.sha--;
                 if (!player.hasSkill('jlsg_yongjiBuff')) {
                   player.storage.jlsg_yongjiBuff = 1;
-                  player.addTempSkill('jlsg_yongjiBuff', 'phaseUseAfter'); // 'phaseUseEnd'
+                  player.addTempSkill('jlsg_yongjiBuff'); // 'phaseUseAfter'
                 } else {
                   ++player.storage.jlsg_yongjiBuff;
                 }
@@ -17084,7 +17089,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 'step 0'
-                trigger.player.chooseCards('h',true, '布教：将一张手牌交给'+get.translation(player));
+                trigger.player.chooseCard('h',true, '布教：将一张手牌交给'+get.translation(player));
                 'step 1'
                 if (result.bool) {
                   trigger.target.give(result.cards, player);
@@ -19868,13 +19873,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 Visit Repository</a><br>
 2021.04.03更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
-&ensp; 修复SK蒯越 开局摸牌<br>
+&ensp; 修复SK蒯越 开局摸牌报错<br>
+&ensp; 修复三英神张角 布教报错<br>
 &ensp; 限制SK蒯越摸牌以防摸穿牌库<br>
 &ensp; 修复SK于禁 配音 logskill<br>
+&ensp; 将SR吕布强度评价上调至a+(关闭SRlose时)<br>
 &ensp; 修复SR陆逊 诱敌<br>
+&ensp; 修复开启srlose武将强度评级错误<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
+&ensp; 修复SK关兴 武志未计算勇继<br>
 &ensp; 新增 SK全琮 邀名 花色提示<br>
 &ensp; 更正⭐SK关羽同将替换<br>
 <span style="font-size: large;">历史：</span><br>
