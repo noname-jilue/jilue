@@ -773,15 +773,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 "step 1"
                 if (result.bool) {
                   player.logSkill("jlsg_cangshu", trigger.player);
-                  player.$give(result.cards, trigger.player);
-                  trigger.player.gain(result.cards, player);
+                  // player.$give(result.cards, trigger.player);
+                  trigger.player.gain(result.cards, player, 'giveAuto');
                 } else {
                   event.finish();
                 }
                 "step 2"
                 if (trigger.cards) {
-                  player.$draw(trigger.cards);
-                  player.gain(trigger.cards);
+                  // player.$draw(trigger.cards);
+                  player.gain(trigger.cards, 'gain2');
                 }
                 trigger.cancel();
               },
@@ -19883,6 +19883,7 @@ Visit Repository</a><br>
 &ensp; 修复SR陆逊 诱敌<br>
 &ensp; 修复开启srlose武将强度评级错误<br>
 &ensp; 优化七杀 袖箭 技能动画<br>
+&ensp; 优化SK向朗 藏书 动画<br>
 &ensp; 优化SK张宁 雷祭 技能标记<br>
 &ensp; 优化七杀 孔明灯 UX<br>
 &ensp; 修复SK关兴 武志未计算勇继<br>
