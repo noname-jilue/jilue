@@ -12008,7 +12008,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               srlose: true,
               trigger: { global: 'phaseEnd' },
               filter: function (event, player) {
-                return player.countCards('h') > 0;
+                return player.countCards('h') != 0 && event.player.isAlive();
               },
               direct: true,
               content: function () {
@@ -17092,8 +17092,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger.player.chooseCard('h',true, '布教：将一张手牌交给'+get.translation(player));
                 'step 1'
                 if (result.bool) {
-                  trigger.target.give(result.cards, player);
-                  trigger.target.draw();
+                  trigger.player.give(result.cards, player);
+                  trigger.player.draw();
                 }
               }
             },
@@ -19867,11 +19867,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0403",
+      version: "2.2.0410",
       changelog: `
 <a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.04.03更新<br>
+2021.04.11更新<br>
+&ensp; 修复三英神张角 布教报错<br>
+<span style="font-size: large;">历史：</span><br>
+2021.04.10更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
 &ensp; 修复SK蒯越 开局摸牌报错<br>
 &ensp; 修复三英神张角 布教报错<br>
@@ -19889,29 +19892,6 @@ Visit Repository</a><br>
 &ensp; 修复SK关兴 武志未计算勇继<br>
 &ensp; 新增 SK全琮 邀名 花色提示<br>
 &ensp; 更正⭐SK关羽同将替换<br>
-<span style="font-size: large;">历史：</span><br>
-2021.03.31更新<br>
-&ensp; 重写SK于禁 整毅<br>
-&ensp; 优化SR孙尚香 决裂 提示<br>
-&ensp; 优化SK程昱 捧日 动画<br>
-&ensp; 大幅优化SR陆逊 代劳 AI<br>
-&ensp; 修复三英神张角 布教<br>
-&ensp; 重写SR大乔 婉柔<br>
-&ensp; 优化了SR夏侯惇的选择提示。SR夏侯惇蠢拒了你。<br>
-&ensp; 修复SK周泰 奋激 AI<br>
-&ensp; 修复七杀 梅 配音 优化AI<br>
-&ensp; 优化SK卞夫人 化戈 AI<br>
-&ensp; 修复七杀水淹七军错误显示debuff技能<br>
-&ensp; 修复七杀玉玺获得为锁定技<br>
-&ensp; 重写SK神关羽 武神，修复武神&索魂配音<br>
-&ensp; 重写SK吉平 烈医，修复配音<br>
-&ensp; 修复SK孙乾 随骥 配音<br>
-&ensp; 重制七杀 梅 贴图<br>
-&ensp; 修复忠候闪与用多次的问题<br>
-&ensp; 修复SK向朗 勘误 配音<br>
-&ensp; 修复七杀 太平要术 描述<br>
-&ensp; 优化七杀 草船借箭 无懈逻辑<br>
-&ensp; 优化SK神贾诩 湮灭<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
