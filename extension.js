@@ -11266,7 +11266,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player.chooseToCompare(target);
                 "step 1"
                 if (result.bool) {
-                  player.draw();
+                  player.draw('nodelay');
                   player.useCard({ name: 'sha' }, target, false);
                 } else {
                   target.chooseToUse({ name: 'sha' }, player);
@@ -19874,6 +19874,7 @@ Visit Repository</a><br>
 2021.04.11更新<br>
 &ensp; 修复三英神张角 布教报错<br>
 &ensp; 优化SK关兴 勇继 配音<br>
+&ensp; 优化SR马超 邀战 动画<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.10更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
