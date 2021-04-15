@@ -8516,7 +8516,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 respondSha: true,
                 skillTagFilter: function (player) {
-                  return player.countCards('he', { type: 'equip' });
+                  if (!player.countCards('he')) return false;
                 }
               }
             },
@@ -19873,6 +19873,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 Visit Repository</a><br>
 2021.04.11更新<br>
 &ensp; 修复三英神张角 布教报错<br>
+&ensp; 优化 SR吕布 射戟杀询问<br>
 &ensp; 优化SK关兴 勇继 配音<br>
 &ensp; 优化SR马超 邀战 动画<br>
 <span style="font-size: large;">历史：</span><br>
