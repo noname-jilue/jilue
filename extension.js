@@ -57,7 +57,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         jlsgsk_luzhi: 'yl_luzhi',
         jlsgsk_simashi: 'jin_simashi',
         jlsgsk_jiangqin: 'jiangqing',
-        jlsgsk_guanyu: 'jsp_guanyu',
+        // jlsgsk_guanyu: 'jsp_guanyu',
       };
       var trivialSolveCharacterReplace = function (name, prefix= '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -1907,11 +1907,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 player.storage.jlsg_hemeng_usable--;
-                target.viewCards('和盟', player.getCards('h'));
+                // target.viewCards('和盟', player.getCards('h'));
                 target.gainPlayerCard(player,'h', 'visible', true);
                 'step 1'
-                player.viewCards('和盟', target.get('he'));
-                target.isUnderControl();
+                // player.viewCards('和盟', target.get('he'));
+                // target.isUnderControl();
                 player.gainPlayerCard(target, 'visible', true, 'he').set('ai', function (button) {
                   var card = button.link;
                   return get.value(card);
@@ -2852,14 +2852,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_feijun: {
               audio: "ext:极略:2",
+              popup: false,
               trigger: { player: 'phaseUseBegin' },
               forced: true,
               content: function () {
                 if (player.countCards('h') >= player.hp) {
+                  player.logSkill('jlsg_feijun1');
                   player.storage.jlsg_feijun = player.hp;
-                  player.addTempSkill('jlsg_feijun_more', 'phaseAfter');
+                  player.addTempSkill('jlsg_feijun_more');
                 } else {
-                  player.addTempSkill('jlsg_feijun_less', 'phaseAfter');
+                  player.logSkill('jlsg_feijun2');
+                  player.addTempSkill('jlsg_feijun_less');
                 }
               },
               subSkill: {
@@ -2881,6 +2884,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 }
               }
+            },
+            jlsg_feijun1: {
+              inherit: 'jlsg_feijun',
+              sub: true,
+              audio: 'ext:极略:true',
+            },
+            jlsg_feijun2: {
+              inherit: 'jlsg_feijun',
+              sub: true,
+              audio: 'ext:极略:true',
             },
             jlsg_muniu: {
               audio: "ext:极略:2",
@@ -12999,7 +13012,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               mark: true,
               marktext: "遁",
               intro: {
-                content: "限定技，你的回合开始时，可以选择一名无「禁」的其他角色，该角色获得技能［奇门·改］",
+                content: "限定技，你的回合开始时，可以选���一名无「禁」的其他角色，该角色获得技能［奇门·改］",
               },
               content: function () {
                 'step 0'
@@ -14921,15 +14934,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 expose: 0.4,
               }
             },
+            jlsg_tianqi_phase: {
+            },
             jlsg_tianqi: {
               // TODO: delete excessive audio clips
-              usable: 1,
+              // usable: 1,
               audio: "ext:极略:2",
               enable: ['chooseToUse', 'chooseToRespond'],
               hiddenCard: function (player, name) {
-                return lib.inpile.contains(name);
+                return lib.inpile.contains(name) && !player.isDying() && !player.hasSkill('jlsg_tianqi_phase');
               },
               filter: function (event, player) {
+                if (player.isDying() || player.hasSkill('jlsg_tianqi_phase')) return false;
                 for (var i of lib.inpile) {
                   if (i == 'shan' || i == 'wuxie') continue;
                   var type = get.type(i);
@@ -15037,6 +15053,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 backup: function (links, player) {
                   var tianqiOnUse = function (result, player) {
+                    if (player.isPhaseUsing()) {
+                      player.addTempSkill('jlsg_tianqi_phase', 'phaseUseAfter');
+                    }
                     player.logSkill('jlsg_tianqi');
                     game.log(player, '声明了' + get.translation(links[0][0]) + '牌');
                     var cards = get.cards();
@@ -15071,6 +15090,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 fireAttack: true,
                 respondShan: true,
                 respondSha: true,
+                skillTagFilter:function(player,tag,arg){
+                  if (player.isDying() || player.hasSkill('jlsg_tianqi_phase')) return false;
+                },
                 result: {
                   player: function (player) {
                     if (player.storage.jlsg_tianji_top != undefined) return 1;
@@ -15094,9 +15116,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               selectCard: -1,
               viewAs: { name: 'wuxie' },
               viewAsFilter: function (player) {
-                return !player.isDying();
+                return !player.isDying() && !player.hasSkill('jlsg_tianqi_phase');
               },
               onuse: function (result, player) {
+                if (player.isPhaseUsing()) {
+                  player.addTempSkill('jlsg_tianqi_phase', 'phaseUseAfter');
+                }
                 var cards = get.cards();
                 player.showCards(cards);
                 result.cards = cards;
@@ -15139,7 +15164,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               //   return !player.isDying() && event.parent.name != 'phaseUse';
               // },
               filterCard: function () {
-                return false
+                return false;
               },
               selectCard: -1,
               order: function (card, event, player) {
@@ -15153,9 +15178,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               viewAs: { name: 'shan' },
               viewAsFilter: function (player) {
-                return !player.isDying();
+                return !player.isDying() && !player.hasSkill('jlsg_tianqi_phase');
               },
               onuse: function (result, player) {
+                if (player.isPhaseUsing()) {
+                  player.addTempSkill('jlsg_tianqi_phase', 'phaseUseAfter');
+                }
                 var cards = get.cards();
                 player.showCards(cards);
 
@@ -15166,6 +15194,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 delete player.storage.jlsg_tianji_top;
               },
               onrespond: function (result, player) {
+                if (player.isPhaseUsing()) {
+                  player.addTempSkill('jlsg_tianqi_phase', 'phaseUseAfter');
+                }
                 var cards = get.cards();
                 player.showCards(cards);
 
@@ -19821,7 +19852,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       debug: {
         name: "<span style='color:#808080'>debug</span>",
         intro: "禁用所有其他武将包 <span style='color:#FF0000'>测试用！</span>",
-        init: false
+        init: false,
       }
     }, 
     help: {
@@ -19876,6 +19907,9 @@ Visit Repository</a><br>
 &ensp; 优化 SR吕布 射戟杀询问<br>
 &ensp; 优化SK关兴 勇继 配音<br>
 &ensp; 优化SR马超 邀战 动画<br>
+&ensp; 优化SK邓芝 和盟 动画<br>
+&ensp; 修复SK王平 飞军 配音映射<br>
+&ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.10更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
