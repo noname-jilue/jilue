@@ -1038,14 +1038,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 "step 0"
-                player.chooseTarget(get.prompt('jlsg_sijian'), function (card, player, target) {
+                player.chooseTarget(get.prompt(event.name), function (card, player, target) {
                   return player != target && target.countDiscardableCards(player, 'he') > 0;
                 }).set('ai', function (target) {
                   return -get.attitude(_status.event.player, target);
                 });
                 "step 1"
                 if (result.bool) {
-                  player.logSkill('jlsg_sijian', result.targets);
+                  player.logSkill(event.name, result.targets);
                   event.target = result.targets[0];
                   player.discardPlayerCard(player.hp, event.target, true);
                 }
@@ -1321,13 +1321,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 "step 0"
-                player.chooseTarget(get.prompt('jlsg_kuangzheng')).set('ai', function (target) {
+                player.chooseTarget(get.prompt(event.name)).set('ai', function (target) {
                   return get.attitude(_status.event.player, target);
                 });
                 "step 1"
                 if (result.bool) {
                   event.target = result.targets[0];
-                  player.logSkill('jlsg_kuangzheng', result.targets);
+                  player.logSkill(event.name, result.targets);
                 } else {
                   event.finish();
                 }
@@ -5022,6 +5022,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_qianhuan: {
               audio: "ext:极略:2",
+              // forbid:['guozhan'],
               trigger: {
                 player: ['phaseBegin', 'enterGame'],
                 global: 'gameDrawBegin',
@@ -9018,12 +9019,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: { player: 'shaMiss' },
               priority: -1,
               check: function (event, player) {
-                return get.attitude(player, event.target) < 0;
+                return get.attitude(player, event.target) < 2;
               },
               content: function () {
                 player.draw();
                 if (trigger.target.countCards('h')) {
-                  player.discardPlayerCard(trigger.target, 'h');
+                  player.discardPlayerCard(trigger.target, 'h', true);
                 }
               }
             },
@@ -19910,6 +19911,7 @@ Visit Repository</a><br>
 &ensp; 优化SK邓芝 和盟 动画<br>
 &ensp; 修复SK王平 飞军 配音映射<br>
 &ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
+&ensp; 优化SR孙尚香 习武 优化AI<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.10更新<br>
 &ensp; 修复七杀特殊规则弃置装备<br>
