@@ -9490,14 +9490,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 0'
                 var att = get.attitude(player, trigger.player);
                 player.chooseCardButton(get.prompt('jlsg_guoshi', trigger.player), trigger.player.getStorage("jlsg_guoshi").filterInD('d')).ai = function (button) {
-                  if (att > 0) return 1;
-                  return 0;
+                  debugger;
+                  if (att > 0) return get.value(button.link, trigger.player);
+                  return -get.value(button.link, trigger.player);
                 }
                 'step 1'
                 if (result.bool) {
                   player.logSkill('jlsg_guoshi', trigger.player);
                   trigger.player.gain(result.buttons[0].link);
                   trigger.player.$gain(result.buttons[0].link);
+                }
+                if (trigger.player.ai.shown > player.ai.shown) {
+                  player.addExpose(0.2);
                 }
                 'step 2'
                 trigger.player.storage.jlsg_guoshi = [];
@@ -17675,37 +17679,29 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_canlue: {
               audio: "ext:极略:1", // audio: ['jlsgsy_canlue'],
-              trigger: { global: 'gainEnd' },
+              trigger: { source: 'gainEnd' },
               forced: true,
               filter: function (event, player) {
-                if (event.source == player && event.player != player && event.cards && event.cards.length) return event.player.isAlive();
-                return false;
+                return event.player && event.player != player && event.player.isIn();
               },
-              logTarget: function (event, player) {
-                return event.player;
-              },
+              logTarget: 'player',
               content: function () {
                 trigger.player.chooseToDiscard('he', trigger.cards.length, true);
               },
               group: ['jlsgsy_canlue2'],
             },
             jlsgsy_canlue2: {
-              audio: "ext:极略:1", // audio: ['jlsgsy_canlue'],
-              trigger: { global: 'gainEnd' },
+              audio: "jlsgsy_canlue",
+              trigger: { player: 'gainEnd' },
               filter: function (event, player) {
-                if (event.source != player && event.player == player && event.source != undefined && event.cards && event.cards.length) return event.source.isAlive();
-                return false;
+                return event.source && event.source != player && event.source.isIn();
               },
-              prompt: function (event, player) {
-                var str = '';
-                str += '是否对' + get.translation(event.source) + '发动【残掠】？'
-                return str;
+              check: function (event, player) {
+                return get.damageEffect(event.source, player, player) > 0;
               },
-              logTarget: function (event, player) {
-                return event.source;
-              },
+              logTarget: 'source',
               content: function () {
-                trigger.source.damage(trigger.cards.length);
+                trigger.source.damage(trigger.cards.length, player);
               },
             },
             jlsgsy_chanxian: {
@@ -17892,7 +17888,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             // jlsgsy_shenji_info:'若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
             jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
             jlsgsy_chanxian_info: '出牌阶段限一次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
-            jlsgsy_canlue_info: '你每从其他角色处获得一张牌时，可对其造成1点伤害；其他角色每获得你一张牌时，须弃置一张牌',
+            jlsgsy_canlue_info: '你从其他角色处获得牌时，可对其造成等量的伤害；锁定技，其他角色获得你的牌时，须弃置等量的牌',
             jlsgsy_zongyu_info: '出牌阶段，你可以主动失去1点体力，视为使用一张【酒】',
             jlsgsy_lingnue_info: '出牌阶段，你每使用【杀】对目标角色造成一次伤害，可以进行一次判定， 若结果为黑色则获得该判定牌且该【杀】不计入每回合使用限制',
             jlsgsy_baozheng_info: '锁定技，其他角色摸牌阶段结束时，若该角色手牌数大于你，须选择一项：交给你一张方块牌；或受到你造成的1点伤害。',
@@ -19900,16 +19896,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0410",
+      version: "2.2.0418",
       changelog: `
-<a onclick="if (lib.jlsg) lib.jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
+<a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.04.11更新<br>
+2021.04.18更新<br>
 &ensp; 修复三英神张角 布教报错<br>
+&ensp; 修复三英神张让 残略 配音 描述 AI<br>
 &ensp; 优化 SR吕布 射戟杀询问<br>
 &ensp; 优化SK关兴 勇继 配音<br>
 &ensp; 优化SR马超 邀战 动画<br>
 &ensp; 优化SR郭嘉 慧觑 动画<br>
+&ensp; 优化SR吕蒙 国士 AI<br>
 &ensp; 优化SK邓芝 和盟 动画<br>
 &ensp; 修复SK王平 飞军 配音映射<br>
 &ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
