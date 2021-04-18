@@ -8338,11 +8338,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 'step 3'
                 if (result.bool) {
+                  player.line(result.targets[0]);
                   result.targets[0].damage(player);
                   player.draw();
                 }
                 // player.line2(result.targets);
-                event.targets = result.targets;
+                // event.targets = result.targets;
               },
             },
             jlsg_jiwu: {
@@ -19908,6 +19909,7 @@ Visit Repository</a><br>
 &ensp; 优化 SR吕布 射戟杀询问<br>
 &ensp; 优化SK关兴 勇继 配音<br>
 &ensp; 优化SR马超 邀战 动画<br>
+&ensp; 优化SR郭嘉 慧觑 动画<br>
 &ensp; 优化SK邓芝 和盟 动画<br>
 &ensp; 修复SK王平 飞军 配音映射<br>
 &ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
