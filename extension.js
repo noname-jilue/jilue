@@ -12869,73 +12869,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           characterIntro: {},
           skill: {
-            jlsg_chanxian: {
-              audio: "ext:极略:2",
-              enable: 'phaseUse',
-              usable: 1,
-              unique: true,
-              filterCard: true,
-              discard: false,
-              prepare: 'give',
-              position: 'h',
-              filter: function (event, player) {
-                return player.countCards('h') > 0;
-              },
-              filterTarget: function (card, player, target) {
-                return player != target;
-              },
-              check: function (card) {
-                return 6 - get.value(card);
-              },
-              content: function () {
-                "step 0"
-                player.showCards(cards[0]);
-                var types = [];
-                for (var i = 0; i < cards.length; i++) {
-                  types.add(get.type(cards[i], 'trick'));
-                }
-                "step 1"
-                target.gain(cards[0], player);
-                event.player = player;
-                target.chooseCard('交给' + get.translation(player) + '一张大于' + get.number(cards[0]) + '的牌然后弃置一张牌或者对' + get.translation(player) + '以外的一名角色造成1点伤害', function (card) {
-                  return get.number(card) > get.number(cards[0]);
-                }).ai = function (card, player) {
-                  return 7 - get.value(card);
-                };
-                "step 2"
-                if (result.bool) {
-                  player.gain(result.cards[0], target);
-                  target.$give(1, player);
-                  target.chooseToDiscard('he', true);
-                  event.finish();
-                } else {
-                  event.target = target;
-                  if (game.players.length <= 2) {
-                    target.damage(event.target);
-                    event.finish();
-                  }
-                  target.chooseTarget('请选择一名目标', function (card, player, target) {
-                    return event.player != target;
-                  }, true).ai = function (target) {
-                    return -get.attitude(player, target);
-                  };
-                }
-                "step 3"
-                if (result.bool && result.targets && result.targets.length) {
-                  event.target.line(result.targets[0], 'green');
-                  result.targets[0].damage(event.target);
-                }
-              },
-              ai: {
-                order: 6,
-                result: {
-                  target: function (player, target) {
-                    return get.attitude(player, target);
-                  },
-                  player: -1,
-                },
-              },
-            },
             jlsg_qimen: {
               group: ['jlsg_qimen2'],
               mark: true,
@@ -17714,46 +17647,43 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               prepare: 'give',
               position: 'h',
               filter: function (event, player) {
-                return player.num('h') > 0;
+                return player.countCards('h') > 0;
               },
-              filterTarget: function (card, player, target) {
-                return player != target;
-              },
+              filterTarget: lib.filter.notMe,
               check: function (card) {
                 return 6 - ai.get.value(card);
               },
               content: function () {
                 "step 0"
                 player.showCards(cards[0]);
-                var types = [];
-                for (var i = 0; i < cards.length; i++) {
-                  types.add(get.type(cards[i], 'trick'));
-                }
-                "step 1"
                 target.gain(cards[0], player);
+                "step 1"
                 event.player = player;
+                var damageEffect = Math.max(...game.filterPlayer(c=> c != player).map(c=>get.damageEffect(c, target, target)));
                 target.chooseCard('交给' + get.translation(player) + '一张大于' + get.number(cards[0]) + '的牌然后弃置一张牌或者对' + get.translation(player) + '以外的一名角色造成1点伤害', function (card) {
                   return get.number(card) > get.number(cards[0]);
                 }).ai = function (card, player) {
-                  return 7 - ai.get.value(card);
+                  // return 7 - ai.get.value(card);
+                  return -damageEffect - get.value(card);
                 };
                 "step 2"
                 if (result.bool) {
-                  player.gain(result.cards[0], target);
-                  target.$give(1, player);
+                  target.give(result.cards, player);
+                  // player.gain(result.cards[0], target);
+                  // target.$give(1, player);
                   target.chooseToDiscard('he', true);
                   event.finish();
                 }
                 else {
                   event.target = target;
                   if (game.players.length <= 2) {
-                    target.damage(event.target);
+                    target.damage(target);
                     event.finish();
                   }
                   target.chooseTarget('请选择一名目标', function (card, player, target) {
                     return event.player != target;
                   }, true).ai = function (target) {
-                    return -ai.get.attitude(player, target);
+                    return get.damageEffect(target, event.target);
                   };
                 }
                 "step 3"
@@ -18700,29 +18630,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               equipSkill: true,
               trigger: { player: 'shaMiss' },
               filter: function (event, player) {
-                return event.target && event.target.countCards('e');
-
+                return event.target && event.target.countGainableCards(player, 'e');
               },
-              prompt: function (event, player) {
-                var str = '';
-                str += '是否发动【七星宝刀】获得' + get.translation(event.target) + '装备区中的一张牌并将【七星宝刀】交给他？';
-                return str;
-              },
+              // prompt: function (event, player) {
+              //   return `###是否发动【七星宝刀】?###获得${get.translation(event.target)}装备区中的一张牌并将【七星宝刀】交给他`;
+              // },
               check: function (event, player) {
                 return 1;
               },
               content: function () {
-                var card = player.get('e', '5');
+                'step 0'
+                var card=player.getEquip('jlsgqs_qixingbaodao');
                 if (card) {
-                  var name = card.name;
-                  if (name && name.indexOf('jlsgqs_qixingbaodao') != -1 && card) {
-                    trigger.target.gain(card, player);
-                    player.$give(card, trigger.target);
-                    if (trigger.target.num('e') > 0) {
-                      player.gainPlayerCard('e', trigger.target, true);
-                    }
-                  }
+                  player.give(card, trigger.target);
                 }
+                if (trigger.target.countGainableCards(player, 'e') == 0) {
+                  event.finish();
+                }
+                'step 1'
+                player.gainPlayerCard('e', trigger.target, true);
               },
             },
             jlsgqs_dunjiatianshu: {
@@ -19903,6 +19829,8 @@ Visit Repository</a><br>
 2021.04.18更新<br>
 &ensp; 修复三英神张角 布教报错<br>
 &ensp; 修复三英神张让 残略 配音 描述 AI<br>
+&ensp; 修复七杀 七星宝刀<br>
+&ensp; 优化三英神张让 馋陷 非挑战模式下AI 修复拿牌顺序<br>
 &ensp; 优化 SR吕布 射戟杀询问<br>
 &ensp; 优化SK关兴 勇继 配音<br>
 &ensp; 优化SR马超 邀战 动画<br>
