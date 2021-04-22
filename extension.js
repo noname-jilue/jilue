@@ -6873,6 +6873,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_xiongyi_info: "锁定技，准备阶段，若你的体力值为1，你恢复1点体力；若你没有手牌，你摸两张牌。",
             jlsg_sijian: "死谏",
             jlsg_gangzhi: "刚直",
+            jlsg_gangzhi2: "刚直",
             jlsg_sijian_info: "当你失去所有手牌后，你可以弃置一名其他角色的X张牌(X为你的体力值)。",
             jlsg_gangzhi_info: "当你受到伤害时，若你有手牌，你可以弃置所有手牌，然后防止此伤害，若你没有手牌，你可以将武将牌翻面，然后将手牌数补至体力上限。",
             jlsg_yanxi: "衍息",
@@ -19822,10 +19823,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0418",
+      version: "2.2.0419",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.04.19更新<br>
+&ensp; 修复三英神董卓 凌虐 配音<br>
+&ensp; 修复SK田丰 刚直 技能名称<br>
+<span style="font-size: large;">历史：</span><br>
 2021.04.18更新<br>
 &ensp; 修复三英神张角 布教报错<br>
 &ensp; 修复三英神张让 残略 配音 描述 AI<br>
@@ -19840,25 +19845,6 @@ Visit Repository</a><br>
 &ensp; 修复SK王平 飞军 配音映射<br>
 &ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
 &ensp; 优化SR孙尚香 习武 优化AI<br>
-<span style="font-size: large;">历史：</span><br>
-2021.04.10更新<br>
-&ensp; 修复七杀特殊规则弃置装备<br>
-&ensp; 修复SK蒯越 开局摸牌报错<br>
-&ensp; 修复三英神张角 布教报错<br>
-&ensp; 修复SK神贾诩 湮灭，更正描述<br>
-&ensp; 限制SK蒯越摸牌以防摸穿牌库<br>
-&ensp; 修复SK于禁 配音 logskill<br>
-&ensp; 修复三英神孙皓 荒淫 报错<br>
-&ensp; 将SR吕布强度评价上调至a+(关闭SRlose时)<br>
-&ensp; 修复SR陆逊 诱敌<br>
-&ensp; 修复开启srlose武将强度评级错误<br>
-&ensp; 优化七杀 袖箭 技能动画<br>
-&ensp; 优化SK向朗 藏书 动画<br>
-&ensp; 优化SK张宁 雷祭 技能标记<br>
-&ensp; 优化七杀 孔明灯 UX<br>
-&ensp; 修复SK关兴 武志未计算勇继<br>
-&ensp; 新增 SK全琮 邀名 花色提示<br>
-&ensp; 更正⭐SK关羽同将替换<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
