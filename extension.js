@@ -55,7 +55,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       };
       var CharacterReplaceExclude = {
         jlsgsk_luzhi: 'yl_luzhi',
-        jlsgsk_simashi: 'jin_simashi',
+        jlsgsk_huangyueying: 'jsp_huangyueying',
+        // jlsgsk_simashi: 'jin_simashi',
         jlsgsk_jiangqin: 'jiangqing',
         // jlsgsk_guanyu: 'jsp_guanyu',
       };
@@ -19830,6 +19831,7 @@ Visit Repository</a><br>
 2021.04.19更新<br>
 &ensp; 修复三英神董卓 凌虐 配音<br>
 &ensp; 修复SK田丰 刚直 技能名称<br>
+&ensp; 优化同将替换<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.18更新<br>
 &ensp; 修复三英神张角 布教报错<br>
