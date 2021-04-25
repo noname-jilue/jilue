@@ -19973,11 +19973,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0419",
+      version: "2.2.0426",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.04.19更新<br>
+2021.04.26更新<br>
 &ensp; 修复三英神董卓 凌虐 配音<br>
 &ensp; 修复SK田丰 刚直 技能名称<br>
 &ensp; 重写SK张布 朝臣 修复AI 修复配音，加入多个张布时的支持<br>
