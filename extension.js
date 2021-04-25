@@ -576,26 +576,47 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return (button.link[2] == 'sha') ? 1 : -1;
                 },
                 backup: function (links, player) {
-                  var fuc = function (result, player) {
-                    player.logSkill('jlsg_zhengyi');
-                    if (player.countCards('h') > player.hp) {
-                      player.chooseToDiscard(true);
-                    } else {
-                      player.draw('nodelay');
-                    }
-                  };
-                  return {
+                  var A = {
                     audio: false,
-                    filterCard: false,
-                    selectCard: 0,
                     popname: true,
-                    viewAs: { name: links[0][2], nature: links[0][3] },
-                    onuse: fuc,
-                    onrespond: fuc,
+                    // ignoreMod:true,
+                    viewAs: {
+                      name: links[0][2],
+                      nature: links[0][3],
+                      suit:'none',
+                      number:null,
+                      isCard:true,
+                    },
+                  };
+                  if (player.countCards('h') > player.hp) {
+                    A.precontent = function() {
+                      player.logSkill('jlsg_zhengyi');
+                      var card=event.result.cards[0];
+                      event.card=card;
+                      player.discard(card);
+                      // player.$throw(card,1000);
+                      event.result.card = {
+                        name: event.result.card.name,
+                        nature: event.result.card.nature,
+                        // cards: [],
+                      };
+                      event.result.cards = [];
+                    };
+                  } else {
+                    A.precontent = function() {
+                      player.logSkill('jlsg_zhengyi');
+                      player.draw('nodelay');
+                    };
+                    A.selectCard = -1;
+                    A.filterCard = () => false;
+                    // A.onuse = A.onrespond = function (result, player) { player.draw('nodelay');};
                   }
+                  return A;
                 },
                 prompt: function (links, player) {
-                  return '选择' + get.translation({ name: links[0][2], nature: links[0][3] }) + '的目标';
+                  var str = '视为使用或打出' + get.translation({ name: links[0][2], nature: links[0][3] });
+                  if (player.hp <= player.countCards('h')) str = '弃置一张手牌，' + str;
+                  return str;
                 }
               },
               ai: {
@@ -618,20 +639,39 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       ? player.countCards('h') - player.hp == 1
                       : player.hp - player.countCards('h') == 1;
                   },
-                  filterCard: function () { return false },
-                  selectCard: -1,
-                  check: () => true,
-                  viewAs: { name: 'shan' },
+                  filterCard: function (card, player) { 
+                    return _status.currentPhase == player
+                    ? true : false; 
+                  },
+                  selectCard: function () {
+                    return _status.currentPhase == _status.event.player
+                    ? 1 : -1;
+                  },
+                  // check: () => true,
+                  // ignoreMod:true,
+                  viewAs: {
+                    name: 'shan',
+                    suit:'none',
+                    number:null,
+                  },
                   onrespond: function (result, player) {
                     if (_status.currentPhase == player) {
-                      player.chooseToDiscard(true);
+                      player.discard(result.cards);
+                      result.card = {
+                        name: result.card.name,
+                      };
+                      result.cards=[];
                     } else {
                       player.draw("nodelay");
                     }
                   },
                   onuse: function (result, player) {
                     if (_status.currentPhase == player) {
-                      player.chooseToDiscard(true);
+                      player.discard(result.cards);
+                      result.card = {
+                        name: result.card.name,
+                      };
+                      result.cards=[];
                     } else {
                       player.draw("nodelay");
                     }
@@ -824,74 +864,138 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_kanwu: {
               audio: "ext:极略:1",
-              group: ['jlsg_kanwu1', 'jlsg_kanwu2', "jlsg_kanwu3"],
-            },
-            jlsg_kanwu1: {
-              audio: "jlsg_kanwu",
               enable: ['chooseToUse', 'chooseToRespond'],
+              hiddenCard: function (player, name) {
+                if (get.type(name) != 'basic' || name == 'shan') return false;
+                return _status.currentPhase != player && player.countCards('h');
+              },
               filter: function (event, player) {
-                return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
+                if (_status.currentPhase == player || !player.countCards('h', {type:['delay', 'trick']})) return false;
+                for (var i of lib.inpile) {
+                  if (get.type(i) != 'basic' || i == 'shan') continue;
+                  if (event.filterCard({ name: i }, player, event)) return true;
+                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
+                    return true;
+                  }
+                }
+                return false;
               },
-              filterCard: function (card) {
-                return get.type(card, 'trick') == 'trick';
-              },
-              check: function (card) {
-                return 7 - get.value(card);
-              },
-              selectCard: 1,
-              viewAs: { name: 'shan' },
-              ai: {
-                order: 7,
-              },
-            },
-            jlsg_kanwu2: {
-              audio: "jlsg_kanwu",
-              enable: ['chooseToRespond', 'chooseToUse'],
-              filter: function (event, player) {
-                return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
-              },
-              filterCard: function (card) {
-                return get.type(card, 'trick') == 'trick';
-              },
-              check: function (card) {
-                return 7.5 - get.value(card);
-              },
-              selectCard: 1,
-              viewAs: { name: 'tao' },
-              ai: {}
-            },
-            jlsg_kanwu3: {
-              audio: "jlsg_kanwu",
-              enable: ['chooseToUse', 'chooseToRespond'],
-              filter: function (event, player) {
-                return _status.currentPhase != player && player.countCards("h", { type: "trick" }) > 0;
-              },
-              filterCard: function (card) {
-                return get.type(card, 'trick') == 'trick';
-              },
-              check: function (card) {
-                return 6 - get.value(card);
-              },
-              selectCard: 1,
-              viewAs: { name: 'sha' },
-              ai: {
-                order: function () {
-                  if (_status.event.player.hasSkillTag('presha', true, null, true)) return 10;
-                  return 3;
-                },
-                result: {
-                  target: function (player, target) {
-                    if (player.hasSkill('jiu') && !target.getEquip('baiyin')) {
-                      if (get.attitude(player, target) > 0) {
-                        return -6;
-                      } else {
-                        return -3;
-                      }
+              chooseButton: {
+                dialog: function (event, player) {
+                  var list = [];
+                  for (var i of lib.inpile) {
+                    if (get.type(i) != 'basic' || i == 'shan') continue;
+                    list.push(['basic', '', i]);
+                    if (i == 'sha') {
+                      list.push(['basic', '', i, 'fire']);
+                      list.push(['basic', '', i, 'thunder']);
+                      list.push(['basic', '', i, 'ice']);
                     }
-                    return -1.5;
-                  },
+                  }
+                  return ui.create.dialog('勘误', [list, 'vcard']);
+                },
+                filter: function (button, player) {
+                  var evt = _status.event.getParent();
+                  return evt.filterCard({ name: button.link[2], nature: button.link[3] }, player, evt);
+                },
+                check: function (button) {
+                  var player = _status.event.player;
+                  var shaTarget = false;
+                  for (var i = 0; i < game.players.length; i++) {
+                    if (player.canUse('sha', game.players[i]) && ai.get.effect(game.players[i], { name: 'sha' }, player) > 0) {
+                      shaTarget = true;
+                    }
+                  }
+                  if (player.isDamaged()) return (button.link[2] == 'tao') ? 1 : -1;
+                  if (shaTarget && player.num('h', 'sha') && !player.num('h', 'jiu')) return (button.link[2] == 'jiu') ? 1 : -1;
+                  if (shaTarget && !player.num('h', 'sha')) return (button.link[2] == 'sha') ? 1 : -1;
+                  return (button.link[2] == 'sha') ? 1 : -1;
+                },
+                backup: function (links, player) {
+                  return {
+                    filterCard:function(card){
+                      return get.type(card, 'trick')=='trick';
+                    },
+                    audio: false,
+                    popname: true,
+                    // ignoreMod:true,
+                    viewAs: {
+                      name: links[0][2],
+                      nature: links[0][3],
+                      suit:'none',
+                      number:null,
+                      isCard:true,
+                    },
+                    precontent:function(){
+                      'step 0'
+                      player.logSkill('jlsg_kanwu');
+                      var card=event.result.cards[0];
+                      event.card=card;
+                      player.discard(card);
+                      event.result.card = {
+                        name: event.result.card.name,
+                        nature: event.result.card.nature,
+                        // cards: [],
+                      };
+                      event.result.cards = [];
+                    },
+                  };
+                },
+                // prompt: function (links, player) {
+                //   return '弃置一张锦囊牌，视为使用或打出' + get.translation({ name: links[0][2], nature: links[0][3] });
+                // }
+              },
+              ai: {
+                order: 6,
+                result: {
+                  player: 1,
+                },
+                // threaten: 1.3,
+                respondSha: true,
+                fireattack: true,
+                skillTagFilter: function (player) {
+                  return _status.currentPhase != player && player.countCards('h');
                 },
               },
+              group: ['jlsg_kanwu_shan'],
+              subSkill: {
+                shan: {
+                  audio: "jlsg_kanwu", // audio: ["jieyue1", 2],
+                  enable: ['chooseToUse', 'chooseToRespond'],
+                  filter: function (event, player) {
+                    return _status.currentPhase != player;
+                  },
+                  filterCard: function (card, player) { 
+                    return get.type(card, 'trick')=='trick';
+                  },
+                  // check: () => true,
+                  viewAs: {
+                    name: 'shan',
+                    suit:'none',
+                    number:null,
+                  },
+                  onrespond: function (result, player) {
+                    player.discard(result.cards);
+                    result.card = {
+                      name: result.card.name,
+                    };
+                    result.cards=[];
+                  },
+                  onuse: function (result, player) {
+                    player.discard(result.cards);
+                    result.card = {
+                      name: result.card.name,
+                    };
+                    result.cards=[];
+                  },
+                  ai: {
+                    skillTagFilter: function (player) {
+                      return _status.currentPhase != player && player.countCards('h');
+                    },
+                    respondShan: true
+                  }
+                },
+              }
             },
             jlsg_huage: {
               audio: "ext:极略:2",
@@ -2178,15 +2282,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               group: null,
             },
             jlsg_chaochen: {
-              audio: "ext:极略:2",
+              audio: "ext:极略:1",
               usable: 1,
               enable: 'phaseUse',
               filterCard: true,
               selectCard: [1, Infinity],
               discard: false,
-              prepare: function (cards, player, targets) {
-                player.$give(cards.length, targets[0]);
-              },
+              lose:false,
+              // prepare: function (cards, player, targets) {
+              //   player.$give(cards.length, targets[0]);
+              // },
               filterTarget: function (card, player, target) {
                 return player != target;
               },
@@ -2195,15 +2300,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return 0;
               },
               content: function () {
-                target.gain(cards);
-                target.storage.jlsg_chaochen = player;
+                player.give(cards, target);
+                // target.gain(cards);
+                // target.storage.jlsg_chaochen = player;
                 target.addTempSkill('jlsg_chaochen2', { player: 'phaseAfter' });
+                target.markAuto('jlsg_chaochen2', [player]);
               },
               ai: {
                 order: 5,
                 result: {
                   player: -1,
-                  target: function (target) {
+                  target: function (player, target) {
                     var th = target.countCards('h');
                     if (th + 1 > target.hp) return -1;
                     return 0;
@@ -2212,21 +2319,31 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_chaochen2: {
-              audio: "ext:极略:2",
+              audio: "jlsg_chaochen",
               mark: true,
               marktext: '朝',
               intro: {
-                content: "该角色的回合开始阶段开始时，若其手牌数大于其体力值，你对其造成1点伤害",
+                content: "回合开始时，若手牌数大于体力值，受到$造成的1点伤害",
               },
               trigger: { player: 'phaseBegin' },
               filter: function (event, player) {
-                return player.countCards('h') > player.hp;
+                return player.storage.jlsg_chaochen2 && player.countCards('h') > player.hp;
               },
               direct: true,
+              onremove:function(player){
+                delete player.storage.jlsg_chaochen2;
+              },
               content: function () {
-                player.storage.jlsg_chaochen.logSkill('jlsg_chaochen2', player);
-                player.damage(player.storage.jlsg_chaochen);
-                delete player.storage.jlsg_chaochen;
+                'step 0'
+                var target = player.storage.jlsg_chaochen2.shift();
+                target.logSkill('jlsg_chaochen2', player);
+                player.damage(target);
+                if (player.storage.jlsg_chaochen2) {
+                  event.redo();
+                }
+                // player.storage.jlsg_chaochen2.logSkill('jlsg_chaochen2', player);
+                // player.damage(player.storage.jlsg_chaochen2);
+                // delete player.storage.jlsg_chaochen2;
               }
             },
             jlsg_quanzheng: {
@@ -6891,9 +7008,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_huntian_info: "当你的牌因弃置而进入弃牌堆时，你可将其中任意张置于牌堆顶，然后从牌堆随机获得一张与这些牌类别均不同的牌。",
             jlsg_cangshu: "藏书",
             jlsg_kanwu: "勘误",
-            jlsg_kanwu1: "勘误",
-            jlsg_kanwu2: "勘误",
-            jlsg_kanwu3: "勘误",
+            jlsg_kanwu_shan: "勘误",
 
             jlsg_cangshu_info: "当其他角色使用非延时类锦囊牌时，你可以交给其一张基本牌，然后获得此牌并令其无效。",
             jlsg_kanwu_info: "当你于回合外需要使用或打出一张基本牌时，你可以弃置一张锦囊牌，视为使用或打出之。",
@@ -12776,7 +12891,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_jiuzhu_info: '每当一张非转化的【闪】进入弃牌堆时，你可以用一张不为【闪】的牌替换之。若此时不是你的回合，你可以视为对当前回合角色使用一张无视防具的【杀】。',
             jlsg_tuwei_info: '每当一张非转化的【杀】进入弃牌堆时，若你是此【杀】的目标或使用者，你可以弃置一张能造成伤害的牌，然后弃置此牌目标或使用者的共计两张牌。',
             // jlsg_xujin_info: '摸牌阶段，你可以放弃摸牌，改为展示牌堆顶的5张牌，并令一名角色获得其中1种花色的所有牌，再将其余的牌置入弃牌堆。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
-            jlsg_xujin_info: '摸牌阶段开始时，你展示牌堆顶的五张牌，然后，你可以放弃摸牌并将其中一种花色的牌交给一名角色。若如此做，你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。',
+            jlsg_xujin_info: '摸牌阶段开始时，你展示牌堆顶的五张牌，然后，你可以放弃摸牌并将其中一种花色的牌交给一名角色，令你本回合的攻击范围和可以使用的【杀】数量与以此法被获得的牌的数量相同。否则你将展示的牌置入弃牌堆。',
             jlsg_paoxiao_info: '出牌阶段，当你使用【杀】对目标角色造成一次伤害并结算完毕后，你可以摸一张牌，然后选择一项：使用一张无视距离的【杀】，或令该角色弃置你的一张牌。',
             jlsg_benxi_info: '锁定技，你计算与其他角色的距离时始终-1.你使用【杀】指定目标后，目标角色须弃置一张装备牌，否则此【杀】不可被【闪】响应。',
             jlsg_yaozhan_info: '出牌阶段限一次，你可以与一名其他角色拼点：若你赢，你摸一张牌并视为对其使用一张【杀】（此【杀】不计入每回合的使用限制）；若你没赢，该角色可以对你使用一张【杀】。',
@@ -19865,8 +19980,13 @@ Visit Repository</a><br>
 2021.04.19更新<br>
 &ensp; 修复三英神董卓 凌虐 配音<br>
 &ensp; 修复SK田丰 刚直 技能名称<br>
+&ensp; 重写SK张布 朝臣 修复AI 修复配音，加入多个张布时的支持<br>
+&ensp; 优化SR张飞 蓄劲 描述<br>
+&ensp; 重写SK于禁 整毅，现在整毅对回合内发动有更好的支持<br>
+&ensp; 重写SK向朗 勘误<br>
 &ensp; 优化同将替换<br>
 &ensp; 添加了对千幻聆音 换肤拓展的支持，并加入了三个官方皮肤<br>
+&ensp; 千幻聆音支持拓展添加原生武将皮肤后，我可能会看极略玩家的需求出一个极略换肤换配音包<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.18更新<br>
 &ensp; 修复三英神张角 布教报错<br>
