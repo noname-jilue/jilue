@@ -6806,7 +6806,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yicong: '义从',
             jlsg_muma: '募马',
             jlsg_suiji: '随骥',
-            jlsg_fengyi: '风仪',
+            jlsg_fengyi: '凤仪',
             jlsg_yalv: '雅虑',
             jlsg_xiemu: '协穆',
             jlsg_xiemu2: '协穆',
@@ -19973,10 +19973,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0426",
+      version: "2.2.0428",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.04.28更新<br>
+&ensp; 修复SK孙乾 技能名<br>
+<span style="font-size: large;">历史：</span><br>
 2021.04.26更新<br>
 &ensp; 修复三英神董卓 凌虐 配音<br>
 &ensp; 修复SK田丰 刚直 技能名称<br>
@@ -19987,21 +19990,6 @@ Visit Repository</a><br>
 &ensp; 优化同将替换<br>
 &ensp; 添加了对千幻聆音 换肤拓展的支持，并加入了三个官方皮肤<br>
 &ensp; 千幻聆音支持拓展添加原生武将皮肤后，我可能会看极略玩家的需求出一个极略换肤换配音包<br>
-<span style="font-size: large;">历史：</span><br>
-2021.04.18更新<br>
-&ensp; 修复三英神张角 布教报错<br>
-&ensp; 修复三英神张让 残略 配音 描述 AI<br>
-&ensp; 修复七杀 七星宝刀<br>
-&ensp; 优化三英神张让 馋陷 非挑战模式下AI 修复拿牌顺序<br>
-&ensp; 优化 SR吕布 射戟杀询问<br>
-&ensp; 优化SK关兴 勇继 配音<br>
-&ensp; 优化SR马超 邀战 动画<br>
-&ensp; 优化SR郭嘉 慧觑 动画<br>
-&ensp; 优化SR吕蒙 国士 AI<br>
-&ensp; 优化SK邓芝 和盟 动画<br>
-&ensp; 修复SK王平 飞军 配音映射<br>
-&ensp; 修复SK神郭嘉 天启 回合内外使用次数<br>
-&ensp; 优化SR孙尚香 习武 优化AI<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
