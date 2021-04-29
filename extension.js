@@ -430,12 +430,22 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             juemingyoulan: {
               title: '限定',
               translation: '绝命幽兰',
-              info: '',
+              info: '据说在某个神秘游戏里可以提升一点武将的体力上限。',
             },
             nagenanren: {
               title: '传说',
               translation: '那个男人',
               info: '',
+            },
+            huoshaowuchao: {
+              title: '稀有',
+              translation: '火烧乌巢',
+              info: '',
+            },
+            zhengtaifenbu: {
+              title: '史诗',
+              translation: '正态分布',
+              info: '据说在某个神秘游戏里可以使开局手牌数+2。',
             },
           }
         });
@@ -6603,11 +6613,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             // 真有你的啊 用别人的字做技能名
             jlsg_yidu: {
-              audio: "ext:极略:1",
+              audio: "ext:极略:2",
               trigger: {
                 player: 'loseAfter',
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
               },
+              usable:1,
               frequent: true,
               filter: function (event, player) {
                 var currPlayer = _status.currentPhase;
@@ -6640,6 +6651,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_zhubao: {
+              group: 'jlsg_zhubao_phase',
               audio: "ext:极略:1",
               frequent: true,
               trigger: {
@@ -6647,13 +6659,52 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               filter: function (event, player) {
                 if (_status.currentPhase != player || !player.countCards('h')) return false;
+                if (!player.storage.jlsg_zhubao) {
+                  player.storage.jlsg_zhubao = [];
+                }
                 return game.hasPlayer(p => {
                   if (p == player) return false;
+                  if (player.storage.jlsg_zhubao.contains(p)) return false;
                   var evt = event.getl(p);
                   return evt && evt.hs && evt.hs.length > 0;
                 });
               },
-              content: function () {
+              direct: true,
+              content: function() {
+                'step 0'
+                if (!player.storage.jlsg_zhubao) {
+                  player.storage.jlsg_zhubao = [];
+                }
+                event.suitMap = [];
+                game.filterPlayer(p => p != player && !player.storage.jlsg_zhubao.contains(p)).forEach(p => {
+                  var evt = trigger.getl(p);
+                  if (evt && evt.hs) {
+                    var suits = [...new Set(evt.hs.map(card => get.suit(card)))];
+                    event.suitMap.push([p, suits]);
+                  }
+                });
+                'step 1'
+                if (!event.suitMap.length) {
+                  event.finish();
+                  return;
+                }
+                [event.target, event.suits] = event.suitMap.shift();
+                player.chooseBool(get.prompt2(event.name, event.target));
+                'step 2'
+                if (result.bool) {
+                  player.storage.jlsg_zhubao.push(event.target);
+                  player.logSkill(event.name, event.target);
+                  var num = player.countCards('h',
+                    (card) => event.suits.contains(get.suit(card))
+                  );
+                  player.draw(num);
+                }
+                event.goto(1);
+              },
+              contentx: function () {
+                if (!player.storage.jlsg_zhubao) {
+                  player.storage.jlsg_zhubao = [];
+                }
                 var suits = [];
                 game.filterPlayer(p => p != player).forEach(p => {
                   var evt = trigger.getl(p);
@@ -6666,6 +6717,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 );
                 if (num > 10) num = 10;
                 player.draw(num);
+              },
+              subSkill: {
+                phase: {
+                  silent: true,
+                  forced: true,
+                  trigger:{player:'phaseBegin'},
+                  content:function(){
+                    player.storage.jlsg_zhubao = [];
+                  },
+                },
               },
             },
             jlsg_buqu: {
@@ -6893,9 +6954,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fenji: '奋激',
 
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
-            jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）',
-            jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）',
-            jlsg_zhubao_append: '<span style="font-family: yuanli">每次至多摸十张。</span>',
+            jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）。每回合限一次。',
+            jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）。每回合对每名其他角色限触发一次。',
+            // jlsg_zhubao_append: '<span style="font-family: yuanli">每次至多摸十张。</span>',
             jlsg_yongji_info: '锁定技，当你于出牌阶段使用【杀】造成伤害后，你摸X张牌（X为你已损失的体力值且至多为3），且本回合可额外使用一张【杀】。',
             jlsg_wuzhi_info: '锁定技，弃牌阶段结束后，若你本回合内【杀】的使用次数未达到上限，你失去1点体力并从牌堆中获得一张【杀】',
             jlsg_wusheng_info: '你可以将一张红色牌当杀使用或打出。',
@@ -19978,7 +20039,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.04.28更新<br>
+&ensp; 新增武将<div style="display:inline" data-nature="metalmm">SK邹氏</div><br>
 &ensp; 修复SK孙乾 技能名<br>
+&ensp; 更新SK蒯越立绘为官方版，增加技能配音<br>
+&ensp; 更新SK蒯越 技能<br>
+&ensp; 新增SK神貂蝉 皮肤<br>
+&ensp; 新增SK许攸 皮肤<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.26更新<br>
 &ensp; 修复三英神董卓 凌虐 配音<br>
