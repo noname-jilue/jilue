@@ -196,6 +196,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_yujin',
             'jlsgsk_simazhao',
             'jlsgsk_kuaiyue',
+            'jlsgsk_zoushi',
             'jlsgsk_zhoutai',
           ],
           am: [
@@ -301,6 +302,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               "jlsgsk_quancong",
               "jlsgsk_chengyu",
               "jlsgsk_kuaiyue",
+              "jlsgsk_zoushi",
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -528,6 +530,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_guanxing: ["male", 'shu', 4, ["jlsg_yongji", "jlsg_wuzhi"], []],
             jlsgsk_kuaiyue: ["male", 'qun', 3, ["jlsg_yidu", "jlsg_zhubao"], []],
             jlsgsk_zhoutai: ["male", 'wu', 4, ["jlsg_buqu", "jlsg_fenji"], []],
+            jlsgsk_zoushi: ["female", 'qun', 3, ["jlsg_jiaomei", "jlsg_huoshui"], []],
             jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
           },
           characterIntro: {
@@ -6752,6 +6755,93 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 trigger.target.draw(2);
               }
             },
+            jlsg_jiaomei: {
+              audio: "ext:极略:1",
+              usable: 1,
+              trigger: {
+                player: 'useCardToPlayered',
+              },
+              logTarget:'target',
+              filter: function(event, player) {
+                // if (event.target == player) return false;
+                if (!player.isPhaseUsing()) return false;
+                return get.type(event.card) == 'trick' || event.card.name == 'sha';
+              },
+              check: function(event, player) {
+                var target = event.target;
+                var effect = get.effect(target, {name: 'tiesuo'}, player, player);
+                if (player.hasSkill('jlsg_huoshui')) {
+                  effect += (target.isLinked() ? -0.8 : 0.8) *
+                    get.effect(target, {name: 'shunshou'}, player, player);
+                  effect += (target.isLinked() ? 1 : 0.2) *
+                    get.damageEffect(target, player, player);
+                }
+                if (target.isLinked() && !target.hasSkillTag('noturn')) {
+                  effect += get.attitude(player, target) * (
+                    target.isTurnedOver() ? 6 : -6
+                  );
+                }
+                return effect > 0;
+              },
+              prompt2: function(event, player) { 
+                return `令${get.translation(event.target)}${event.target.isLinked()?'重置并翻面':'横置'}`;
+              },
+              content: function() {
+                if (trigger.target.isLinked()) {
+                  trigger.target.link();
+                  trigger.target.turnOver();
+                } else {
+                  trigger.target.link();
+                }
+              },
+            },
+            jlsg_huoshui: {
+              audio: "ext:极略:1",
+              trigger: {
+                player: 'phaseEnd',
+              },
+              filter: function(event, player) {
+                return game.hasPlayer(p => p != player && (p.isTurnedOver() || p.isLinked()) );
+              },
+              check: function(event, player) {
+                var effect = 0;
+                for (var p of game.filterPlayer(p => p != player)) {
+                  if (p.isLinked()) {
+                    effect += get.effect(p, {name: 'shunshou'}, player, player);
+                  }
+                  if (p.isTurnedOver()) {
+                    effect += get.damageEffect(p, player, player);
+                  }
+                }
+                return effect > 0;
+              },
+              content: function() {
+                'step 0'
+                event.targets = game.filterPlayer(p => p.isLinked());
+                player.line(event.targets,'green');
+                'step 1'
+                if (event.targets.length == 0) {
+                  event.goto(2);
+                  return;
+                }
+                event.target = event.targets.shift();
+                if (event.target.countGainableCards(player, 'he') != 0) {
+                  player.gainPlayerCard(event.target, true);
+                }
+                event.redo();
+                'step 2'
+                event.targets = game.filterPlayer(p => p.isTurnedOver());
+                player.line(event.targets,'green');
+                'step 3'
+                if (event.targets.length == 0) {
+                  event.finish();
+                  return;
+                }
+                event.target = event.targets.shift();
+                event.target.damage(player);
+                event.redo();
+              },
+            },
             jlsg_hubu: {
               audio: "ext:极略:1",
               trigger: { player: 'damageEnd', source: 'damageEnd' },
@@ -6843,6 +6933,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_guanxing: 'SK关兴',
             jlsgsk_kuaiyue: 'SK蒯越',
             jlsgsk_zhoutai: 'SK周泰',
+            jlsgsk_zoushi: 'SK邹氏',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -6952,7 +7043,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yidu: '异度',
             jlsg_zhubao: '诛暴',
             jlsg_fenji: '奋激',
-
+            jlsg_jiaomei: '娇媚',
+            jlsg_huoshui: '祸水',
+            
+            jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
+            jlsg_huoshui_info: '回合结束时，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
             jlsg_yidu_info: '你的回合外，当你失去手牌后，你可以摸X张牌（X为当前回合角色手牌中花色与这些牌相同的数量）。每回合限一次。',
             jlsg_zhubao_info: '你的回合内，当其他角色失去手牌后，你可以摸X张牌（X为你手牌中花色与这些牌相同的数量）。每回合对每名其他角色限触发一次。',
