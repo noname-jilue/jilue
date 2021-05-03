@@ -1,3 +1,6 @@
+/*
+nonamexwapk::name::极略::version::2.2.0501::nonamexwapkend
+*/
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
   return {
@@ -20088,25 +20091,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       }
     },
     help: {
-      "民间极略": "<h2><font color=Magenta>民间极略魔改版</font></h2><br>" +
-        "前言：因为本人（仲哥）对极略三国扩展有独到的情怀和殷勤的热情，很喜欢极略三国里面的武将。但本扩展BUG较多，限制于原作者的能力有限，再加上疫情期间空闲时间较多，所以呢，就顺便对此扩展魔改了一二。希望能给大家带来更好的体验~" +
-        "<br><br><font color=Red>具体的魔改内容：</font><br>" +
-        "<li>修复新神张角技能电界、神道使用异常" +
-        "<li>修复SR吕蒙技能“国士”使用异常" +
-        "<li>修复SK、SR武将包的所有BUG（找到BUG了来打死我!）" +
-        "<li>优化几乎所有SR、SK武将包武将技能AI（无AI透视）" +
-        "<li>对魂煭包进行了浅度涉猎，修复了若干少许BUG（懒得列出来了，最讨厌的就是过程总结-.-）" +
-        "<li>修复SR、SK、魂煭包武将技能配音异常问题" +
-        "<li>添加 武将旧版替换 选项" +
-        "<li>添加 更好的势力标识 选项" +
-        "<li>添加 禁用各类变态（弱鸡）武将 选项" +
-        "<li>添加 隐藏武将前缀 选项" +
-        "<li>扩展所有者不用选择失去技能（SR武将）" +
-        "<li>修改SC赵云的贴图（原图太违和。。）" +
-        "<li>身为强迫症一枚，调度代码的结构和位置（原代码歪七竖八，不成体统，有失体面。本人受不了这刺激，故而所览之处，代码均已扶正！）" +
-        "<br><font color=Green>很多改动都忘了。。。到此为止吧。。。</font>" +
-        "<br><br><font color=Blue>后言：</font>没碰过SC武将包，就往里面加个两个武将而已" +
-        "<br><br><font color=Blue>后言2：</font>以上都是遗留了 SC包已经被我鲨了(●'◡'●) ——xiaoas"
+      "极略": `\
+本拓展基于民间极略的某魔改版，因为当时那位作者说“修复了所有的bug”<br>
+事实证明这种说法比较离谱<br>
+需要打开武将包才能看到对应的武将图片<br>
+——xiaoas`
     },
     package: {
       character: {
@@ -20137,6 +20126,8 @@ Visit Repository</a><br>
 2021.05.01更新<br>
 &ensp; 修复SK张宁 打出闪触发<br>
 &ensp; 修复SK神貂蝉 天资 描述<br>
+&ensp; 优化玄武版(android 11)UX<br>
+&ensp; 更新简介<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.30更新<br>
 &ensp; 新增武将<div style="display:inline" data-nature="metalmm">SK邹氏</div><br>
