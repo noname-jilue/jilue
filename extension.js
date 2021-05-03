@@ -180,7 +180,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsr_daqiao',
             'jlsgsk_dongzhuo',
             'jlsgsk_guonvwang',
-            'jlsgsk_zhangning',
             'jlsgsoul_zhangliao',
           ],
           a: [
@@ -196,6 +195,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_yujin',
             'jlsgsk_simazhao',
             'jlsgsk_kuaiyue',
+            'jlsgsk_zhangning',
             'jlsgsk_zoushi',
             'jlsgsk_zhoutai',
           ],
@@ -408,7 +408,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         addRank(rank);
       } // lib.rank
       // 千幻聆音 (换肤)
-      if (lib.qhlypkg) {
+      // temporarily disabled
+      if (false && lib.qhlypkg) {
         lib.qhlypkg.push({
           isExt: true,//是否是扩展，一般填true
           filterCharacter: function (name) {
@@ -5549,7 +5550,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_leiji: {
               audio: "ext:极略:1",
-              trigger: { global: ["useCard", "respond"], },
+              trigger: { global: "useCard", },
               mark: true,
               marktext: "祭",
               intro: {
@@ -16687,7 +16688,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_tianji_info: '任一角色的出牌阶段开始时，你可以观看牌堆顶的一张牌，然后你可以选择一项：用一张手牌替换之；若你的手牌数不是全场最多的(或之一)，你可以获得之。',
             jlsg_xianzhu_info: '当一名角色恢复体力后，或失去一张装备区里的牌后，你可以令其摸两张牌。',
             jlsg_liangyuan_info: '限定技，出牌阶段，你可以选择一名其他男性角色，则于本局游戏中，你的自然回合结束时，该角色进行一个额外的回合。',
-            jlsg_tianzi_info: '摸牌阶段开始时，你可以令所有其他角色依次选择一项：1、交给你一张牌；2、令你摸一张牌。',
+            jlsg_tianzi_info: '摸牌阶段开始时，你可以放弃摸牌，然后令所有其他角色依次选择一项：1、交给你一张牌；2、令你摸一张牌。',
             jlsg_meixin_info: '出牌阶段限一次，你可以弃置一张牌并选择一名其他男性角色，若如此做，本阶段当你使用一张基本牌后，你令其弃置一张牌；当你使用一张锦囊牌后，你获得其一张牌；当你使用一张装备牌后，你对其造成一点伤害。',
             jlsg_shayi_info: '锁定技，出牌阶段开始时，你展示所有手牌，若有【杀】，你摸一张牌；若没有【杀】，你于本阶段可以将一张黑色牌当【杀】使用。你使用【杀】无距离限制、无次数限制。',
             jlsg_zhenhun_info: '出牌阶段限一次，你可以弃置一张牌令所有其他角色的非锁定技于本阶段内无效。',
@@ -20129,28 +20130,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0428",
+      version: "2.2.0501",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.04.28更新<br>
+2021.05.01更新<br>
+&ensp; 修复SK张宁 打出闪触发<br>
+&ensp; 修复SK神貂蝉 天资 描述<br>
+<span style="font-size: large;">历史：</span><br>
+2021.04.30更新<br>
 &ensp; 新增武将<div style="display:inline" data-nature="metalmm">SK邹氏</div><br>
 &ensp; 修复SK孙乾 技能名<br>
 &ensp; 更新SK蒯越立绘为官方版，增加技能配音<br>
 &ensp; 更新SK蒯越 技能<br>
-&ensp; 新增SK神貂蝉 皮肤<br>
-&ensp; 新增SK许攸 皮肤<br>
-<span style="font-size: large;">历史：</span><br>
-2021.04.26更新<br>
-&ensp; 修复三英神董卓 凌虐 配音<br>
-&ensp; 修复SK田丰 刚直 技能名称<br>
-&ensp; 重写SK张布 朝臣 修复AI 修复配音，加入多个张布时的支持<br>
-&ensp; 优化SR张飞 蓄劲 描述<br>
-&ensp; 重写SK于禁 整毅，现在整毅对回合内发动有更好的支持<br>
-&ensp; 重写SK向朗 勘误<br>
-&ensp; 优化同将替换<br>
-&ensp; 添加了对千幻聆音 换肤拓展的支持，并加入了三个官方皮肤<br>
-&ensp; 千幻聆音支持拓展添加原生武将皮肤后，我可能会看极略玩家的需求出一个极略换肤换配音包<br>
+&ensp; 暂时移除了换肤功能<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
