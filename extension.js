@@ -199,7 +199,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_simazhao',
             'jlsgsk_kuaiyue',
             'jlsgsk_zhangning',
-            'jlsgsk_zoushi',
             'jlsgsk_zhoutai',
           ],
           am: [
@@ -216,6 +215,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             'jlsgsk_guanlu',
             'jlsgsk_zhanglu',
             'jlsgsk_yangxiu',
+            'jlsgsk_zoushi',
           ],
           bp: [
             'jlsgsoul_ganning',
@@ -468,6 +468,24 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         var jlsg_sk = {
           name: 'jlsg_sk',
           connect: true,
+          characterSort: {
+            jlsg_sk: {
+              jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue'],
+              jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
+                'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng'],
+              jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi'],
+              jlsg_pojun: ['jlsgsk_zhuran', 'jlsgsk_yanliang', 'jlsgsk_chendao', 'jlsgsk_dingfeng', 'jlsgsk_dongzhuo',
+                'jlsgsk_yujin', 'jlsgsk_panfeng', 'jlsgsk_jiangqin', 'jlsgsk_guanxing'],
+              jlsg_yinyang: ['jlsgsk_zuoci', 'jlsgsk_guanlu', 'jlsgsk_wangyi', 'jlsgsk_zhanglu', 'jlsgsk_kongrong',
+                'jlsgsk_zhoucang', 'jlsgsk_zhoutai', 'jlsgsk_lvlingqi', 'jlsgsk_lukang', 'jlsgsk_luji',
+                'jlsgsk_xianglang', 'jlsgsk_zoushi'],
+              jlsg_tanlang: ['jlsgsk_zhangxiu', 'jlsgsk_zhugejin', 'jlsgsk_liyan', 'jlsgsk_jiping', 'jlsgsk_sunhao',
+                'jlsgsk_yangxiu', 'jlsgsk_simazhao', 'jlsgsk_simashi', 'jlsgsk_zhangning', 'jlsgsk_feiyi'],
+              jlsg_jiangxing: ['jlsgsk_sunluyu', 'jlsgsk_chengyu', 'jlsgsk_mizhu', 'jlsgsk_zhangren', 'jlsgsk_zangba',
+                'jlsgsk_hejin', 'jlsgsk_zhangbao', 'jlsgsk_bianfuren', 'jlsgsk_heqi', 'jlsgsk_tianfeng'],
+              jlsg_sp: ['jlsgsk_guanyu', 'jlsgsk_huangyueying'],
+            },
+          },
           character: {
             jlsgsk_simashi: ["male", 'wei', 4, ["jlsg_quanlue"], []],
             jlsgsk_xianglang: ["male", 'shu', 3, ["jlsg_cangshu", "jlsg_kanwu"], []],
@@ -506,7 +524,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsk_lvlingqi: ['female', 'qun', 4, ['jlsg_jiwux'], []],
             jlsgsk_zhoucang: ['male', 'shu', 4, ['jlsg_daoshi'], []],
             jlsgsk_kongrong: ['male', 'qun', 3, ['jlsg_lirang', 'jlsg_xianshi'], []],
-            jlsgsk_caochong: ['male', 'wei', 3, ['jlsg_chengxiang', 'jlsg_renxin'], []],
+            jlsgsk_caochong: ['male', 'wei', 3, ['jlsg_chengxiang', 'jlsg_renxin'], ['unseen']],
             jlsgsk_zhanglu: ['male', 'qun', 3, ['jlsg_midao', 'jlsg_yishe', 'jlsg_pudu'], []],
             jlsgsk_guanlu: ['male', 'wei', 3, ['jlsg_zongqing', 'jlsg_bugua'], []],
             jlsgsk_simazhao: ['male', 'wei', 3, ['jlsg_zhaoxin', 'jlsg_zhihe'], []],
@@ -600,16 +618,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     viewAs: {
                       name: links[0][2],
                       nature: links[0][3],
-                      suit:'none',
-                      number:null,
-                      isCard:true,
+                      suit: 'none',
+                      number: null,
+                      isCard: true,
                     },
                   };
                   if (player.countCards('h') > player.hp) {
-                    A.precontent = function() {
+                    A.precontent = function () {
                       player.logSkill('jlsg_zhengyi');
-                      var card=event.result.cards[0];
-                      event.card=card;
+                      var card = event.result.cards[0];
+                      event.card = card;
                       player.discard(card);
                       // player.$throw(card,1000);
                       event.result.card = {
@@ -620,7 +638,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       event.result.cards = [];
                     };
                   } else {
-                    A.precontent = function() {
+                    A.precontent = function () {
                       player.logSkill('jlsg_zhengyi');
                       player.draw('nodelay');
                     };
@@ -656,20 +674,20 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       ? player.countCards('h') - player.hp == 1
                       : player.hp - player.countCards('h') == 1;
                   },
-                  filterCard: function (card, player) { 
+                  filterCard: function (card, player) {
                     return _status.currentPhase == player
-                    ? true : false; 
+                      ? true : false;
                   },
                   selectCard: function () {
                     return _status.currentPhase == _status.event.player
-                    ? 1 : -1;
+                      ? 1 : -1;
                   },
                   // check: () => true,
                   // ignoreMod:true,
                   viewAs: {
                     name: 'shan',
-                    suit:'none',
-                    number:null,
+                    suit: 'none',
+                    number: null,
                   },
                   onrespond: function (result, player) {
                     if (_status.currentPhase == player) {
@@ -677,7 +695,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       result.card = {
                         name: result.card.name,
                       };
-                      result.cards=[];
+                      result.cards = [];
                     } else {
                       player.draw("nodelay");
                     }
@@ -688,7 +706,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       result.card = {
                         name: result.card.name,
                       };
-                      result.cards=[];
+                      result.cards = [];
                     } else {
                       player.draw("nodelay");
                     }
@@ -887,7 +905,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return _status.currentPhase != player && player.countCards('h');
               },
               filter: function (event, player) {
-                if (_status.currentPhase == player || !player.countCards('h', {type:['delay', 'trick']})) return false;
+                if (_status.currentPhase == player || !player.countCards('h', { type: ['delay', 'trick'] })) return false;
                 for (var i of lib.inpile) {
                   if (get.type(i) != 'basic' || i == 'shan') continue;
                   if (event.filterCard({ name: i }, player, event)) return true;
@@ -930,8 +948,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 backup: function (links, player) {
                   return {
-                    filterCard:function(card){
-                      return get.type(card, 'trick')=='trick';
+                    filterCard: function (card) {
+                      return get.type(card, 'trick') == 'trick';
                     },
                     audio: false,
                     popname: true,
@@ -939,15 +957,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     viewAs: {
                       name: links[0][2],
                       nature: links[0][3],
-                      suit:'none',
-                      number:null,
-                      isCard:true,
+                      suit: 'none',
+                      number: null,
+                      isCard: true,
                     },
-                    precontent:function(){
+                    precontent: function () {
                       'step 0'
                       player.logSkill('jlsg_kanwu');
-                      var card=event.result.cards[0];
-                      event.card=card;
+                      var card = event.result.cards[0];
+                      event.card = card;
                       player.discard(card);
                       event.result.card = {
                         name: event.result.card.name,
@@ -982,28 +1000,28 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   filter: function (event, player) {
                     return _status.currentPhase != player;
                   },
-                  filterCard: function (card, player) { 
-                    return get.type(card, 'trick')=='trick';
+                  filterCard: function (card, player) {
+                    return get.type(card, 'trick') == 'trick';
                   },
                   // check: () => true,
                   viewAs: {
                     name: 'shan',
-                    suit:'none',
-                    number:null,
+                    suit: 'none',
+                    number: null,
                   },
                   onrespond: function (result, player) {
                     player.discard(result.cards);
                     result.card = {
                       name: result.card.name,
                     };
-                    result.cards=[];
+                    result.cards = [];
                   },
                   onuse: function (result, player) {
                     player.discard(result.cards);
                     result.card = {
                       name: result.card.name,
                     };
-                    result.cards=[];
+                    result.cards = [];
                   },
                   ai: {
                     skillTagFilter: function (player) {
@@ -2305,7 +2323,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filterCard: true,
               selectCard: [1, Infinity],
               discard: false,
-              lose:false,
+              lose: false,
               // prepare: function (cards, player, targets) {
               //   player.$give(cards.length, targets[0]);
               // },
@@ -2347,7 +2365,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return player.storage.jlsg_chaochen2 && player.countCards('h') > player.hp;
               },
               direct: true,
-              onremove:function(player){
+              onremove: function (player) {
                 delete player.storage.jlsg_chaochen2;
               },
               content: function () {
@@ -2458,7 +2476,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:1",
               trigger: { global: 'shaBegin' },
               filter: function (event, player) {
-                return event.target != player && event.target.inRangeOf(player) && event.target.countCards('e');
+                if (event.player == player || event.target == player) return false;
+                return event.target.inRangeOf(player) && event.target.countCards('e');
               },
               check: function (event, player) {
                 if (player.countCards('h', 'shan') && get.effect(event.target, { name: 'sha' }, event.player, player) < 0) {
@@ -5195,7 +5214,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               // forbid:['guozhan'],
               trigger: {
                 player: ['phaseBegin', 'enterGame'],
-                global: 'gameDrawBegin',
+                global: 'gameDrawAfter',
               },
               forced: true,
               unique: true,
@@ -5205,9 +5224,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               content: function () {
                 "step 0"
-                if (get.config('double_character') || lib.config.mode == 'guozhan') {
+                // if (player.isUnseen(2)) {
+                //   player.useSkill('jlsg_qianhuan2');
+                // }
+                if (get.config('double_character')) { // || lib.config.mode == 'guozhan'
                   // event.num = 4;
                   event.set('num', 4);
+                  // player.name2 = player.name1;
                 } else {
                   // event.num = 2;
                   event.set('num', 2);
@@ -5360,14 +5383,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               group: ['jlsg_qianhuan2'],
             },
             jlsg_qianhuan2: {
-              trigger: { global: 'gameStart' },
+              trigger: { global: 'gameDrawAfter' },
               forced: true,
               priority: 100,
               unique: true,
               popup: false,
               silent: true,
               filter: function (event, player) {
-                return get.config('double_character') || lib.config.mode == 'guozhan';
+                return get.config('double_character'); // || lib.config.mode == 'guozhan';
               },
               content: function () {
                 "step 0"
@@ -6625,13 +6648,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 player: 'loseAfter',
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
               },
-              usable:1,
-              frequent: true,
+              usable: 1,
+              // frequent: true,
               filter: function (event, player) {
                 var currPlayer = _status.currentPhase;
                 if (!currPlayer || currPlayer == player || !currPlayer.countCards('h')) return false;
                 var evt = event.getl(player);
                 return evt && evt.hs && evt.hs.length > 0;
+              },
+              check(event, player) {
+                return true;
               },
               content: function () {
                 var suits = trigger.getl(player).hs.map(card => get.suit(card));
@@ -6660,7 +6686,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhubao: {
               group: 'jlsg_zhubao_phase',
               audio: "ext:极略:1",
-              frequent: true,
+              direct: true,
               trigger: {
                 global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
               },
@@ -6677,7 +6703,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 });
               },
               direct: true,
-              content: function() {
+              content: function () {
                 'step 0'
                 if (!player.storage.jlsg_zhubao) {
                   player.storage.jlsg_zhubao = [];
@@ -6696,7 +6722,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return;
                 }
                 [event.target, event.suits] = event.suitMap.shift();
-                player.chooseBool(get.prompt2(event.name, event.target));
+                event.num = player.countCards('h',
+                  (card) => event.suits.contains(get.suit(card))
+                );
+                if (event.num == 0) {
+                  event.redo();
+                  return;
+                }
+                var prompt = `###${get.prompt(event.name, event.target)}###你可以摸${get.cnNumber(event.num)}张牌`;
+                player.chooseBool(prompt);
                 'step 2'
                 if (result.bool) {
                   player.storage.jlsg_zhubao.push(event.target);
@@ -6704,7 +6738,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   var num = player.countCards('h',
                     (card) => event.suits.contains(get.suit(card))
                   );
-                  player.draw(num);
+                  player.draw(event.num);
                 }
                 event.goto(1);
               },
@@ -6729,8 +6763,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 phase: {
                   silent: true,
                   forced: true,
-                  trigger:{player:'phaseBegin'},
-                  content:function(){
+                  trigger: { player: 'phaseBegin' },
+                  content: function () {
                     player.storage.jlsg_zhubao = [];
                   },
                 },
@@ -6765,18 +6799,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: {
                 player: 'useCardToPlayered',
               },
-              logTarget:'target',
-              filter: function(event, player) {
+              logTarget: 'target',
+              filter: function (event, player) {
                 // if (event.target == player) return false;
                 if (!player.isPhaseUsing()) return false;
                 return get.type(event.card) == 'trick' || event.card.name == 'sha';
               },
-              check: function(event, player) {
+              check: function (event, player) {
                 var target = event.target;
-                var effect = get.effect(target, {name: 'tiesuo'}, player, player);
+                var effect = get.effect(target, { name: 'tiesuo' }, player, player);
                 if (player.hasSkill('jlsg_huoshui')) {
                   effect += (target.isLinked() ? -0.8 : 0.8) *
-                    get.effect(target, {name: 'shunshou'}, player, player);
+                    get.effect(target, { name: 'shunshou' }, player, player);
                   effect += (target.isLinked() ? 1 : 0.2) *
                     get.damageEffect(target, player, player);
                 }
@@ -6787,10 +6821,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 return effect > 0;
               },
-              prompt2: function(event, player) { 
-                return `令${get.translation(event.target)}${event.target.isLinked()?'重置并翻面':'横置'}`;
+              prompt2: function (event, player) {
+                return `令${get.translation(event.target)}${event.target.isLinked() ? '重置并翻面' : '横置'}`;
               },
-              content: function() {
+              content: function () {
                 if (trigger.target.isLinked()) {
                   trigger.target.link();
                   trigger.target.turnOver();
@@ -6804,14 +6838,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: {
                 player: 'phaseEnd',
               },
-              filter: function(event, player) {
-                return game.hasPlayer(p => p != player && (p.isTurnedOver() || p.isLinked()) );
+              filter: function (event, player) {
+                return game.hasPlayer(p => p != player && (p.isTurnedOver() || p.isLinked()));
               },
-              check: function(event, player) {
+              check: function (event, player) {
                 var effect = 0;
                 for (var p of game.filterPlayer(p => p != player)) {
                   if (p.isLinked()) {
-                    effect += get.effect(p, {name: 'shunshou'}, player, player);
+                    effect += get.effect(p, { name: 'shunshou' }, player, player);
                   }
                   if (p.isTurnedOver()) {
                     effect += get.damageEffect(p, player, player);
@@ -6819,10 +6853,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
                 return effect > 0;
               },
-              content: function() {
+              content: function () {
                 'step 0'
                 event.targets = game.filterPlayer(p => p.isLinked());
-                player.line(event.targets,'green');
+                player.line(event.targets, 'green');
                 'step 1'
                 if (event.targets.length == 0) {
                   event.goto(2);
@@ -6835,7 +6869,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 event.redo();
                 'step 2'
                 event.targets = game.filterPlayer(p => p.isTurnedOver());
-                player.line(event.targets,'green');
+                player.line(event.targets, 'green');
                 'step 3'
                 if (event.targets.length == 0) {
                   event.finish();
@@ -6886,6 +6920,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
           },
           translate: {
             jlsg_sk: "SK武将",
+            jlsg_tiangang: "天罡包",
+            jlsg_disha: "地煞包",
+            jlsg_renjie: "人杰包",
+            jlsg_pojun: "破军包",
+            jlsg_yinyang: "阴阳包",
+            jlsg_tanlang: "贪狼包",
+            jlsg_jiangxing: "将星包",
+            jlsg_sp: "特别包",
             jlsgsk_dengzhi: 'SK邓芝',
             jlsgsk_xuyou: 'SK许攸',
             jlsgsk_zhangbu: 'SK张布',
@@ -7049,7 +7091,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_fenji: '奋激',
             jlsg_jiaomei: '娇媚',
             jlsg_huoshui: '祸水',
-            
+
             jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
             jlsg_huoshui_info: '回合结束时，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
@@ -20124,9 +20166,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.05.01更新<br>
+&ensp; 修复国战下SK左慈无法报错。现在SK左慈无法在国战模式下吞将。<br>
 &ensp; 修复SK张宁 打出闪触发<br>
 &ensp; 修复SK神貂蝉 天资 描述<br>
+&ensp; 修复SK祖茂 引兵 转移自己的杀<br>
+&ensp; 将SK武将收纳至极略分包中。<br>
 &ensp; 优化玄武版(android 11)UX<br>
+&ensp; 优化SK蒯越 诛暴 logSkill 提示<br>
 &ensp; 更新简介<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.30更新<br>
