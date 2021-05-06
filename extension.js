@@ -14188,6 +14188,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               inherit: "guanxing",
             },
             jlsg_tongtian_qun: {
+              inherit: "wansha",
               audio: "ext:极略:1",
               mark: true,
               unique: true,
@@ -14306,7 +14307,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (result.bool) {
                   player.logSkill('jlsg_fenying', result.targets[0], 'fire');
                   player.discard(result.cards[0]);
-                  result.targets[0].damage('fire', trigger.num);
+                  result.targets[0].damage('fire', trigger.num, player);
                 }
               }
             },
@@ -20166,14 +20167,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.05.01更新<br>
-&ensp; 修复国战下SK左慈无法报错。现在SK左慈无法在国战模式下吞将。<br>
+&ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
 &ensp; 修复SK张宁 打出闪触发<br>
 &ensp; 修复SK神貂蝉 天资 描述<br>
 &ensp; 修复SK祖茂 引兵 转移自己的杀<br>
 &ensp; 将SK武将收纳至极略分包中。<br>
+&ensp; 修复SK神司马懿 通天 完杀描述<br>
+&ensp; 修复SK神陆逊 焚营 伤害来源。<br>
 &ensp; 优化玄武版(android 11)UX<br>
 &ensp; 优化SK蒯越 诛暴 logSkill 提示<br>
-&ensp; 更新简介<br>
+&ensp; 更新拓展简介<br>
 <span style="font-size: large;">历史：</span><br>
 2021.04.30更新<br>
 &ensp; 新增武将<div style="display:inline" data-nature="metalmm">SK邹氏</div><br>
