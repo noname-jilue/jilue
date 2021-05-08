@@ -2408,8 +2408,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 0'
                 target.addTempSkill('jlsg_shejian2', 'phaseAfter');
                 player.discardPlayerCard('he', target, true);
-                target.chooseBool('是否对' + get.translation(player) + '使用一张【杀】？').ai = function (card, player, target) {
-                  return get.effect(player, { name: 'sha' }, target, target);
+                target.chooseBool('是否对' + get.translation(player) + '使用一张【杀】？').ai = function (event, player) {
+                  return get.effect(player, { name: 'sha' }, target, target) + 3;
                 }
                 'step 1'
                 if (result.bool) {
@@ -2433,7 +2433,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               trigger: { target: 'shaAfter' },
               filter: function (event, player) {
-                return player.countCards('he');
+                if (!event.player) return false;
+                return player.countCards('he') // && event.player.countCards('he')
+                  || event.player.countCards('h') < Math.min(5, event.player.maxHp);
               },
               check: function (event, player) {
                 var phe = player.countCards('he');
@@ -2442,35 +2444,79 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 if (event.player.countCards('h') < event.player.maxHp && get.attitude(player, event.player) > 0) return 1;
                 return 0;
               },
+              direct: true,
               content: function () {
                 'step 0'
-                player.chooseControl('选项一', '选项二', function () {
-                  var phe = player.countCards('he');
-                  var the = trigger.player.countCards('he');
-                  if (the > phe && get.attitude(player, trigger.player) < 0) return '选项一';
-                  if (get.attitude(player, trigger.player) > 0) return '选项二';
-                  return '选项二';
-                }).set('prompt', '狂傲<br><br><div class="text">1:弃置所有牌(至少一张),然后' + get.translation(trigger.player) + '弃置所有牌.</div><br><div class="text">2:令' + get.translation(trigger.player) + '将手牌补至其体力上限的张数(至多5张).</div></br>');
-                'step 1'
-                if (result.control == '选项一') {
-                  player.discard(player.get('he'));
-                  trigger.player.discard(trigger.player.get('he'));
-                } else {
-                  if (Math.min(5, trigger.player.maxHp) - trigger.player.countCards('h')) {
-                    trigger.player.drawTo(trigger.player.maxHp);
+                event.target = trigger.player;
+                var prompts = [
+                  `弃置所有牌，然后${get.translation(event.target)}弃置所有牌`,
+                  `令${get.translation(event.target)}摸牌至体力上限（至多摸至五张）`
+                ];
+                event.prompts = [];
+                if (player.countCards('h')) {
+                  event.prompts.push(0);
+                }
+                if (event.target.countCards('h') < Math.min(5, event.target.maxHp)) {
+                  event.prompts.push(1);
+                }
+                var coeff = 0.5 * Math.random() + 0.75; // target card guess coeff
+                var ai = function(event, player) {
+                  if (get.attitude(player, event.target) > 0) {
+                    if (!event.prompts.contains(1)) return 'cancel2';
+                    return prompts[1];
+                  } else {
+                    if (!event.prompts.contains(0)) return 'cancel2';
+                    var targetHEValue = coeff * event.target.getCards('h').reduce((a,b)=>a+get.value(b, event.target), 0)
+                      + event.target.getCards('e').reduce((a,b)=>a+get.value(b, event.target), 0);
+                    var playerHEValue = player.getCards('he').reduce((a,b)=>a+get.value(b, player), 0);
+                    return (coeff * targetHEValue * get.attitude(player, event.target)
+                            - targetHEValue * get.attitude(player, player) > 0)
+                    ? prompt[0] : 'cancel2';
                   }
+                };
+                player.chooseControlList(event.prompts.map(n=>prompts[n]), ai, get.prompt(event.name, event.target));
+                'step 1'
+                if (result.control == 'cancel2') {
+                  event.finish();
+                  return;
+                }
+                player.logSkill(event.name, event.target);
+                if (event.prompts[result.index] == 0) {
+                  player.discard(player.getCards('he'));
+                  event.target.discard(event.target.getCards('he'));
+                } else {
+                  event.target.drawTo(event.target.maxHp);
                 }
               },
-              ai: {
-                effect: {
-                  target: function (card, player, target, current) {
-                    if (card.name != 'sha') return;
-                    if (get.attitude(player, target) < 0) return [1, -target.countCards('he'), 1, -player.countCards('he')];
-                    if (get.attitude(player, target) > 3 && player.countCards('h') < player.maxHp - 2 && target.hp > 2) return [1, 0.5, 1, Math.min(5, player.maxHp) - player.countCards('h')];
-                    return [1, -target.countCards('he'), 1, -player.countCards('he')];
-                  }
-                }
-              }
+              // contentx: function () {
+              //   'step 0'
+              //   player.chooseControl('选项一', '选项二', function () {
+              //     var phe = player.countCards('he');
+              //     var the = trigger.player.countCards('he');
+              //     if (the > phe && get.attitude(player, trigger.player) < 0) return '选项一';
+              //     if (get.attitude(player, trigger.player) > 0) return '选项二';
+              //     return '选项二';
+              //   }).set('prompt', '狂傲<br><br><div class="text">1:弃置所有牌(至少一张),然后' + get.translation(trigger.player) + '弃置所有牌.</div><br><div class="text">2:令' + get.translation(trigger.player) + '将手牌补至其体力上限的张数(至多5张).</div></br>');
+              //   'step 1'
+              //   if (result.control == '选项一') {
+              //     player.discard(player.get('he'));
+              //     trigger.player.discard(trigger.player.get('he'));
+              //   } else {
+              //     if (Math.min(5, trigger.player.maxHp) - trigger.player.countCards('h')) {
+              //       trigger.player.drawTo(trigger.player.maxHp);
+              //     }
+              //   }
+              // },
+              // ai: {
+              //   effect: {
+              //     target: function (card, player, target, current) {
+              //       if (card.name != 'sha') return;
+              //       if (get.attitude(player, target) < 0) return [1, -target.countCards('he'), 1, -player.countCards('he')];
+              //       if (get.attitude(player, target) > 3 && player.countCards('h') < player.maxHp - 2 && target.hp > 2) return [1, 0.5, 1, Math.min(5, player.maxHp) - player.countCards('h')];
+              //       return [1, -target.countCards('he'), 1, -player.countCards('he')];
+              //     }
+              //   }
+              // }
             },
             jlsg_yinbing: {
               audio: "ext:极略:1",
@@ -12508,7 +12554,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               trigger: { source: 'damageEnd' },
               filter: function (event, player) {
                 if (player.group != 'shu') return false;
-                if (event.card && event.card.name != 'sha') return false;
+                if (!event.card || event.card.name != 'sha') return false;
                 return game.hasPlayer(function (target) {
                   return player != target && target.hasZhuSkill('jlsg_yongbing', player);
                 });
@@ -20155,7 +20201,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         translate: {},
       },
       intro: `<div>\
-<img src="${lib.assetURL}extension/极略/logo.webp" alt="极略三国" style="width:100%" onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
+<img src="${lib.assetURL}extension/极略/logo.webp" alt="极略三国"\
+style="width:100%;text-align:center;font-size:larger;font-family: 'STXinwei','xinwei';"\
+onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <li>极略全部武将·附带七杀卡包+极略三英武将，不需要请记得关闭。<li>帮助中查看更多内容
 </div>`,
       author: "可乐，赵云，青冢，萧墨(17岁)",
@@ -20168,7 +20216,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 Visit Repository</a><br>
 2021.05.01更新<br>
 &ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
+&ensp; 重写SK祢衡 狂傲 优化AI UX 小幅优化舌剑AI<br>
 &ensp; 修复SK张宁 打出闪触发<br>
+&ensp; 修复SR刘备 拥兵 触发条件<br>
 &ensp; 修复SK神貂蝉 天资 描述<br>
 &ensp; 修复SK祖茂 引兵 转移自己的杀<br>
 &ensp; 将SK武将收纳至极略分包中。<br>
