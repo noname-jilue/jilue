@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0501::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0508::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -1787,7 +1787,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 //   }
                 // }
               },
-            },
+            }, // FIXME
             jlsg_yaoming_: {
               audio: "ext:极略:4",
             },
@@ -1870,7 +1870,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 "step 0"
                 player.chooseTarget(get.prompt('jlsg_yaoming'), function (card, player, target) {
-                  return player != target && target.countCards('he') > 0;
+                  return player != target;
                 }).set('ai', function (target) {
                   return -get.attitude(_status.event.player, target);
                 }).set('prompt2', "你可以对一名其他角色造成一点伤害");
@@ -16877,6 +16877,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonulvbu: {
               inherit: 'jlsgsy_baonu',
               animationStr: '把你们全宰了！',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_wushuang: {
               inherit: 'wushuang',
@@ -17005,6 +17006,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonusunhao: {
               inherit: 'jlsgsy_baonu',
               animationStr: '当个好皇帝有什么意思!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_mingzheng: {
               audio: "ext:极略:1",
@@ -17133,6 +17135,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonusimayi: {
               inherit: 'jlsgsy_baonu',
               animationStr: '老夫没时间陪你们了!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_biantian: {
               audio: "ext:极略:1",
@@ -17436,6 +17439,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonudongzhuo: {
               inherit: 'jlsgsy_baonu',
               animationStr: '统统杀光',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_baonu2: {
               trigger: { global: 'gameDrawBegin' },
@@ -17539,6 +17543,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonucaifuren: {
               inherit: 'jlsgsy_baonu',
               animationStr: '别想逃出我的手掌心!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_yaohuo: {
               audio: "ext:极略:1", // audio: ['yaohuo'],
@@ -17716,6 +17721,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonuzhangjiao: {
               inherit: 'jlsgsy_baonu',
               animationStr: '招神劾鬼, 统摄天地!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_dihui: {
               audio: "ext:极略:2", // audio: ['dihui', 2],
@@ -17992,6 +17998,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonuweiyan: {
               inherit: 'jlsgsy_baonu',
               animationStr: '老子岂能受你们摆布!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_fangu: {
               audio: "ext:极略:1", // audio: ['fangu'],
@@ -18157,6 +18164,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonuzhangrang: {
               inherit: 'jlsgsy_baonu',
               animationStr: '明帝, 都得叫我一声爹呢!',
+              mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
           },
           translate: {
@@ -20210,11 +20218,15 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0501",
+      version: "2.2.0508",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.05.01更新<br>
+2021.05.09更新<br>
+&ensp; 修复三英武将在无法觉醒的模式下无法显示正确的技能讯息。<br>
+&ensp; 修复SK全琮 邀名4 目标。<br>
+<span style="font-size: large;">历史：</span><br>
+2021.05.08更新<br>
 &ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
 &ensp; 重写SK祢衡 狂傲 优化AI UX 小幅优化舌剑AI<br>
 &ensp; 修复SK张宁 打出闪触发<br>
@@ -20227,13 +20239,6 @@ Visit Repository</a><br>
 &ensp; 优化玄武版(android 11)UX<br>
 &ensp; 优化SK蒯越 诛暴 logSkill 提示<br>
 &ensp; 更新拓展简介<br>
-<span style="font-size: large;">历史：</span><br>
-2021.04.30更新<br>
-&ensp; 新增武将<div style="display:inline" data-nature="metalmm">SK邹氏</div><br>
-&ensp; 修复SK孙乾 技能名<br>
-&ensp; 更新SK蒯越立绘为官方版，增加技能配音<br>
-&ensp; 更新SK蒯越 技能<br>
-&ensp; 暂时移除了换肤功能<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
