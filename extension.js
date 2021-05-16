@@ -4838,10 +4838,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               usable: 1,
               enable: 'phaseUse',
               filterTarget: function (card, player, target) {
-                return (!target.countCards('e') || target.countCards('j')) && player != target;
+                if (player == target) return false;
+                return !target.countCards('e') || target.countCards('j');
               },
               content: function () {
-                target.damage();
+                target.damage(player);
               },
               ai: {
                 order: 4,
@@ -20225,6 +20226,7 @@ Visit Repository</a><br>
 2021.05.09更新<br>
 &ensp; 修复三英武将在无法觉醒的模式下无法显示正确的技能讯息。<br>
 &ensp; 修复SK全琮 邀名4 目标。<br>
+&ensp; 修复SK孙皓 暴戾 伤害来源。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.05.08更新<br>
 &ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
