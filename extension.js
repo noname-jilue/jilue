@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0508::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0518::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -615,6 +615,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     audio: false,
                     popname: true,
                     // ignoreMod:true,
+                    filterCard: function (card, player) {
+                      return _status.currentPhase == player
+                        ? true : false;
+                    },
                     viewAs: {
                       name: links[0][2],
                       nature: links[0][3],
@@ -9178,7 +9182,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   trigger: { player: 'phaseEnd' },
                   filter: function (event, player) {
-                    return player.getStorage('jlsg_baiyue').length;
+                    return player.getStorage('jlsg_baiyue').filterInD('d').length;
                   },
                   direct: true,
                   content: function () {
@@ -10932,6 +10936,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     selectCard: [1, Infinity],
                     audio: "ext:极略:1",
                     popname: true,
+                    position: 'hs',
                     ai1: function (card) {
                       if (ui.selected.cards.length > 0) return -1;
                       return 5 - get.value(card);
@@ -12288,14 +12293,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   usable: 1,
                   marktext: '♥︎',
                   mark: true,
-                  filter: function (event, player) {
-                    return player.countCards('h', { suit: 'heart' });
-                  },
                   viewAs: { name: 'shunshou' },
                   viewAsFilter: function (player) {
-                    if (!player.countCards('h', { suit: 'heart' })) return false;
+                    if (!player.countCards('hs', { suit: 'heart' })) return false;
                   },
-                  prompt: '将一张♥︎牌当顺手牵羊使用',
+                  prompt: '将一张♥︎手牌当顺手牵羊使用',
+                  position: 'hs',
                   filterCard: function (card, player) {
                     return get.suit(card) == 'heart';
                   },
@@ -12317,13 +12320,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   marktext: '♦︎',
                   mark: true,
                   viewAs: { name: 'huogong', nature: 'fire' },
+                  position: 'hs',
                   filterCard: function (card, player) {
                     return get.suit(card) == 'diamond';
                   },
                   viewAsFilter: function (player) {
-                    if (!player.countCards('h', { suit: 'diamond' })) return false;
+                    if (!player.countCards('hs', { suit: 'diamond' })) return false;
                   },
-                  prompt: '将一张♦︎牌当火攻使用',
+                  prompt: '将一张♦︎手牌当火攻使用',
                   check: function (card) {
                     var player = _status.currentPhase;
                     if (player.countCards('h') > player.hp) {
@@ -12347,13 +12351,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   marktext: '♣︎',
                   mark: true,
                   viewAs: { name: 'jiedao' },
+                  position: 'hs',
                   filterCard: function (card, player) {
                     return get.suit(card) == 'club';
                   },
                   viewAsFilter: function (player) {
-                    if (!player.countCards('h', { suit: 'club' })) return false;
+                    if (!player.countCards('hs', { suit: 'club' })) return false;
                   },
-                  prompt: '将一张♣︎牌当借刀杀人使用',
+                  prompt: '将一张♣︎手牌当借刀杀人使用',
                   check: function (card) {
                     return 6 - get.value(card);
                   },
@@ -12371,8 +12376,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   marktext: '♠︎',
                   mark: true,
                   viewAs: { name: 'juedou' },
+                  position: 'hs',
+                  prompt: '将一张♠︎手牌当决斗使用',
                   filterCard: function (card, player) {
                     return get.suit(card) == 'spade';
+                  },
+                  viewAsFilter: function (player) {
+                    if (!player.countCards('hs', { suit: 'spade' })) return false;
                   },
                   check: function (card) {
                     return 6 - get.value(card);
@@ -14529,8 +14539,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return event.card.name == 'juedou'
                   && event.cards && event.cards.length == 1 && ['sha', 'tao'].contains(event.cards[0].name);
               },
-              filterCard: { name: ['sha', 'tao'] },
-              viewAs: { name: 'juedou' },
+              // filterCard: { name: ['sha', 'tao'] },
+              // viewAs: { name: 'juedou' },
               content: function () {
               },
               ai: {
@@ -14708,7 +14718,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               prompt: function () {
                 return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张方片当作杀使用或打出';
               },
-              position: 'he',
+              position: 'hes',
               check: function (card) {
                 if (_status.event.player.hp > 1) return 0;
                 return 10 - get.value(card);
@@ -14717,8 +14727,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return Math.max(1, _status.event.player.hp);
               },
               viewAs: { name: 'sha', nature: 'fire' },
-              filter: function (event, player) {
-                return player.countCards('he', { suit: 'diamond' }) >= player.hp;
+              viewAsFilter: function (event, player) {
+                return player.countCards('hes', { suit: 'diamond' }) >= player.hp;
               },
               filterCard: function (card) {
                 return get.suit(card) == 'diamond';
@@ -14730,7 +14740,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               prompt: function () {
                 return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张黑桃牌当作无懈可击使用';
               },
-              position: 'he',
+              position: 'hes',
               check: function (card, event) {
                 if (_status.event.player.hp > 1) return 0;
                 return 7 - get.value(card);
@@ -14740,7 +14750,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               viewAs: { name: 'wuxie' },
               viewAsFilter: function (player) {
-                return player.countCards('he', { suit: 'spade' }) >= player.hp;
+                return player.countCards('hes', { suit: 'spade' }) >= player.hp;
               },
               filterCard: function (card) {
                 return get.suit(card) == 'spade';
@@ -14752,7 +14762,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               prompt: function () {
                 return '将' + get.cnNumber(Math.max(1, _status.event.player.hp)) + '张梅花牌当作闪使用或打出';
               },
-              position: 'he',
+              position: 'hes',
               check: function (card, event) {
                 if (_status.event.player.hp > 1) return 0;
                 return 10 - get.value(card);
@@ -14761,6 +14771,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return Math.max(1, _status.event.player.hp);
               },
               viewAs: { name: 'shan' },
+              viewAsFilter: function (player) {
+                return player.countCards('hes', { suit: 'club' }) >= player.hp;
+              },
               filterCard: function (card) {
                 return get.suit(card) == 'club';
               }
@@ -15999,10 +16012,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   filterCard: function (card) {
                     return get.color(card) == 'black';
                   },
-                  position: 'he',
+                  position: 'hes',
                   viewAs: { name: 'sha' },
                   viewAsFilter: function (player) {
-                    if (!player.countCards('he', { color: 'black' })) return false;
+                    if (!player.countCards('hes', { color: 'black' })) return false;
                   },
                   prompt: '将一张黑色牌当杀使用或打出',
                   check: function (card) {
@@ -16010,7 +16023,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   },
                   ai: {
                     skillTagFilter: function (player) {
-                      if (!player.countCards('he', { color: 'black' })) return false;
+                      if (!player.countCards('hes', { color: 'black' })) return false;
                     },
                     respondSha: true,
                   },
@@ -16376,9 +16389,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player) {
                 return ui.discardPile.childNodes.length > ui.cardPile.childNodes.length;
               },
+              position: 'hs',
               viewAs: { name: 'shunshou' },
               viewAsFilter: function (player) {
-                if (!player.countCards('h', { color: 'black' })) return false;
+                if (!player.countCards('hs', { color: 'black' })) return false;
               },
               prompt: '将一张黑色手牌当顺手牵羊使用',
               check: function (card) {
@@ -20219,14 +20233,18 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0508",
+      version: "2.2.0518",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.05.09更新<br>
+2021.05.18更新<br>
+&ensp; 增加与新木牛流马的兼容性。<br>
 &ensp; 修复三英武将在无法觉醒的模式下无法显示正确的技能讯息。<br>
 &ensp; 修复SK全琮 邀名4 目标。<br>
-&ensp; 修复SK孙皓 暴戾 伤害来源。<br>
+&ensp; 修复SK于禁 整毅 回合内无法选择不可用手牌。<br>
+&ensp; 修复SR貂蝉 拜月 报错。<br>
+&ensp; 修复SK神关羽 武神。<br>
+&ensp; 优化SR黄月英 合谋 描述。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.05.08更新<br>
 &ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
