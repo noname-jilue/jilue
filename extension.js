@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0518::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0528::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -874,6 +874,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_cangshu: {
               audio: "ext:极略:2",
               trigger: { global: "useCard" },
+              usable: 1,
               direct: true,
               filter: function (event, player) {
                 return event.player != player && get.type(event.card) == "trick" && player.countCards("h", { type: "basic" }) != 0;
@@ -1752,7 +1753,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               subfrequent: ['1'],
               subSkill: {
                 strg: {
-                  trigger: { player: 'useCard' },
+                  trigger: { player: 'useCardEnd' },
                   filter: function (event, player) {
                     return _status.currentPhase == player;
                   },
@@ -1772,7 +1773,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
                 mark: {
                   onremove: function (player) {
-                    player.storage.jlsg_yaoming = { suits: [], types: [] };
+                    player.storage.jlsg_yaoming = { suits: [] };
 
                   },
                   intro: {
@@ -1791,17 +1792,17 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 //   }
                 // }
               },
-            }, // FIXME
+            },
             jlsg_yaoming_: {
               audio: "ext:极略:4",
             },
             jlsg_yaoming_1: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCardAfter' },
+              trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 1;
+                return player.storage.jlsg_yaoming.suits.length == 0;
               },
-              usable: 1,
+              // usable: 1,
               frequent: true,
               content: function () {
                 player.draw();
@@ -1820,11 +1821,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_yaoming_2: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCardAfter' },
+              trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 2;
+                return player.storage.jlsg_yaoming.suits.length == 1;
               },
-              usable: 1,
+              // usable: 1,
               direct: true,
               content: function () {
                 "step 0"
@@ -1846,11 +1847,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_yaoming_3: {
               sub: true,
               audio: "ext:极略:true",
-              trigger: { player: 'useCardAfter' },
+              trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 3 && player.canMoveCard();
+                return player.storage.jlsg_yaoming.suits.length == 2 && player.canMoveCard();
               },
-              usable: 1,
+              // usable: 1,
               prompt2: '你可以移动场上的一张牌',
               // frequent: true,
               check: function (event, player) {
@@ -1865,11 +1866,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_yaoming_4: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCardAfter' },
+              trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 4;
+                return player.storage.jlsg_yaoming.suits.length == 3;
               },
-              usable: 1,
+              // usable: 1,
               direct: true,
               content: function () {
                 "step 0"
@@ -7263,7 +7264,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_kanwu: "勘误",
             jlsg_kanwu_shan: "勘误",
 
-            jlsg_cangshu_info: "当其他角色使用非延时类锦囊牌时，你可以交给其一张基本牌，然后获得此牌并令其无效。",
+            jlsg_cangshu_info: "当其他角色使用非延时类锦囊牌时，你可以交给其一张基本牌，然后获得此牌并令其无效。每回合限一次。",
             jlsg_kanwu_info: "当你于回合外需要使用或打出一张基本牌时，你可以弃置一张锦囊牌，视为使用或打出之。",
             jlsg_huage: "化戈",
             jlsg_muyi: "母仪",
@@ -12305,13 +12306,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   check: function (card) {
                     return 6 - get.value(card);
                   },
-                  ai: {
-                    order: 7.5,
-                    threaten: 1.5
-                  },
                   intro: {
                     name: '合谋·顺手',
-                    content: '回合限一次,可将一张♥︎牌当顺手牵羊使用.'
+                    content: '本回合内限一次,可将一张♥︎牌当顺手牵羊使用.'
                   }
                 },
                 diamond: {
@@ -12336,13 +12333,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     return 4 - get.value(card)
                   },
                   ai: {
-                    order: 4,
                     fireattack: true,
-                    threaten: 1.5
                   },
                   intro: {
                     name: '合谋·火攻',
-                    content: '回合限一次,可将一张♦︎牌当火攻使用.'
+                    content: '本回合内限一次,可将一张♦︎牌当火攻使用.'
                   }
                 },
                 club: {
@@ -12362,12 +12357,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   check: function (card) {
                     return 6 - get.value(card);
                   },
-                  ai: {
-                    order: 8
-                  },
                   intro: {
                     name: '合谋·借刀',
-                    content: '回合限一次,可将一张♣︎牌当借刀杀人使用.'
+                    content: '本回合内限一次,可将一张♣︎牌当借刀杀人使用.'
                   }
                 },
                 spade: {
@@ -12485,6 +12477,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player) {
                 return player.countCards('h') > 0;
               },
+              filterTarget:function(card,player,target){
+                return player!=target;
+              },
               check: function (card) {
                 return 7 - get.value(card)
               },
@@ -12497,61 +12492,62 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 for (var i = 0; i < event.cards1.length; i++) {
                   event.types.add(get.type(event.cards1[i], 'trick'));
                 }
-                event.dialog = ui.create.dialog('弃置一张与' + get.translation(player) + '弃置的牌类别均不同的牌,然后让' + get.translation(player) + '获得' + get.translation(event.cards1) + '或受到来自' + get.translation(player) + '的1点伤害并获得其中1种类别的牌.', 'hidden');
+                event.types.sort();
+                var prompt = '弃置一张与' + get.translation(player) + '弃置的牌类别均不同的牌,然后让' + get.translation(player) + '获得' + get.translation(event.cards1) +
+                  ',或受到来自' + get.translation(player) + '的1点伤害并获得其中一种类别的牌.';
+                event.dialog = ui.create.dialog(prompt, 'hidden');
                 event.dialog.classList.add('noselect');
                 event.dialog.add(event.cards1);
-                'step 1'
-                player.chooseTarget(function (card, player, target) {
-                  return player != target;
-                }, true).ai = function (target) {
-                  return get.attitude(player, target) <= 0 ? Math.random() : -Math.random();
-                }
-                'step 2'
-                event.target = result.targets[0];
-                player.line(event.target);
-                event.target.chooseToDiscard(dialog, function (card) {
+                player.line(target);
+                target.chooseToDiscard(dialog, function (card) {
                   return !event.types.contains(get.type(card, 'trick'));
                 }).ai = function (card) {
                   if (card.name == 'tao') return -1;
-                  if (event.target.hp <= 2) return 7.1 - get.value(card);
-                  if (event.target.isTurnedOver()) return -1;
+                  if (target.hp <= 2) return 7.1 - get.value(card);
+                  if (target.isTurnedOver()) return -1;
                   return 7 - get.value(card);
                 }
-                'step 3'
+                'step 1'
                 if (result.bool) {
                   player.gain(event.cards1, 'gain2');
                   event.finish();
                   return;
                 } else {
-                  event.target.damage();
-                  var dialog = ui.create.dialog('仇袭：选择一张的卡牌获得之', event.cards1);
-                  if (event.target.isAlive()) {
-                    event.target.chooseButton([1], dialog, true).filterButton = function (button) {
-                      if (ui.selected.buttons.length == 0) return get.value(button.link);
-                      for (var i = 0; i < ui.selected.buttons.length; i++) {
-                        if (get.type(button.link) != get.type(ui.selected.buttons[i].link)) return false;
-                      }
-                      return true;
-                    }
+                  target.damage();
+                }
+                'step 2'
+                if (!target.isAlive()) {
+                  event.finish();
+                  return;
+                }
+                if (event.types.length == 1) {
+                  return;
+                }
+                var dialog = ui.create.dialog('仇袭：选择一种类型的卡牌卡牌获得之', event.cards1);
+                target.chooseControl(event.types, dialog);
+                'step 3'
+                var cards = [[], []];
+                if (event.types.length == 1) {
+                  event.type = event.types[0];
+                } else {
+                  event.type = result.control;
+                }
+                target.popup(event.type);
+                for (var card of event.cards1) {
+                  if (get.type(card, 'trick') == event.type) {
+                    cards[0].push(card);
+                  } else {
+                    cards[1].push(card);
                   }
                 }
-                'step 4'
-                var cards2 = [];
-                if (event.target.isAlive()) {
-                  for (var i = 0; i < result.buttons.length; i++) {
-                    cards2.push(result.buttons[i].link);
-                    event.cards1.remove(result.buttons[i].link);
-                  }
-                  event.target.gain(cards2, 'gain2');
-                }
-                if (event.cards1.length) {
-                  player.gain(event.cards1, 'gain2');
-                }
+                target.gain(cards[0], 'gain2');
+                player.gain(cards[1], 'gain2');
               },
               ai: {
                 order: 4,
                 result: {
-                  player: 1,
+                  player: 0.5,
+                  target: -1,
                 }
               }
             },
@@ -13163,7 +13159,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_hemou_info: '其他角色的出牌阶段开始时，你可以将一张手牌正面朝上交给该角色，该角色本阶段限一次，可将一张与之相同花色的手牌按下列规则使用：黑桃【决斗】，梅花【借刀杀人】，红桃【顺手牵羊】，方片【火攻】。',
             jlsg_qicai_info: '每当你失去一次手牌时，你可以进行判定，若结果为红色，你摸一张牌。',
             jlsg_rende_info: '任一角色的回合结束阶段结束时，你可以将任意数量的手牌交给该角色，然后该角色进行1个额外的出牌阶段。',
-            jlsg_chouxi_info: '出牌阶段限一次，你可以弃置一张手牌并展示牌堆顶的两张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一张牌，然后你获得其余的牌。',
+            jlsg_chouxi_info: '出牌阶段限一次，你可以弃置一张手牌并展示牌堆顶的两张牌，然后令一名其他角色选择一项：弃置一张与之均不同类别的牌，然后令你获得这些牌；或受到你造成的1点伤害并获得其中一种类别的所有牌，然后你获得其余的牌。',
             jlsg_yongbing_info: '主公技，当一名其他蜀势力角色使用【杀】造成一次伤害后，该角色可令你摸一张牌。',
             jlsg_yinmeng_info: '出牌阶段限X次，若你有手牌，你可以展示一名其他男性角色的一张手牌，然后展示你的一张手牌，若两张牌类型相同，你与其各摸一张牌；若不同，你弃置其展示的牌，X为你所损失的体力且至少为1',
             jlsg_xiwu_info: '当你使用的【杀】被目标角色的【闪】响应后，你可以摸一张牌，然后弃置其一张手牌。',
@@ -20233,18 +20229,20 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0518",
+      version: "2.2.0528",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.05.18更新<br>
+2021.05.28更新<br>
+&ensp; 更新SK向朗 藏书为最新版。<br>
+&ensp; 重写SR刘备 仇袭。<br>
 &ensp; 增加与新木牛流马的兼容性。<br>
 &ensp; 修复三英武将在无法觉醒的模式下无法显示正确的技能讯息。<br>
-&ensp; 修复SK全琮 邀名4 目标。<br>
+&ensp; 修复SK全琮 邀名4 目标。修复触发条件，触发时机。优化动画。<br>
 &ensp; 修复SK于禁 整毅 回合内无法选择不可用手牌。<br>
 &ensp; 修复SR貂蝉 拜月 报错。<br>
 &ensp; 修复SK神关羽 武神。<br>
-&ensp; 优化SR黄月英 合谋 描述。<br>
+&ensp; 优化SR黄月英 合谋 描述。修复AI。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.05.08更新<br>
 &ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
