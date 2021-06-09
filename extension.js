@@ -813,7 +813,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   "phaseDrawEnd",
                   "phaseUseEnd",
                   "phaseDiscardEnd",
-                  "phaseEnd",
+                  "phaseJieshuEnd",
                 ],
               },
               filter: function (event, player) {
@@ -1296,7 +1296,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_yanxi: {
               audio: "ext:极略:2",
-              trigger: { player: ['phaseBegin', 'phaseEnd'] },
+              trigger: { player: ['phaseZhunbeiBegin', 'phaseJieshuBegin'] },
               frequent: true,
               filter: function (event, player) {
                 return player.countCards('e') <= 0;
@@ -2018,7 +2018,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               skillAnimation: true,
               unique: true,
               derivation: ['jlsg_tuodao'],
-              trigger: { player: 'phaseBegin' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               forced: true,
               filter: function (event, player) {
                 return !player.storage.jlsg_danqi && player.countCards('h') > player.hp;
@@ -2771,7 +2771,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_jushou: {
               audio: "ext:极略:1",
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               check: function (event, player) {
                 var num = game.filterPlayer(p => p != player && player.inRangeOf(p)).length;
                 if (player.isTurnedOver()) return true;
@@ -2912,7 +2912,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_xiemu: {
               audio: "ext:极略:1",
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseZhunbeiBegin' },
               direct: true,
               content: function () {
                 'step 0'
@@ -2938,7 +2938,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               group: 'jlsg_xiemu2',
             },
             jlsg_xiemu2: {
-              trigger: { global: 'phaseEnd' },
+              trigger: { global: 'phaseJieshuBegin' },
               audio: "ext:极略:1",
               logTarget: 'player',
               prompt2: function (event, player) {
@@ -3273,7 +3273,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_baozheng: {
               audio: "ext:极略:2",
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               forced: true,
               priority: 10,
               filterTarget: function (card, player, target) {
@@ -3368,7 +3368,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_zhongyong: {
               audio: "ext:极略:2",
-              trigger: { player: 'phaseBeginStart' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               check: function (event, player) {
                 return (!player.hasJudge('lebu') || !player.hasJudge('bingliang')) && (player.hp >= 2 || player.hasCard('tao', 'h')) &&
                   game.hasPlayer(function (cur) {
@@ -3528,7 +3528,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_zhijiao: {
               audio: "ext:极略:2",
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               unique: true,
               direct: true,
               init: function (player) {
@@ -3878,7 +3878,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_daoshi: {
               audio: "ext:极略:2",
-              trigger: { global: 'phaseEnd' },
+              trigger: { global: 'phaseJieshuBegin' },
               filter: function (event, player) {
                 return event.player.countCards('e') > 0 && (player == event.player || player.hasSkill("jlsg_daoshi"));
               },
@@ -3886,7 +3886,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               content: function () {
                 'step 0'
                 var prompt = (trigger.player == player) ? "是否发动【刀侍】摸一张牌?" :
-                  `###是否对${get.translation(event.target)}发动【刀侍】？###摸一张牌并将装备区的一张牌交给该角色`;
+                  `###是否对${get.translation(event.target)}发动【刀侍】？###摸一张牌并将装备区的一张牌交给${get.translation(player)}`;
                 trigger.player.chooseBool(prompt).ai = function () {
                   if (trigger.player == player) return true;
                   if (get.attitude(trigger.player, player) > 0 && player.countCards('e') < 2)
@@ -3914,7 +3914,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_lirang: {
               audio: "ext:极略:2",
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseZhunbeiEnd' },
               filter: function (event, player) {
                 if (event.player.countCards('h') == 0) return false;
                 if (player.storage.jlsg_lirang.length == 0) return true;
@@ -4629,7 +4629,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_caijie: {
               audio: "ext:极略:1",
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseZhunbeiBegin' },
               check: function (event, player) {
                 var cards = player.get('h');
                 for (var i = 0; i < cards.length; i++) {
@@ -4713,7 +4713,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_yanliang: {
               audio: "ext:极略:2",
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseZhunbeiBegin' },
               filter: function (event, player) {
                 return player.countDiscardableCards(player, 'he');
               },
@@ -4892,7 +4892,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_huanbing2: {
               audio: "ext:极略:2",
-              trigger: { player: 'phaseBegin' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               filter: function (event, player) {
                 return player.storage.jlsg_huanbing.length;
               },
@@ -5990,7 +5990,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_jianyue: {
               audio: "ext:极略:2",
-              trigger: { global: 'phaseEnd' },
+              trigger: { global: 'phaseJieshuBegin' },
               filter: function (event, player) {
                 if (ui.discardPile.hasChildNodes() == false) return false;
                 return !game.hasPlayer(function (target) {
@@ -6427,7 +6427,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_zhuanshan: {
               audio: "ext:极略:2",
-              trigger: { player: ['phaseBegin', 'phaseEnd'] },
+              trigger: { player: ['phaseZhunbeiBegin', 'phaseJieshuEnd'] },
               direct: true,
               content: function () {
                 'step 0'
@@ -6435,7 +6435,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   if (target == player) {
                     if (target.countCards('j')) {
                       if (target.countCards('j', 'shandian') == 0) {
-                        if (event.triggername == 'phaseBegin') {
+                        if (event.triggername == 'phaseZhunbeiBegin') {
                           return 5;
                         } else {
                           if (jlsg.isFriend(target, target.next)) {
@@ -6460,7 +6460,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   } else {
                     var att = get.attitude(player, target);
                     if (att > 0 && target.countCards('j')) {
-                      if (event.triggername == 'phaseBegin') {
+                      if (event.triggername == 'phaseZhunbeiBegin') {
                         return 6;
                       } else {
                         if (jlsg.isFriend(player, player.next)) {
@@ -9023,7 +9023,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_wuqin: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuEnd' },
               filter: function (event, player) {
                 return player.countCards('h', { type: 'basic' }) > 0;
               },
@@ -9181,7 +9181,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     player.storage.jlsg_baiyue = [];
                     player.unmarkSkill("jlsg_baiyue");
                   },
-                  trigger: { player: 'phaseEnd' },
+                  trigger: { player: 'phaseJieshuBegin' },
                   filter: function (event, player) {
                     return player.getStorage('jlsg_baiyue').filterInD('d').length;
                   },
@@ -9882,7 +9882,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_guoshi: {
               audio: "ext:极略:2",
               srlose: true,
-              trigger: { global: 'phaseEnd' },
+              trigger: { global: 'phaseJieshuBegin' },
               filter: function (event, player) {
                 return event.player.getStorage("jlsg_guoshi").filterInD('d').length > 0;
               },
@@ -9963,7 +9963,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_guoshi2: {
               audio: "jlsg_guoshi",
-              trigger: { global: 'phaseBegin' },
+              trigger: { global: 'phaseZhunbeiBegin' },
               prompt: '是否发动【国士】观看牌顶的牌？',
               frequent: true,
               content: function () {
@@ -11924,7 +11924,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_guanxing: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { player: ['phaseBegin', 'phaseEnd'] },
+              trigger: { player: ['phaseZhunbeiBegin', 'phaseJieshuBegin'] },
               frequent: true,
               content: function () {
                 "step 0"
@@ -12427,7 +12427,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_rende: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { global: 'phaseEnd' },
+              trigger: { global: 'phaseJieshuEnd' },
               filter: function (event, player) {
                 return player.countCards('h') != 0 && event.player.isAlive();
               },
@@ -13938,7 +13938,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_kuangfeng: {
               audio: "ext:极略:2",
-              trigger: { player: 'phaseBegin' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               direct: true,
               filter: function (event, player) {
                 return player.storage.jlsg_qixing && player.storage.jlsg_qixing.length;
@@ -14018,7 +14018,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               }
             },
             jlsg_dawu: {
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               priority: 1,
               direct: true,
               filter: function (event, player) {
@@ -14825,7 +14825,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_cuifeng: {
               audio: "ext:极略:1",
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               forced: true,
               filter: function (player) {
                 var num = 0;
@@ -16773,7 +16773,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_shenfen_info: '出牌阶段，弃6个暴怒标记，你对每名其他角色各造成一点伤害，其他角色先弃掉各自装备区里所有的牌，再各弃4张手牌，然后将你的武将牌翻面，每回合限一次。',
             jlsg_wushen_info: '锁定技，你的【杀】和【桃】均视为【决斗】。',
             jlsg_suohun_info: '锁定技，每当你受到一点伤害时，伤害来源(除你以外)获得一个「魂」标记。当你进入濒死状态时，减一半(向上取整)的体力上限并恢复体力至体力上限，拥有「魂」标记的角色依次弃置所有的「魂」标记，然后受到与弃置的「魂」标记数量相同的伤害。',
-            jlsg_juejing_info: '锁定技，一名角色的回合开始时，若你的体力值：为一，你摸一张牌；大于一，你失去1点体力，然后摸两张牌。',
+            jlsg_juejing_info: '锁定技，一名角色的回合结束时，若你的体力值：为一，你摸一张牌；大于一，你失去1点体力，然后摸两张牌。',
             jlsg_longhun_info: '你可以将同花色的X张牌按下列规则使用（或打出）：红桃当【桃】；方块当火属性的【杀】；梅花当【闪】；黑桃当【无懈可击】。（X为你当前的体力值且至少为一）。',
             jlsg_nizhan_info: '每当一名角色受到【杀】或【决斗】造成的一次伤害后，你可以将一枚「袭」标记放置在该角色或伤害来源(不为你)的武将牌上；锁定技，你的身份为“主公”时，不增加体力上限。',
             jlsg_cuifeng_info: '锁定技，回合结束阶段，若场上的「袭」标记总数不小于4，你须依次从每名被标记的角色处获得等同于其「袭」标记数量的手牌。若该角色手牌不足，则你获得其全部手牌，然后该角色受到你对其造成的一点伤害。最后移除场上全部的「袭」标记。',
@@ -17176,7 +17176,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_tianyou: {
               audio: "ext:极略:1", // audio: ['jlsgsy_tianyou'],
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               init: function (player) {
                 player.storage.tianyou = false;
               },
@@ -17932,7 +17932,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_shiao: {
               audio: "ext:极略:true", // audio: ['shiao'],
-              trigger: { player: 'phaseBegin' },
+              trigger: { player: 'phaseZhunbeiBegin' },
               direct: true,
               unique: true,
               filter: function (event, player) {
@@ -17949,7 +17949,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_shiao2: {
               audio: "ext:极略:true", // audio: ['shiao2'],
-              trigger: { player: 'phaseEnd' },
+              trigger: { player: 'phaseJieshuBegin' },
               direct: true,
               unique: true,
               filter: function (event, player) {
@@ -20233,6 +20233,14 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.05.29更新<br>
+&ensp; 修复SK郭女王 俭约。<br>
+&ensp; 修复SK陆绩 怀橘，三英神魏延 恃傲，三英神司马 天佑，SK神张辽 摧锋，SK神诸葛亮 狂风 大雾，SR刘备 仁德，SR诸葛亮 观星，SR吕蒙 国士，\
+SR貂蝉 拜月，SR华佗 五禽，SK何进 专擅，SK诸葛瑾 缓兵，SK李严 延粮，SK杨修 才捷，SK孔融 礼让，SK陈到 忠勇，SK马良 协穆，☆SK关羽 单骑，\
+SK费祎 衍息，SK曹仁 据守，SK董卓 暴征，SK陆抗 至交，SK周仓 刀侍，时机。<br>
+&ensp; 修复SK神赵云 描述。<br>
+&ensp; 修复SK周仓 刀侍 提示。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.05.28更新<br>
 &ensp; 更新SK向朗 藏书为最新版。<br>
 &ensp; 重写SR刘备 仇袭。<br>
@@ -20243,20 +20251,6 @@ Visit Repository</a><br>
 &ensp; 修复SR貂蝉 拜月 报错。<br>
 &ensp; 修复SK神关羽 武神。<br>
 &ensp; 优化SR黄月英 合谋 描述。修复AI。<br>
-<span style="font-size: large;">历史：</span><br>
-2021.05.08更新<br>
-&ensp; 修复国战下SK左慈报错。现在SK左慈无法在国战模式下吞将。<br>
-&ensp; 重写SK祢衡 狂傲 优化AI UX 小幅优化舌剑AI<br>
-&ensp; 修复SK张宁 打出闪触发<br>
-&ensp; 修复SR刘备 拥兵 触发条件<br>
-&ensp; 修复SK神貂蝉 天资 描述<br>
-&ensp; 修复SK祖茂 引兵 转移自己的杀<br>
-&ensp; 将SK武将收纳至极略分包中。<br>
-&ensp; 修复SK神司马懿 通天 完杀描述<br>
-&ensp; 修复SK神陆逊 焚营 伤害来源。<br>
-&ensp; 优化玄武版(android 11)UX<br>
-&ensp; 优化SK蒯越 诛暴 logSkill 提示<br>
-&ensp; 更新拓展简介<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
