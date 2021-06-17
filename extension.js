@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0528::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0617::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -1792,6 +1792,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 //   }
                 // }
               },
+              isNew(event, player) {
+                if (!event.card) return false;
+                var suit = get.suit(event.card);
+                if (!suit) return false;
+                var suits = player.getStorage('jlsg_yaoming').suits;
+                return !(suits && suits.contains(suit));
+              },
             },
             jlsg_yaoming_: {
               audio: "ext:极略:4",
@@ -1800,7 +1807,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 0;
+                return player.storage.jlsg_yaoming.suits.length == 0
+                  && lib.skill.jlsg_yaoming.isNew(event, player);
               },
               // usable: 1,
               frequent: true,
@@ -1823,7 +1831,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 1;
+                return player.storage.jlsg_yaoming.suits.length == 1
+                  && lib.skill.jlsg_yaoming.isNew(event, player);
               },
               // usable: 1,
               direct: true,
@@ -1849,7 +1858,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 2 && player.canMoveCard();
+                return player.storage.jlsg_yaoming.suits.length == 2
+                  && lib.skill.jlsg_yaoming.isNew(event, player)
+                  && player.canMoveCard();
               },
               // usable: 1,
               prompt2: '你可以移动场上的一张牌',
@@ -1868,7 +1879,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 3;
+                return player.storage.jlsg_yaoming.suits.length == 3
+                  && lib.skill.jlsg_yaoming.isNew(event, player);
               },
               // usable: 1,
               direct: true,
@@ -2465,21 +2477,21 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   event.prompts.push(1);
                 }
                 var coeff = 0.5 * Math.random() + 0.75; // target card guess coeff
-                var ai = function(event, player) {
+                var ai = function (event, player) {
                   if (get.attitude(player, event.target) > 0) {
                     if (!event.prompts.contains(1)) return 'cancel2';
                     return prompts[1];
                   } else {
                     if (!event.prompts.contains(0)) return 'cancel2';
-                    var targetHEValue = coeff * event.target.getCards('h').reduce((a,b)=>a+get.value(b, event.target), 0)
-                      + event.target.getCards('e').reduce((a,b)=>a+get.value(b, event.target), 0);
-                    var playerHEValue = player.getCards('he').reduce((a,b)=>a+get.value(b, player), 0);
+                    var targetHEValue = coeff * event.target.getCards('h').reduce((a, b) => a + get.value(b, event.target), 0)
+                      + event.target.getCards('e').reduce((a, b) => a + get.value(b, event.target), 0);
+                    var playerHEValue = player.getCards('he').reduce((a, b) => a + get.value(b, player), 0);
                     return (coeff * targetHEValue * get.attitude(player, event.target)
-                            - targetHEValue * get.attitude(player, player) > 0)
-                    ? prompt[0] : 'cancel2';
+                      - targetHEValue * get.attitude(player, player) > 0)
+                      ? prompt[0] : 'cancel2';
                   }
                 };
-                player.chooseControlList(event.prompts.map(n=>prompts[n]), ai, get.prompt(event.name, event.target));
+                player.chooseControlList(event.prompts.map(n => prompts[n]), ai, get.prompt(event.name, event.target));
                 'step 1'
                 if (result.control == 'cancel2') {
                   event.finish();
@@ -12477,8 +12489,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               filter: function (event, player) {
                 return player.countCards('h') > 0;
               },
-              filterTarget:function(card,player,target){
-                return player!=target;
+              filterTarget: function (card, player, target) {
+                return player != target;
               },
               check: function (card) {
                 return 7 - get.value(card)
@@ -20229,12 +20241,13 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0528",
+      version: "2.2.0617",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.05.29更新<br>
+2021.06.17更新<br>
 &ensp; 修复SK郭女王 俭约。<br>
+&ensp; 修复SK全琮 邀名。<br>
 &ensp; 修复SK陆绩 怀橘，三英神魏延 恃傲，三英神司马 天佑，SK神张辽 摧锋，SK神诸葛亮 狂风 大雾，SR刘备 仁德，SR诸葛亮 观星，SR吕蒙 国士，\
 SR貂蝉 拜月，SR华佗 五禽，SK何进 专擅，SK诸葛瑾 缓兵，SK李严 延粮，SK杨修 才捷，SK孔融 礼让，SK陈到 忠勇，SK马良 协穆，☆SK关羽 单骑，\
 SK费祎 衍息，SK曹仁 据守，SK董卓 暴征，SK陆抗 至交，SK周仓 刀侍，时机。<br>
