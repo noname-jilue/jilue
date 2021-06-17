@@ -2359,7 +2359,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 target.markAuto('jlsg_chaochen2', [player]);
               },
               ai: {
-                order: 5,
+                order: 0.5,
                 result: {
                   player: -1,
                   target: function (player, target) {
@@ -2390,7 +2390,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 var target = player.storage.jlsg_chaochen2.shift();
                 target.logSkill('jlsg_chaochen2', player);
                 player.damage(target);
-                if (player.storage.jlsg_chaochen2) {
+                if (player.storage.jlsg_chaochen2.length) {
                   event.redo();
                 }
                 // player.storage.jlsg_chaochen2.logSkill('jlsg_chaochen2', player);
@@ -3928,25 +3928,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               audio: "ext:极略:2",
               trigger: { global: 'phaseZhunbeiEnd' },
               filter: function (event, player) {
-                if (event.player.countCards('h') == 0) return false;
-                if (player.storage.jlsg_lirang.length == 0) return true;
-                var suit = ['heart', 'diamond', 'club', 'spade'];
-                for (var i = 0; i < player.storage.jlsg_lirang.length; i++)
-                  if (suit.contains(get.suit(player.storage.jlsg_lirang[i]))) suit.remove(get.suit(player.storage.jlsg_lirang[i]));
-                var cards = event.player.get('h');
-                for (var i = 0; i < cards.length; i++)
-                  if (suit.contains(get.suit(cards[i]))) return true;
-                return false;
+                if (game.online) {
+                  return player.storage.jlsg_lirang.length < 4 && event.player.countCards('h');
+                }
+                var liSuits = player.storage.jlsg_lirang.map(c => get.suit(c));
+                return event.player.countCards( 'h', c => !liSuits.contains(get.suit(c)) );
               },
               direct: true,
               content: function () {
                 'step 0'
+                var liSuits = player.storage.jlsg_lirang.map(c => get.suit(c));
                 var next = trigger.player.chooseCard(get.prompt('jlsg_lirang', player, trigger.player));
                 next.filterCard = function (card) {
-                  for (var i = 0; i < player.storage.jlsg_lirang.length; i++) {
-                    if (get.suit(card) == get.suit(player.storage.jlsg_lirang[i])) return false;
-                  }
-                  return true;
+                  return !liSuits.contains(get.suit(card));
                 }
                 next.ai = function (card) {
                   if (get.attitude(trigger.player, player) > 0) {
@@ -3961,14 +3955,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 'step 1'
                 if (result.bool) {
                   player.logSkill('jlsg_lirang', trigger.player);
-                  trigger.player.lose(result.cards, ui.special);
-                  trigger.player.$give(result.cards.length, player);
+                  trigger.player.$give(result.cards.length, player, false);
+                  trigger.player.lose(result.cards, ui.special, 'toStorage');
                   player.storage.jlsg_lirang = player.storage.jlsg_lirang.concat(result.cards);
                   player.markSkill('jlsg_lirang');
                   player.syncStorage('jlsg_lirang');
+                  // player.updateMarks('jlsg_lirang');
                   trigger.player.draw();
-                } else {
-                  event.finish();
                 }
               },
               init: function (player) {
@@ -3979,7 +3972,44 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               group: ['jlsg_lirang2']
             },
-            jlsg_lirang2: {
+            jlsg_lirang2:{
+              enable:'chooseToUse',
+              filter:function(event,player){
+                return player.storage.jlsg_lirang.length>=2&&event.filterCard({name:'tao'},player,event);
+              },
+              chooseButton:{
+                dialog:function(event,player){
+                  return ui.create.dialog('礼让',player.storage.jlsg_lirang,'hidden');
+                },
+                select: 2,
+                backup:function(links,player){
+                  return {
+                    audio:"jlsg_lirang",
+                    filterCard:function(){return false},
+                    selectCard:-1,
+                    viewAs:{name:'tao',cards:links},
+                    cards:links,
+                    onuse:function(result,player){
+                      result.cards=lib.skill[result.skill].cards;
+                      player.storage.jlsg_lirang.remove(result.cards);
+                      player.syncStorage('jlsg_lirang');
+                      player.markAuto('jlsg_lirang2')
+                      // player.logSkill('jlsg_lirang2',result.targets);
+                    }
+                  }
+                },
+              },
+              ai:{
+                order:10,
+                result:{
+                  player:function(player) {
+                    // FIXME
+                    return 1;
+                  }
+                }
+              }
+            },
+            jlsg_lirangBackup: {
               enable: 'chooseToUse',
               direct: true,
               check: function (event, player) {
@@ -11415,7 +11445,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player.gain(event.card, 'gain2');
                   if (_status.currentPhase != player) {
                     player.chooseBool('是否对' + get.translation(_status.currentPhase) + '使用一张无视防具的杀？').ai = function () {
-                      return ai.get.attitude(player, trigger.player) < 0;
+                      return get.attitude(player, _status.currentPhase) < 0;
                     }
                   } else {
                     event.finish();
@@ -12655,6 +12685,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   player.logSkill('jlsg_zhaoxiang', trigger.player);
                   if (trigger.player.countCards('h')) {
                     trigger.player.chooseCard('交给' + get.translation(player) + '一张牌或令打出的杀无效').set('ai', function (card) {
+                      debugger;
+                      if (get.effect(player, trigger.card, trigger.player, trigger.player) < 0) {
+                        return -1;
+                      }
                       if (_status.event.getParent().player.hasSkill('jiu')) {
                         return 7 - get.value(card);
                       } else {
@@ -16132,6 +16166,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 nofire: true,
                 nothunder: true,
+                nodamage:true,
                 effect: {
                   target: function (card, player, target, current) {
                     if (get.tag(card, 'damage')) return [0, 0.5];
@@ -17856,90 +17891,57 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_huoxin: {
               audio: "ext:极略:1", // audio: ['huoxin'],
-              trigger: { source: 'damageEnd' },
+              trigger: { source: 'damageSource', player:'damageEnd' },
               unique: true,
-              filter: function (event, player) {
-                return event.player != player && event.player.isAlive();
+              filter: function (event, player, name) {
+                if (name == 'damageSource') {
+                  return event.player && event.player != player && event.player.isAlive();
+                } else {
+                  return event.source && event.source != player;
+                }
               },
               check: function (event, player) {
-                var att = ai.get.attitude(player, event.player);
-                return att <= 0;
+                var target = (event.player == player) ? event.source : event.player;
+                var att = get.attitude(player, target);
+                return att < 0 || (att < 1 && target.countGainableCards(player, 'e'));
+              },
+              logTarget:function(event,player){
+                if(event.player==player) return event.source;
+                return event.player;
               },
               content: function () {
                 "step 0"
-                trigger.player.chooseCard('交出一张装备区内的装备牌或者失去一点体力', 'e', function (card) {
+                event.target = (trigger.player == player) ? trigger.source : trigger.player;
+                if (!event.target.countCards('e')) {
+                  event.target.loseHp();
+                  event.finish();
+                  return;
+                }
+                event.target.chooseCard(`交给${get.translation(player)}一张装备区内的牌或者失去一点体力`, 'e', function (card) {
                   return get.type(card) == 'equip';
-                }).ai = function (card, player) {
-                  player = trigger.player;
-                  if (player.hp == player.maxHp) {
-                    return 6 - ai.get.value(card);
+                }).ai = function (card, cards2) {
+                  debugger;
+                  if (event.target.hp == event.target.maxHp) {
+                    return 6 - get.value(card);
                   }
-                  else if (player.hp == 1) {
-                    return 12 - ai.get.value(card);
+                  else if (event.target.hp == 1) {
+                    return 12 - get.value(card);
                   }
                   else {
-                    return 7 - ai.get.value(card);
+                    return 7 - get.value(card);
                   }
                 };
                 "step 1"
                 if (result.bool) {
-                  player.gain(result.cards[0], trigger.player);
-                  trigger.player.$give(result.cards[0], player);
+                  player.gain(result.cards[0], event.target);
+                  event.target.$give(result.cards[0], player);
                 }
                 else {
-                  trigger.player.loseHp();
-                }
-              },
-              group: ['jlsgsy_huoxin2']
-            },
-            jlsgsy_huoxin2: {
-              audio: "ext:极略:1", // audio: ['huoxin'],
-              trigger: { player: 'damageEnd' },
-              unique: true,
-              filter: function (event, player) {
-                return event.source && event.source != player && event.source.isAlive();
-              },
-              check: function (event, player) {
-                var att = ai.get.attitude(player, event.source);
-                return att <= 0;
-              },
-              content: function () {
-                "step 0"
-                trigger.source.chooseCard('交出一张装备区内的装备牌或者失去一点体力', 'e', function (card) {
-                  return get.type(card) == 'equip';
-                }).ai = function (card, player) {
-                  player = trigger.source;
-                  if (player.hp == player.maxHp) {
-                    return 6 - ai.get.value(card);
-                  }
-                  else if (player.hp == 1) {
-                    return 12 - ai.get.value(card);
-                  }
-                  else {
-                    return 7 - ai.get.value(card);
-                  }
-                };
-                "step 1"
-                if (result.bool) {
-                  player.gain(result.cards[0], trigger.source);
-                  trigger.source.$give(result.cards[0], player);
-                }
-                else {
-                  trigger.source.loseHp();
+                  event.target.loseHp();
                 }
               },
               ai: {
-                threaten: 0.8,
-                result: {
-                  effect: function (card, player, target) {
-                    if (get.tag(card, 'damage')) {
-                      if (!target.hasFriend()) return;
-                      if (player.skills.contains('jueqing')) return [1, -2];
-                      if (target.hp > 2) return [1, -1, 1, -1];
-                      return [1, -1, 1, -0.8];
-                    }
-                  }
-                }
+                maixie_defend: true,
               },
             },
             jlsgsy_shiao: {
@@ -18264,7 +18266,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsy_baonuzhangjiao_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张角并立即开始你的回合',
             jlsgsy_dihui_info: '出牌阶段限一次，你可令场上(除你外)体力值最多的(或之一)的一名角色对另一名角色造成1点伤害，然后你可以执行下列1项：摸一张牌或者弃置受到伤害角色的一张牌',
             jlsgsy_luansi_info: '出牌阶段限一次，你可以令两名有手牌的其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
-            jlsgsy_huoxin_info: '你每造成或受到一次伤害，你可令该角色交给你一张装备区内的装备牌 ，否则其失去一点体力',
+            jlsgsy_huoxin_info: '你对其他角色造成伤害，或受到其他角色造成的伤害后，你可令该角色交给你一张装备区内的装备牌 ，或者失去一点体力。',
             jlsgsy_baonucaifuren_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒蔡夫人并立即开始你的回合',
             jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用一张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的一名其他角色使用一张【杀】',
             jlsgsy_kuangxi_info: '出牌阶段，当你使用非延时锦囊牌指定其他角色为目标后，你可以终止此牌的结算，改为视为对这些目标依次使用一张【杀】(不计入出牌阶段的使用限制)',
@@ -20248,6 +20250,12 @@ Visit Repository</a><br>
 2021.06.17更新<br>
 &ensp; 修复SK郭女王 俭约。<br>
 &ensp; 修复SK全琮 邀名。<br>
+&ensp; 优化SK张布 朝臣 AI。<br>
+&ensp; 优化SR曹操 招降 AI。<br>
+&ensp; 优化SR赵云 救主 AI。<br>
+&ensp; 优化SK神司马徽 隐世 AI。<br>
+&ensp; 重写SK孔融 修复AI 修复死循环漏洞。<br>
+&ensp; 重写三英蔡夫人 祸心。修复AI<br>
 &ensp; 修复SK陆绩 怀橘，三英神魏延 恃傲，三英神司马 天佑，SK神张辽 摧锋，SK神诸葛亮 狂风 大雾，SR刘备 仁德，SR诸葛亮 观星，SR吕蒙 国士，\
 SR貂蝉 拜月，SR华佗 五禽，SK何进 专擅，SK诸葛瑾 缓兵，SK李严 延粮，SK杨修 才捷，SK孔融 礼让，SK陈到 忠勇，SK马良 协穆，☆SK关羽 单骑，\
 SK费祎 衍息，SK曹仁 据守，SK董卓 暴征，SK陆抗 至交，SK周仓 刀侍，时机。<br>
