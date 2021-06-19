@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0617::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0619::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -10327,7 +10327,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               enable: 'phaseUse',
               usable: 1,
               filter: function (event, player) {
-                return player.countCards('h') > 1
+                return player.countCards('h') > 1 && game.countPlayer(p => p != player) >= 2;
               },
               check: function (card) {
                 if (ui.selected.cards.length == 0) return get.value(card);
@@ -10345,6 +10345,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               targetprompt: ['先拿牌', '后拿牌'],
               selectTarget: 2,
               discard: false,
+              lose: false,
               multitarget: true,
               content: function () {
                 targets[0].gain(cards[0]);
@@ -17847,17 +17848,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               usable: 1,
               unique: true,
               filterTarget: function (card, player, target) {
-                return player != target && target.num('h');
+                if (player == target || !target.countCards('h')) return false;
+                if(ui.selected.targets.length){
+                  return !target.hasSkillTag('noCompareTarget');
+                } else {
+                  return !target.hasSkillTag('noCompareSource');
+                }
               },
               filter: function (event, player) {
-                var targets = [];
-                for (var i = 0; i < game.players.length; i++) {
-                  if (game.players[i].num('h') && game.players[i] != player) {
-                    targets.push(game.players[i]);
-                  }
-                }
-                if (targets.length >= 2) return true;
-                return false;
+                return game.countPlayer(p => p != player && p.countCards('h')) >= 2;
               },
               multitarget: true,
               targetprompt: ['发起拼点', '被拼点'],
@@ -20247,6 +20246,10 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.06.19更新<br>
+&ensp; 优化SR周瑜 筹略。<br>
+&ensp; 优化三英蔡夫人 乱嗣 目标选择。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.06.17更新<br>
 &ensp; 修复SK郭女王 俭约。<br>
 &ensp; 修复SK全琮 邀名。<br>
@@ -20261,17 +20264,6 @@ SR貂蝉 拜月，SR华佗 五禽，SK何进 专擅，SK诸葛瑾 缓兵，SK李
 SK费祎 衍息，SK曹仁 据守，SK董卓 暴征，SK陆抗 至交，SK周仓 刀侍，时机。<br>
 &ensp; 修复SK神赵云 描述。<br>
 &ensp; 修复SK周仓 刀侍 提示。<br>
-<span style="font-size: large;">历史：</span><br>
-2021.05.28更新<br>
-&ensp; 更新SK向朗 藏书为最新版。<br>
-&ensp; 重写SR刘备 仇袭。<br>
-&ensp; 增加与新木牛流马的兼容性。<br>
-&ensp; 修复三英武将在无法觉醒的模式下无法显示正确的技能讯息。<br>
-&ensp; 修复SK全琮 邀名4 目标。修复触发条件，触发时机。优化动画。<br>
-&ensp; 修复SK于禁 整毅 回合内无法选择不可用手牌。<br>
-&ensp; 修复SR貂蝉 拜月 报错。<br>
-&ensp; 修复SK神关羽 武神。<br>
-&ensp; 优化SR黄月英 合谋 描述。修复AI。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
