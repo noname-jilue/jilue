@@ -2149,7 +2149,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   // if (!player.countCards('he')) return -get.attitude(player, target) && target.countCards('he');
                   // if (player.countCards('he') > 4) return get.attitude(player, target) && target.countCards('he');
                   // return 0;
-                  return get.effect(player, { name: 'guohe' }, player, target) - get.effect(player, { name: 'guohe' }, target, player);
+                  return get.effect(target, { name: 'guohe' }, player, player) - get.effect(player, { name: 'guohe' }, target, player);
                 }
                 'step 1'
                 if (result.bool) {
@@ -4000,7 +4000,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 },
               },
               ai:{
-                order:10,
+                // order:10,
+                order:function(){
+                  var od = get.order({name:'tao'})+0.2;
+                  // if (event.filterCard({name:'jiu'},_status.event.player,_status.event)) {
+                  //   od =Math.max(od, get.order({name:'jiu'})+0.2);
+                  // }
+                  return od;
+                },
+                save : true,
                 result:{
                   player:function(player) {
                     // FIXME
@@ -12648,20 +12656,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                // console.log(trigger);
+                debugger;
                 if (!trigger.player.inRangeOf(player) && (trigger.target != player && !trigger.target.inRangeOf(player))) {
                   var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function () {
-                    if (jlsg.isFriend(player, trigger.player)) {
-                      if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return true;
-                      if (get.effect(trigger.target, { name: 'sha' }, trigger.player) < 0) return true;
-                      return false;
-                    } else {
-                      if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return false;
-                      if (get.effect(trigger.target, { name: 'sha' }, trigger.player) < 0) return false;
-                      return true;
-                    }
-                    return false;
+                      return get.effect(trigger.target, trigger.card, trigger.player, player) < 0;
                   };
                 } else {
                   var next = player.chooseToDiscard(get.prompt('jlsg_zhaoxiang', trigger.player));
@@ -14770,7 +14769,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return Math.max(1, _status.event.player.hp);
               },
               viewAs: { name: 'sha', nature: 'fire' },
-              viewAsFilter: function (event, player) {
+              viewAsFilter: function (player) {
                 return player.countCards('hes', { suit: 'diamond' }) >= player.hp;
               },
               filterCard: function (card) {
@@ -20248,6 +20247,10 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 Visit Repository</a><br>
 2021.06.19更新<br>
 &ensp; 优化SR周瑜 筹略。<br>
+&ensp; 优化SK邓芝 素俭 AI。<br>
+&ensp; 修复SK孔融 礼让 无法救人。<br>
+&ensp; 修复SK神赵云 龙魂。<br>
+&ensp; 修复SR曹操 招降 AI。<br>
 &ensp; 优化三英蔡夫人 乱嗣 目标选择。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.06.17更新<br>
