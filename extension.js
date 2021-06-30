@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0619::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.0630::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -305,6 +305,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               "jlsgsk_quancong",
               "jlsgsk_chengyu",
               "jlsgsk_kuaiyue",
+              "jlsgsk_luzhi",
               "jlsgsk_zoushi",
             ],
             rare: [ // 稀有
@@ -331,7 +332,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               "jlsgsk_zhugejin",
               "jlsgsk_zhangxiu",
               "jlsgsk_sunluyu",
-              "jlsgsk_luzhi",
               "jlsgsk_yuji",
               "jlsgsk_guonvwang",
               "jlsgsk_zhangren",
@@ -473,7 +473,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng'],
-              jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi'],
+              jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi', 'jlsgsk_luzhi'],
               jlsg_pojun: ['jlsgsk_zhuran', 'jlsgsk_yanliang', 'jlsgsk_chendao', 'jlsgsk_dingfeng', 'jlsgsk_dongzhuo',
                 'jlsgsk_yujin', 'jlsgsk_panfeng', 'jlsgsk_jiangqin', 'jlsgsk_guanxing'],
               jlsg_yinyang: ['jlsgsk_zuoci', 'jlsgsk_guanlu', 'jlsgsk_wangyi', 'jlsgsk_zhanglu', 'jlsgsk_kongrong',
@@ -2066,12 +2066,14 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                player.addSkill('unequip');
                 player.addSkill('jlsg_tuodao_buff');
                 'step 1'
-                player.chooseToUse({ name: 'sha' }, '拖刀：是否对' + get.translation(trigger.player) + '使用一张【杀】？', trigger.player, -1).set('logSkill', 'jlsg_tuodao');
+                player.chooseToUse({ name: 'sha' }, '拖刀：是否对' + get.translation(trigger.player) + '使用一张【杀】？', trigger.player, -1)
+                  .set('logSkill', 'jlsg_tuodao')
+                // .set('oncard', function(card, player) {
+                //   _status.event.directHit.addArray(game.players);
+                // });
                 'step 2'
-                player.removeSkill('unequip');
                 player.removeSkill('jlsg_tuodao_buff');
 
               },
@@ -2083,6 +2085,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   popup: false,
                   content: function () {
                     trigger.directHit = true;
+                  },
+                  ai: {
+                    unequip: true,
                   }
                 }
               }
@@ -3932,7 +3937,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   return player.storage.jlsg_lirang.length < 4 && event.player.countCards('h');
                 }
                 var liSuits = player.storage.jlsg_lirang.map(c => get.suit(c));
-                return event.player.countCards( 'h', c => !liSuits.contains(get.suit(c)) );
+                return event.player.countCards('h', c => !liSuits.contains(get.suit(c)));
               },
               direct: true,
               content: function () {
@@ -3972,25 +3977,25 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               group: ['jlsg_lirang2']
             },
-            jlsg_lirang2:{
-              enable:'chooseToUse',
-              filter:function(event,player){
-                return player.storage.jlsg_lirang.length>=2&&event.filterCard({name:'tao'},player,event);
+            jlsg_lirang2: {
+              enable: 'chooseToUse',
+              filter: function (event, player) {
+                return player.storage.jlsg_lirang.length >= 2 && event.filterCard({ name: 'tao' }, player, event);
               },
-              chooseButton:{
-                dialog:function(event,player){
-                  return ui.create.dialog('礼让',player.storage.jlsg_lirang,'hidden');
+              chooseButton: {
+                dialog: function (event, player) {
+                  return ui.create.dialog('礼让', player.storage.jlsg_lirang, 'hidden');
                 },
                 select: 2,
-                backup:function(links,player){
+                backup: function (links, player) {
                   return {
-                    audio:"jlsg_lirang",
-                    filterCard:function(){return false},
-                    selectCard:-1,
-                    viewAs:{name:'tao',cards:links},
-                    cards:links,
-                    onuse:function(result,player){
-                      result.cards=lib.skill[result.skill].cards;
+                    audio: "jlsg_lirang",
+                    filterCard: function () { return false },
+                    selectCard: -1,
+                    viewAs: { name: 'tao', cards: links },
+                    cards: links,
+                    onuse: function (result, player) {
+                      result.cards = lib.skill[result.skill].cards;
                       player.storage.jlsg_lirang.remove(result.cards);
                       player.syncStorage('jlsg_lirang');
                       player.markAuto('jlsg_lirang2')
@@ -3999,18 +4004,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                   }
                 },
               },
-              ai:{
+              ai: {
                 // order:10,
-                order:function(){
-                  var od = get.order({name:'tao'})+0.2;
+                order: function () {
+                  var od = get.order({ name: 'tao' }) + 0.2;
                   // if (event.filterCard({name:'jiu'},_status.event.player,_status.event)) {
                   //   od =Math.max(od, get.order({name:'jiu'})+0.2);
                   // }
                   return od;
                 },
-                save : true,
-                result:{
-                  player:function(player) {
+                save: true,
+                result: {
+                  player: function (player) {
                     // FIXME
                     return 1;
                   }
@@ -4637,7 +4642,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               },
               discard: false,
               lose: false,
-              prompt: '制合：请选择你想要保留的卡牌',
+              prompt: '请选择你想要保留的卡牌',
               selectCard: function () {
                 var cards = _status.event.player.get('h');
                 var suits = [];
@@ -5515,166 +5520,77 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsg_jinglun: {
               audio: "ext:极略:2",
-              trigger: { player: 'useCard' },
-              frequent: true,
-              nodelay: true,
+              usable: 1,
+              trigger: { global: ['respond', 'useCard'] },
               filter: function (event, player) {
-                var type = get.type(event.card);
-                return type == 'trick' && event.cards[0] && event.cards[0] == event.card;
-              },
-              content: function () {
-                'step 0'
-                event.card = jlsg.findCardInCardPile('wuxie');
-                'step 1'
-                if (event.card) {
-                  player.gain(event.card, 'gain2');
-                  game.log(player, '从牌堆获得了', event.card);
-                } else {
-                  event.card = jlsg.findCardInDiscardPile('wuxie');
-                  if (event.card) {
-                    var i = parseInt(Math.random() * ui.cardPile.childNodes.length);
-                    ui.cardPile.insertBefore(event.card, ui.cardPile.childNodes[i]);
-                    game.log(player, '将', event.card, '随机置于牌堆');
-                    player.draw();
-                  }
+                if (!event.respondTo) return false;
+                if (event.player == player && player != event.respondTo[0]) {
+                  var cards = [];
+                  if (get.itemtype(event.respondTo[1]) == 'card') cards.push(event.respondTo[1]);
+                  else if (event.respondTo[1].cards) cards.addArray(event.respondTo[1].cards);
+                  return cards.filterInD('od').length != 0;
                 }
+                if (event.player != player && player == event.respondTo[0]) {
+                  return event.cards.filterInD('od').length > 0;
+                }
+                return false;
               },
-              ai: {
-                order: 10,
-                result: {
-                  player: 10,
-                },
+              check: function (event, player) {
+                return true;
+                // return get.value(event.cards.filterInD('od'), player) > 0;
+              },
+              logTarget: 'player',
+              content: function () {
+                var cards = [];
+                if (trigger.player == player && player != trigger.respondTo[0]) {
+                  if (get.itemtype(trigger.respondTo[1]) == 'card') cards.push(trigger.respondTo[1]);
+                  else if (trigger.respondTo[1].cards) cards.addArray(trigger.respondTo[1].cards);
+                } else {
+                  cards = trigger.cards;
+                }
+                cards = cards.filterInD('od');
+                player.gain(cards, 'log', 'gain2');
               },
             },
             jlsg_ruzong: {
-              srlose: true,
-              audio: "ext:极略:2",
-              enable: 'phaseUse',
-              filter: function (event, player) {
-                return player.countCards('h', 'wuxie') > 0;
-              },
-              chooseButton: {
-                dialog: function () {
-                  var list = [];
-                  for (var i in lib.card) {
-                    if (!lib.translate[i + '_info']) continue;
-                    if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false) continue;
-                    if (lib.card[i].type == 'basic') list.push(['basic', '', i]);
-                  }
-                  return ui.create.dialog('儒宗：请选择想要使用的基本牌', [list, 'vcard']);
-                },
-                filter: function (button, player) {
-                  return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
-                },
-                check: function (button) {
-                  var player = _status.event.player;
-                  var shaTarget = false;
-                  for (var i = 0; i < game.players.length; i++) {
-                    if (player.canUse('sha', game.players[i]) && ai.get.effect(game.players[i], { name: 'sha' }, player) > 0) {
-                      shaTarget = true;
-                    }
-                  }
-                  if (player.isDamaged()) return (button.link[2] == 'tao') ? 1 : -1;
-                  if (shaTarget && player.countCards('h', 'sha') && !player.countCards('h', 'jiu')) return (button.link[2] == 'jiu') ? 1 : -1;
-                  if (shaTarget && !player.countCards('h', 'sha')) return (button.link[2] == 'sha') ? 1 : -1;
-                  return 0;
-                },
-                backup: function (links, player) {
-                  return {
-                    filterCard: { name: 'wuxie' },
-                    audio: "ext:极略:4",
-                    popname: true,
-                    ai1: function (card) {
-                      return 8 - ai.get.value(card);
-                    },
-                    viewAs: { name: links[0][2] },
-                  }
-                },
-                prompt: function (links, player) {
-                  return '将一张无懈可击当' + get.translation(links[0][2]) + '使用';
-                }
-              },
-              ai: {
-                order: 6,
-                result: {
-                  player: function (player) {
-                    if (player.isDamaged()) return 2;
-                    return player.countCards('h', 'wuxie') - 1;
-                  }
-                }
-              },
-              group: ['jlsg_ruzong_sha', 'jlsg_ruzong_shan', 'jlsg_ruzong_tao'],
+              audio: "ext:极略:1",
+              group: ['jlsg_ruzong_wuxie', 'jlsg_ruzong_shan'],
               subSkill: {
-                sha: {
-                  audio: "ext:极略:4",
-                  enable: ['chooseToRespond', 'chooseToUse'],
-                  filterCard: { name: 'wuxie' },
-                  viewAs: { name: 'sha' },
-                  filter: function (event, player) {
-                    if (!player.countCards('h', { name: 'wuxie' })) return false;
-                    return event.parent.name != 'phaseUse';
+                wuxie: { // 闪当无懈
+                  audio: 'jlsg_ruzong',
+                  position: "hs",
+                  enable: ['chooseToUse', 'chooseToRespond'],
+                  filterCard: { name: 'shan' },
+                  viewAsFilter: function (player) {
+                    return player.countCards('hs', 'shan') != 0;
                   },
-                  prompt: '将一张无懈可击当【杀】使用或打出',
-                  check: function (card) {
-                    var player = _status.event.player;
-                    if (player.countCards('h', 'sha')) return 6 - ai.get.value(card);
-                    return 7 - ai.get.value(card);
+                  viewAs: {
+                    name: "wuxie",
                   },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (!player.countCards('h', { name: 'wuxie' })) return false;
-                    },
-                    respondSha: true,
-                    useful: [10, 8],
-                  }
+                  prompt: "将一张闪当无懈可击使用",
+                  check: function (card) { return 8 - get.value(card); },
                 },
                 shan: {
-                  audio: "ext:极略:4",
-                  enable: ['chooseToRespond', 'chooseToUse'],
+                  audio: 'jlsg_ruzong',
+                  position: "hs",
+                  enable: ['chooseToUse', 'chooseToRespond'],
                   filterCard: { name: 'wuxie' },
-                  viewAs: { name: 'shan' },
-                  filter: function (event, player) {
-                    if (!player.countCards('h', { name: 'wuxie' })) return false;
-                    return event.parent.name != 'phaseUse';
+                  viewAsFilter: function (player) {
+                    return player.countCards('hs', 'wuxie') != 0;
                   },
-                  prompt: '将一张无懈可击当【闪】使用或打出',
-                  check: function (card) {
-                    var player = _status.event.player;
-                    if (player.countCards('h', 'shan')) return 6 - ai.get.value(card);
-                    return 7 - ai.get.value(card);
+                  viewAs: {
+                    name: "shan",
                   },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (!player.countCards('h', { name: 'wuxie' })) return false;
+                  prompt: "将一张无懈可击当闪使用或打出",
+                  check: function (card) { return 1; },
+                  ai : {
+                    respondShan:true,
+                    skillTagFilter:function(player){
+                      if(!player.countCards('hs','wuxie')) return false;
                     },
-                    respondShan: true,
-                    useful: [10, 8],
-                  }
+                  },
                 },
-                tao: {
-                  audio: "ext:极略:4",
-                  enable: ['chooseToUse'],
-                  filterCard: { name: 'wuxie' },
-                  viewAs: { name: 'tao' },
-                  filter: function (event, player) {
-                    if (!player.countCards('h', { name: 'wuxie' })) return false;
-                    return event.parent.name != 'phaseUse';
-                  },
-                  prompt: '将一张无懈可击当【桃】使用或打出',
-                  check: function (card, player) {
-                    var player = _status.event.player;
-                    if (player.countCards('h', 'tao')) return 6 - ai.get.value(card);
-                    return 7 - ai.get.value(card);
-                  },
-                  ai: {
-                    skillTagFilter: function (player) {
-                      if (!player.countCards('h', { name: 'wuxie' })) return false;
-                    },
-                    save: true,
-                    useful: [10, 8],
-                  }
-                }
-              }
+              },
             },
             jlsg_leiji: {
               audio: "ext:极略:1",
@@ -7162,6 +7078,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_qianhuan: '千幻',
             jlsg_jinglun: '经纶',
             jlsg_ruzong: '儒宗',
+            jlsg_ruzong_wuxie: '儒宗',
+            jlsg_ruzong_shan: '儒宗',
             jlsg_leiji: '雷祭',
             jlsg_shanxi: '闪戏',
             jlsg_guhuo: '蛊惑',
@@ -7282,8 +7200,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_huilian_info: '出牌阶段限一次，你可以令一名其他角色进行一次判定并获得生效后的判定牌。若结果为红桃，该角色恢复1点体力。',
             jlsg_wenliang_info: '一名角色的红色判定牌生效后，你可以摸一张牌。',
             jlsg_qianhuan_info: '变化技，锁定技，你的每个回合开始时，随机展示3张未上场且你拥有的武将，你获得其中的2个技能（觉醒技、主公技、限定技和变化技除外），直到你的下个回合开始。若该局游戏为双将模式，则移除你的另一名武将，将“2个”改为“4个”。',
-            jlsg_jinglun_info: '当你使用非延时类锦囊牌时，若牌堆有【无懈可击】，你可以随机获得一张；若没有，你可以将一张【无懈可击】从弃牌堆随机置入牌堆，然后摸一张牌。',
-            jlsg_ruzong_info: '你可以将【无懈可击】当任意基本牌使用。',
+            jlsg_jinglun_info: '你响应其他角色的牌，或其他角色响应你的牌时，你可以获得其使用或响应的牌。每回合限一次。',
+            jlsg_ruzong_info: '你可以将【闪】/【无懈可击】当【无懈可击】/【闪】使用或打出。',
             jlsg_leiji_info: '当其他角色使用【闪】时，你可以将牌堆或弃牌堆里的一张【闪电】置入一名角色的判定区。',
             jlsg_shanxi_info: '锁定技，你不能成为【闪电】的目标，其他角色的【闪电】的判定牌生效后，你获得之。',
             jlsg_guhuo_info: '其他角色的回合开始时，你可以与其拼点：若你赢，可以视为使用一张非延迟锦囊牌；若你没赢，该角色对你造成1点伤害。',
@@ -12656,28 +12574,18 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               direct: true,
               content: function () {
                 'step 0'
-                debugger;
                 if (!trigger.player.inRangeOf(player) && (trigger.target != player && !trigger.target.inRangeOf(player))) {
                   var next = player.chooseBool(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function () {
-                      return get.effect(trigger.target, trigger.card, trigger.player, player) < 0;
+                    return get.effect(trigger.target, trigger.card, trigger.player, player) < 0;
                   };
                 } else {
                   var next = player.chooseToDiscard(get.prompt('jlsg_zhaoxiang', trigger.player));
                   next.ai = function (card) {
-                    if (jlsg.isFriend(player, trigger.player)) {
-                      if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return 6 - get.value(card);
-                      if (get.effect(trigger.target, { name: 'sha' }, trigger.player) < 0) return 6 - get.value(card);
-                      return 0;
-                    } else {
-                      if (trigger.player.countCards('h') && !jlsg.isFriend(player, trigger.target)) return 0;
-                      if (jlsg.isFriend(player, trigger.target)) return 6 - get.value(card);
-                      if (jlsg.needKongcheng(trigger.player) && trigger.player.countCards('h') == 1) return 0;
-                      if (get.effect(trigger.target, { name: 'sha' }, trigger.player) < 0) return 0;
-                      if (jlsg.needKongcheng(player) && player.countCards('h') == 1) return 10 - get.value(card);
-                      return 4 - get.value(card);
-                    }
-                    return 0;
+                    var income = Math.min(-get.effect(trigger.target, trigger.card, trigger.player, player) * 1.5,
+                      get.effect(trigger.player, { name: 'shunshou' }, player, player) / 1.5
+                    );
+                    return income - get.value(card);
                   };
                 }
                 'step 1'
@@ -13316,7 +13224,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsgsoul_ganning: ['male', 'shen', 4, ['jlsg_lvezhen', 'jlsg_youlong'], ['wu']],
             jlsgsoul_xiahoudun: ['male', 'shen', 4, ['jlsg_danjing', 'jlsg_zhonghun'], ['wei']],
             jlsgsoul_dianwei: ['male', 'shen', 6, ['jlsg_zhiji'], ['wei']],
-            jlsgsoul_huatuo: ['male', 'shen', 3, ['jlsg_jishi', 'jlsg_xuanxin'], ['zhong', 'qun']],
+            jlsgsoul_huatuo: ['male', 'shen', 3, ['jlsg_yuanhua', 'jlsg_guiyuan', 'jlsg_chongsheng'], ['qun']],
             jlsgsoul_zhouyu: ['male', 'shen', 4, ['jlsg_qinyin', 'jlsg_yeyan'], ['wu']],
           },
           characterIntro: {},
@@ -16166,7 +16074,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               ai: {
                 nofire: true,
                 nothunder: true,
-                nodamage:true,
+                nodamage: true,
                 effect: {
                   target: function (card, player, target, current) {
                     if (get.tag(card, 'damage')) return [0, 0.5];
@@ -16299,95 +16207,166 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 }
               }
             },
-            jlsg_jishi: {
-              audio: "ext:极略:1",
-              usable: 1,
-              enable: 'phaseUse',
+            jlsg_yuanhua: {
+              audio: "ext:极略:2",
+              mark: true,
+              intro:{
+                content:'发动元化移出游戏了#张牌',
+              },
+              init: function(player){
+                player.storage.jlsg_yuanhua = 0;
+              },
+              locked: true,
+              direct: true,
+              trigger: {player: 'gainAfter'},
               filter: function (event, player) {
-                return player.num('he', { suit: 'heart' }) > 0;
+                return event.cards && event.cards.some(c => c.name == 'tao');
               },
-              check: function (card) {
-                return 6 - ai.get.value(card)
-              },
-              filterCard: function (card) {
-                return get.suit(card) == 'heart';
-              },
-              filterTarget: function (card, player, target) {
-                return target.num('h') > 0;
-              },
-              position: 'he',
-              content: function () {
-                'step 0'
-                var num = target.num('h');
-                target.discard(target.get('h'));
-                target.draw(num);
-                target.showHandcards();
-                'step 1'
-                var num = target.num('h', function (card) {
-                  return get.type(card) != 'basic';
-                });
-                if (num == 0) {
-                  event.finish();
+              content: function() {
+                "step 0"
+                event.cards = trigger.cards.filter(c => c.name =='tao');
+                "step 1"
+                event.card = event.cards.pop();
+                player.logSkill(event.name);
+                if (player.isDamaged()) {
+                  player.recover();
+                } else {
+                  player.draw(2, 'nodelay');
                 }
-                else {
-                  var recover = target.maxHp - target.hp;
-                  if (num > 0 && num <= recover) {
-                    target.recover(num);
-                  }
-                  else {
-                    if (recover > 0) target.recover(recover);
-                    target.draw(num - recover);
-                  }
+                "step 2"
+                game.log(player, '将', event.card, '移出游戏');
+                player.lose(event.card, ui.special);
+                player.addMark('jlsg_yuanhua', 1, false);
+                "step 3"
+                if (event.cards.length) {
+                  event.goto(1);
                 }
-
               },
-              ai: {
-                order: 9,
-                result: {
-                  target: function (player, target) {
-                    var recover = target.maxHp - target.hp;
-                    var nh = target.num('h');
-                    if (recover >= 2) return nh + recover;
-                    return nh;
-                  }
-                },
-                threaten: 2
-              }
             },
-            jlsg_xuanxin: {
+            jlsg_guiyuan: {
               audio: "ext:极略:1",
-              trigger: { global: 'damageEnd' },
-              check: () => true,
+              global: 'jlsg_guiyuan_ai',
+              enable:'phaseUse',
+              usable:1,
+              check: function (event, player) {
+                return player.hp > 1 || player.canSave(player);
+              },
               content: function () {
                 'step 0'
-                var cards = [];
-                for (var i = 0; i < ui.discardPile.childNodes.length; i++) {
-                  if (get.suit(ui.discardPile.childNodes[i]) == 'heart') {
-                    cards = cards.concat(ui.discardPile.childNodes[i]);
-                  }
-                }
-                if (cards.length) {
-                  var card = cards.randomGet();
-                  player.gain(card, 'gain2');
-                  game.log(player, '从弃牌堆获得了', card);
-                  if (trigger.player && trigger.player != player) {
-                    player.chooseCard('是否交给' + get.translation(trigger.player) + '一张牌？').ai = function (card) {
-                      if (ai.get.attitude(player, trigger.player) > 0) return 6 - ai.get.value(card);
-                      return 0;
-                    }
-                  }
-                }
-                else {
-                  event.finish();
-                }
+                player.loseHp();
+                event.targets = game.filterPlayer( p => p != player );
+                event.targets.sortBySeat();
+                player.line(event.targets,'green');
+                event.gained = false;
                 'step 1'
-                if (result.bool) {
-                  trigger.player.gain(result.cards[0]);
-                  player.$give(1, trigger.player);
+                event.target = event.targets.shift();
+                if (event.target.countCards('h', 'tao')) {
+                  var card = event.target.getCards('h', 'tao').randomGet();
+                  event.target.give(card, player, true);
+                  event.gained = true;
                 }
+                'step 2'
+                if (event.targets.length) {
+                  event.goto(1);
+                } 
+                else if (!event.gained) {
+                  var card=get.cardPile(c => c.name =='tao');
+                  if(card) player.gain(card, 'gain2');
+                }
+              },
+              ai:{
+                order:12,
               }
             },
-
+            jlsg_guiyuan_ai: {
+              ai: {
+                nokeep: true,
+                skillTagFilter:function(player){
+                  if(!game.hasPlayer(p => p.hasSkill('jlsg_guiyuan') && get.attitude(player, p) < 2)) return false;
+                },
+              }
+            },
+            jlsg_chongsheng: {
+              audio: "ext:极略:1",
+              unique:true,
+              limited:true,
+              trigger:{global:'dying'},
+              check:function(event,player){
+                if(get.attitude(player,event.player)<4) return false;
+                if(player.countCards('h',function(card){
+                  var mod2=game.checkMod(card,player,'unchanged','cardEnabled2',player);
+                  if(mod2!='unchanged') return mod2;
+                  var mod=game.checkMod(card,player,event.player,'unchanged','cardSavable',player);
+                  if(mod!='unchanged') return mod;
+                  var savable=get.info(card).savable;
+                  if(typeof savable=='function') savable=savable(card,player,event.player);
+                  return savable;
+                })>=1-event.player.hp) return false;
+                if(event.player==player||event.player==get.zhu(player)) return true;
+                return !player.hasUnknown();
+              },
+              filter:function(event,player){
+                return event.player.hp<=0;
+              },
+              skillAnimation:true,
+              animationColor:'gray',
+              logTarget:'player',
+              content:function(){
+                'step 0'
+                player.awakenSkill('jlsg_chongsheng');
+                'step 1'
+                var num=player.storage.jlsg_yuanhua || 1;
+                if(num > trigger.player.maxHp - trigger.player.hp) {
+                  trigger.player.recover(trigger.player.maxHp - trigger.player.hp);
+                  trigger.player.draw(num - (trigger.player.maxHp - trigger.player.hp));
+                } else {
+                  trigger.player.recover(num);
+                }
+                'step 2'
+                if(!trigger.player.isAlive() || !trigger.player.group || trigger.player.group == 'unknown' || trigger.player.isUnseen(0)){
+                  event.finish();
+                  return;
+                }
+                var group = trigger.player.group;
+                var list;
+                if(_status.characterlist){
+                  list=[];
+                  for(var i=0;i<_status.characterlist.length;i++){
+                    var name=_status.characterlist[i];
+                    if(lib.character[name][1]==group) list.push(name);
+                  }
+                }
+                else if(_status.connectMode){
+                  list=get.charactersOL(function(i){
+                    return lib.character[i][1]!=group;
+                  });
+                }
+                else{
+                  list=get.gainableCharacters(function(info){
+                    return info[1]==group;
+                  });
+                }
+                var players=game.players.concat(game.dead);
+                for(var i=0;i<players.length;i++){
+                  list.remove(players[i].name);
+                  list.remove(players[i].name1);
+                  list.remove(players[i].name2);
+                }
+                list = list.randomGets(3);
+                if (!list.length) {
+                  event.finish();
+                  return;
+                }
+                trigger.player.chooseButton().set('ai',function(button){
+                  return get.rank(button.link,true)-lib.character[button.link][2] - 
+                    (get.rank(trigger.player.name1,true)-lib.character[trigger.player.name1][2]);
+                }).set('createDialog',['将武将牌替换为一名角色',[list,'character']]);
+                'step 3'
+                if (result.bool) {
+                  trigger.player.init(result.links[0]);
+                }
+              },
+            },
             jlsg_lvezhen: {
               shaRelated: true,
               audio: "ext:极略:2",
@@ -16774,8 +16753,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhitian: '知天',
             jlsg_zhiji: '掷戟',
             jlsg_zhiji_damage: '掷戟·摸牌',
-            jlsg_jishi: '济世',
-            jlsg_xuanxin: '悬心',
+            jlsg_yuanhua: '元化',
+            jlsg_guiyuan: '归元',
+            jlsg_chongsheng: '重生',
             jlsg_lvezhen: '掠阵',
             jlsg_youlong: '游龙',
             jlsg_danjing: '啖睛',
@@ -16845,8 +16825,9 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             jlsg_zhitian_info: '变化技，锁定技，你的回合开始时，若你的手牌数大于一时，你须将所有手牌交给一名角色，并令该角色随机获得未加入本局游戏的武将的一个技能（觉醒技、主公技、限定技和变化技除外），然后你失去一点体力。',
             jlsg_yinshi_info: '锁定技，当你受到伤害时，你防止之，然后摸等同于此伤害值数量的牌。',
             jlsg_zhiji_info: '出牌阶段限一次，你可以弃置至少一张武器牌，然后对一名其他角色造成等同于此次弃置武器牌数点伤害。当你受到伤害后，你可以从弃牌堆或牌堆随机获得一张武器牌。',
-            jlsg_jishi_info: '出牌阶段限一次，你可以弃置一张红桃牌，然后令一名角色先弃置所有手牌再摸等量的牌并展示，其中每有一张非基本牌，你令其回复1点体力，以此法回复的过量体力效果改为令其摸等量的牌。',
-            jlsg_xuanxin_info: '一名角色受到伤害后，你可以从弃牌堆获得一张红桃牌，然后可以交给其一张牌。',
+            jlsg_yuanhua_info: '锁定技，你获得【桃】后，若你已受伤，你回复1点体力，否则你摸两张牌。然后将此【桃】移出游戏。',
+            jlsg_guiyuan_info: '出票阶段限一次，你可以失去一点体力，然后令所有其他角色依次交给你一张【桃】，若你没有以此法获得牌，你从牌堆或弃牌堆获得一张【桃】。',
+            jlsg_chongsheng_info: '限定技，一名角色进入濒死状态时，你可以令其回复X点体力（过量回复改为摸牌），然后其可以从随机三张同势力武将牌中选择一张替换之。（X为你发动〖元化〗移除牌的数量且至少为1）',
             jlsg_lvezhen_info: '当你使用【杀】指定目标后，你可以将牌堆顶的3张牌置入弃牌堆，其中每有一张非基本牌，你弃置目标角色一张牌。',
             jlsg_youlong_info: '出牌阶段，若弃牌堆的牌数多于牌堆，你可以将黑色手牌当【顺手牵羊】使用。',
             jlsg_danjing_info: '出牌阶段限一次，你可以失去1点体力，然后令一名其他角色摸三张牌或弃置三张牌。',
@@ -17848,7 +17829,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               unique: true,
               filterTarget: function (card, player, target) {
                 if (player == target || !target.countCards('h')) return false;
-                if(ui.selected.targets.length){
+                if (ui.selected.targets.length) {
                   return !target.hasSkillTag('noCompareTarget');
                 } else {
                   return !target.hasSkillTag('noCompareSource');
@@ -17889,7 +17870,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
             jlsgsy_huoxin: {
               audio: "ext:极略:1", // audio: ['huoxin'],
-              trigger: { source: 'damageSource', player:'damageEnd' },
+              trigger: { source: 'damageSource', player: 'damageEnd' },
               unique: true,
               filter: function (event, player, name) {
                 if (name == 'damageSource') {
@@ -17903,8 +17884,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 var att = get.attitude(player, target);
                 return att < 0 || (att < 1 && target.countGainableCards(player, 'e'));
               },
-              logTarget:function(event,player){
-                if(event.player==player) return event.source;
+              logTarget: function (event, player) {
+                if (event.player == player) return event.source;
                 return event.player;
               },
               content: function () {
@@ -20241,11 +20222,13 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0617",
+      version: "2.2.0630",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.06.19更新<br>
+2021.06.30更新<br>
+&ensp; 更新武将 <div style="display:inline" data-nature="metalmm">SK卢植</div>。<br>
+&ensp; 更新武将 <div style="display:inline" data-nature="thundermm">SK神华佗</div>。<br>
 &ensp; 优化SR周瑜 筹略。<br>
 &ensp; 优化SK邓芝 素俭 AI。<br>
 &ensp; 修复SK孔融 礼让 无法救人。<br>
