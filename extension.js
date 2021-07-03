@@ -9,14 +9,16 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
     content: function (config, pack) {
       console.time(_status.extension);
       if (pack.changelog) {
+        var testCode = `\
+let a = 1;
+const b = 1;
+(() => a + b)();`;
         try {
-          let a = 1;
-          const b = 1;
-          (() => a + b)();
+          eval(testCode);
         } catch (error) {
           if (!lib.config["extension_极略_compatibilityAlert"]) {
             game.saveconfig("extension_极略_compatibilityAlert", true);
-            alert("极略与你的设备不兼容", "极略");
+            alert("极略与你的设备或是无名杀版本不兼容", "极略");
           }
           pack.changelog = `<span style="font-weight:bold;">极略与你的设备不兼容，因此导入被终止了。</span><br>` + pack.changelog;
           return;
@@ -62,6 +64,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
         // jlsgsk_simashi: 'jin_simashi',
         jlsgsk_jiangqin: 'jiangqing',
         jlsgsk_guanyu: 'jsp_guanyu',
+        jlsgsk_jiping: 'sp_jiben'
       };
       var trivialSolveCharacterReplace = function (name, prefix = '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -3294,9 +3297,54 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
               forced: true,
               priority: 10,
               filterTarget: function (card, player, target) {
-                return target.countCards('h') > 0;
+                return target.countCards('he') > 0;
               },
               content: function () {
+                'step 0'
+                event.targets = game.filterPlayer(p => p != player && p.countCards('he'));
+                event.targets.sortBySeat();
+                'step 1'
+                if (!event.targets.length) {
+                  event.finish();
+                  return;
+                }
+                event.target = event.targets.shift();
+                if (event.target.countCards('he') == 1) {
+                  event.target.give(event.target.getCards('he'), player);
+                  event.redo();
+                  return;
+                } 
+                var canDiscard = event.target.countDiscardableCards(event.target, 'he') >= 2;
+                if (!canDiscard) {
+                  event.target.chooseCard('he', true, '暴征：将一张牌交给'+get.translation(player));
+                } else {
+                  event.target.chooseCard('he', [1,2], true, `暴征：将一张牌交给${get.translation(player)}<br>或者选择两张弃置，然后对其造成一点伤害`,
+                    function(card,player) {
+                      return ui.selected.cards.length 
+                        ? [card, ...ui.selected.cards].every(c => lib.filter.cardDiscardable(c,player))
+                        : true
+                    },
+                    function (card, cards) {
+                      var evt = _status.event.getParent();
+                      if (!ui.selected.cards.length) return -get.value(card);
+                      if (get.attitude(evt.target, evt.player) < 0) return 7 - get.value(card) + get.value(ui.selected.cards[0]);
+                      else return -1;
+                    })
+                  .set('complexCard',true);
+                }
+                'step 2'
+                if (!result.bool) {
+                  event.goto(1);
+                } else {
+                  if (result.cards.length == 1) {
+                    event.target.give(result.cards, player);
+                  } else {
+                    event.target.discard(result.cards);
+                    player.damage(event.target);
+                  }
+                }
+              },
+              contentBackup: function () {
                 "step 0"
                 var targets = game.players.slice(0);
                 targets.remove(player);
@@ -3312,7 +3360,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                       return 0;
                     }
                   } else if (event.target.countCards('h') == 1) {
-                    event.target.chooseCard('交给' + get.translation(player) + '一张牌', 'h', true);
+                    event.target.chooseCard('交给' + get.translation(player) + '一张牌', 'he', true);
                   } else {
                     event.num++;
                     event.redo();
@@ -20232,6 +20280,7 @@ Visit Repository</a><br>
 2021.06.31更新<br>
 &ensp; 修复SK神华佗 重生 更换武将牌时回复体力。下调评级。<br>
 &ensp; 修复SK神关羽 索魂 时机。<br>
+&ensp; 重写SK董卓 暴征 优化AI 修复描述。<br>
 &ensp; 大幅优化七杀包 青梅煮酒 选牌AI。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.06.30更新<br>
