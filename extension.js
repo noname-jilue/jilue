@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.0630::nonamexwapkend
+nonamexwapk::name::极略::version::2.2.xxxx::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -3333,16 +3333,18 @@ const b = 1;
                   .set('complexCard',true);
                 }
                 'step 2'
-                if (!result.bool) {
-                  event.goto(1);
-                } else {
+                if (result.bool) {
                   if (result.cards.length == 1) {
                     event.target.give(result.cards, player);
                   } else {
                     event.target.discard(result.cards);
+                    if (target.ai.shown < player.ai.shown) {
+                      target.addExpose(0.1);
+                    }
                     player.damage(event.target);
                   }
                 }
+                event.goto(1);
               },
               contentBackup: function () {
                 "step 0"
@@ -12641,7 +12643,6 @@ const b = 1;
                   player.logSkill('jlsg_zhaoxiang', trigger.player);
                   if (trigger.player.countCards('h')) {
                     trigger.player.chooseCard('交给' + get.translation(player) + '一张牌或令打出的杀无效').set('ai', function (card) {
-                      debugger;
                       if (get.effect(player, trigger.card, trigger.player, trigger.player) < 0) {
                         return -1;
                       }
@@ -20247,6 +20248,9 @@ const b = 1;
 本拓展基于民间极略的某魔改版，因为当时那位作者说“修复了所有的bug”<br>
 事实证明这种说法比较离谱<br>
 需要打开武将包才能看到对应的武将图片<br>
+主要在两个QQ群中发布更新<br>
+无名杀扩展极略自用交流群 574935857<br>
+无名杀官方群Ⅱ 348943983<br>
 ——xiaoas`
     },
     package: {
