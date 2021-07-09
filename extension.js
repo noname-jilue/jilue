@@ -1,5 +1,5 @@
 /*
-nonamexwapk::name::极略::version::2.2.xxxx::nonamexwapkend
+nonamexwapk::name::极略::version::2.3.xxxx::nonamexwapkend
 */
 'use strict';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
@@ -3313,15 +3313,15 @@ const b = 1;
                   event.target.give(event.target.getCards('he'), player);
                   event.redo();
                   return;
-                } 
+                }
                 var canDiscard = event.target.countDiscardableCards(event.target, 'he') >= 2;
                 if (!canDiscard) {
-                  event.target.chooseCard('he', true, '暴征：将一张牌交给'+get.translation(player));
+                  event.target.chooseCard('he', true, '暴征：将一张牌交给' + get.translation(player));
                 } else {
-                  event.target.chooseCard('he', [1,2], true, `暴征：将一张牌交给${get.translation(player)}<br>或者选择两张弃置，然后对其造成一点伤害`,
-                    function(card,player) {
-                      return ui.selected.cards.length 
-                        ? [card, ...ui.selected.cards].every(c => lib.filter.cardDiscardable(c,player))
+                  event.target.chooseCard('he', [1, 2], true, `暴征：将一张牌交给${get.translation(player)}<br>或者选择两张弃置，然后对其造成一点伤害`,
+                    function (card, player) {
+                      return ui.selected.cards.length
+                        ? [card, ...ui.selected.cards].every(c => lib.filter.cardDiscardable(c, player))
                         : true
                     },
                     function (card, cards) {
@@ -3329,8 +3329,8 @@ const b = 1;
                       if (!ui.selected.cards.length) return -get.value(card);
                       if (get.attitude(evt.target, evt.player) < 0) return 7 - get.value(card) + get.value(ui.selected.cards[0]);
                       else return -1;
-                    })
-                  .set('complexCard',true);
+                    }
+                  ).set('complexCard', true);
                 }
                 'step 2'
                 if (result.bool) {
@@ -19330,6 +19330,247 @@ const b = 1;
           }
           return window.open(mirrorURL);
         },
+        checkUpdate(refNode) {
+          import('./modules/idb-keyval.js')
+          var version = lib.extensionPack['极略'].version;
+          refNode.insertAdjacentHTML('afterend',
+            `<div>当前版本${version}<br>正在获取最新版本号</div>`
+          );
+          var cNode = refNode.nextSibling;
+          var responsePromise = fetch("https://api.github.com/repos/xiaoas/jilue/releases/latest", {
+            "headers": {
+              "accept": "application/vnd.github.v3+json",
+              "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+              "cache-control": "no-cache",
+              "pragma": "no-cache"
+            },
+            "method": "GET",
+          });
+          // TODO: only update to version with same major version
+          let successHandler = (response) => {
+            if (response.status >= 300) {
+              cNode.innerHTML += ` 失败<br>${response.status} ${response.statusText}`;
+              return Promise.reject(response);
+            } else {
+              cNode.innerHTML += ' 成功';
+              return response;
+            }
+          }
+          let errorHandler = (error) => {
+            cNode.innerHTML += ` 失败<br>${error}`;
+            console.log(error);
+            return Promise.reject(error);
+          };
+          responsePromise.then(successHandler, errorHandler)
+            .then(response => response.json())
+            .then(data => {
+              var latestVersion = data.tag_name;
+              if (latestVersion.startsWith('v')) {
+                latestVersion = latestVersion.slice(1)
+              }
+              // FIXME: debug update
+              if (true || latestVersion > version) {
+                refNode.innerHTML = `更新至 ${latestVersion}<br>`;
+                window.jlsg.updateData = data;
+                var newFunc = `jlsg.updateGuard(this)`;
+                refNode.setAttribute("onClick", newFunc);
+              } else {
+                refNode.innerHTML = `当前已经是最新版<br>`;
+              }
+            })
+        },
+        async updateGuard(refNode) {
+          if (!this.update) {
+            return;
+          }
+          if (!this.update.guard) {
+            this.update.guard = true;
+            await this.update(refNode);
+            this.update.guard = false;
+          }
+        },
+        async update(refNode) {
+          // TODO
+          var latestTag = window.jlsg.updateData.tag_name;
+          var currentTag = 'v' + lib.extensionPack['极略'].version;
+          var response = await fetch("https://api.github.com/repos/xiaoas/jilue/tags", {
+            "headers": {
+              "accept": "application/vnd.github.v3+json",
+              "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+            },
+            "method": "GET",
+          });
+          var tags = await response.json()
+          tags = tags.map(t => t.name)
+          if (!tags.contains(currentTag)) {
+            if (tags.every(t => t > currentTag)) {
+              refNode.insertAdjacentHTML('afterend',
+                `<div>没有找到适用当前版本的更新讯息${currentTag}</div>`
+              );
+            }
+            currentTag = tags.filter(t => t < currentTag).reduce((a, b) => a < b ? b : a);
+          }
+          // FIXME: debug
+          var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/v2.1.0208...v2.2.0631`
+          // var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/${currentTag}...${latestTag}`
+          var cNode, data;
+          try {
+            refNode.insertAdjacentHTML('afterend',
+              `<div>获取文件列表</div>`
+            ); cNode = refNode.nextSibling;
+            let response = await fetch(compareURI, {
+              "headers": {
+                "accept": "application/vnd.github.v3+json",
+                "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+              },
+              "method": "GET",
+            });
+            data = await response.json();
+            cNode.innerHTML += ' 成功';
+          } catch (e) {
+            console.log(e);
+            cNode.innerHTML += ' 失败';
+            return
+          }
+          var files = data.files;
+          game.saveExtensionConfig('极略', 'pendingFiles', JSON.stringify(files))
+          var idbKeyval = await import('./modules/idb-keyval.js')
+          var required = files.filter(f => ['added', 'modified'].includes(f.status))
+          var blobs = await idbKeyval.getMany(required.map(f => f.sha))
+          // var downloads = required.map((f,i) => blobs[i] || fetch(f.raw_url))
+          var myMap = new Map()
+          var waitBuffer = []
+          // for (let f of required) {
+          //   if (f.raw_url.includes("raw.githubusercontent.com")) {
+          //     f.raw_url.replace("raw.githubusercontent.com", "raw.fastgit.org")
+          //   }
+          // }
+          const maxConcurrent = 5, maxRetry = 3;
+          for (let [i, f] of required.entries()) {
+            if (!blobs[i]) {
+              if (myMap.size < maxConcurrent) {
+                myMap.set(fetch(f.raw_url), f)
+              } else {
+                waitBuffer.push(f)
+              }
+            }
+          }
+          // required.forEach((f, i) => blobs[i] || myMap.set(fetch(f.raw_url), f))
+          refNode.insertAdjacentHTML('afterend',
+            `<div>正在下载<span>0</span>/${required.length}</div><br>`
+          ); cNode = refNode.nextSibling;
+          var [valNode] = cNode.getElementsByTagName('span')
+          var finishedCnt = {
+            _v: null,
+            get v() {
+              return this._v;
+            },
+            set v(_v) {
+              this._v = _v;
+              valNode.innerHTML = _v.toString();
+            },
+          };
+          var downloadError = 0
+          finishedCnt.v = required.length - myMap.size - waitBuffer.length
+          while (myMap.size) {
+            let [completed] = await Promise.any(Array.from(myMap.keys()).map(p => p.then(res => [p], res => [p])))
+            let f = myMap.get(completed)
+            myMap.delete(completed)
+            try {
+              let value = await completed;
+              // value = await value.blob()
+              // save as arrayBuffer
+              value = await value.arrayBuffer()
+              ++finishedCnt.v;
+              idbKeyval.set(f.sha, value)
+              console.log(`${f.filename} downloaded and stored.`)
+            } catch (e) {
+              // console.log(f, e)
+              f.retry = f.retry || 0;
+              ++f.retry;
+              console.log(`${f.filename} download No.${f.retry} failed`)
+              if (f.retry >= maxRetry) {
+                ++downloadError;
+              } else {
+                let nextURL = f.raw_url
+                nextURL = nextURL.replace('github.com', 'hub.fastgit.org')
+                myMap.set(fetch(nextURL), f)
+              }
+            } finally {
+              if (myMap.size < maxConcurrent && waitBuffer.length) {
+                let f = waitBuffer.pop()
+                myMap.set(fetch(f.raw_url), f)
+              }
+            }
+          }
+          if (downloadError != 0) {
+            cNode.innerHTML += `失败${downloadError} 下次运气会更好`
+            return;
+          }
+          // actually array Buffers
+          blobs = await idbKeyval.getMany(required.map(f => f.sha))
+          if (blobs.some(b => !b)) {
+            cNode.innerHTML += ' 失败<br> Error blob not found';
+            return;
+          }
+          let blobMap = new Map(required.map((f, i) => [f.sha, blobs[i]]))
+          if (!game.download) {
+            throw "Not implemented";
+          }
+          if (lib.node && lib.node.fs) {
+            let prefix = __dirname + '/extension/极略/'
+            for (let [i, f] of files.entries()) {
+              switch (f.status) {
+                case 'added':
+                case 'modified':
+                  let blob = blobMap.get(f.sha)
+                  lib.node.fs.writeFile(prefix + f.filename, blob, e => e && console.log(f, e))
+                  break;
+                case 'removed':
+                  lib.node.fs.rm(prefix + f.filename, e => e && console.log(f, e))
+                  break;
+                case 'renamed':
+                  lib.node.fs.rename(prefix + f.previous_filename, prefix + f.filename, e => e && console.log(f, e))
+                  break;
+                default:
+                  console.log(f)
+                  break;
+              }
+            }
+          } else {
+            window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+              entry.getDirectory('extension/极略/', function (dirEntry) {
+                for (let [i, f] of files.entries()) {
+                  switch (f.status) {
+                    case 'added':
+                    case 'modified':
+                      let blob = blobMap.get(f.sha)
+                      dirEntry.getFile(f.filename, { create: true }, function (fileEntry) {
+                        fileEntry.createWriter(function (fileWriter) {
+                          fileWriter.write(blob);
+                        });
+                      });
+                      break;
+                    case 'removed':
+                      dirEntry.getFile(f.filename, function (fileEntry) {
+                        fileEntry.remove();
+                      });
+                      break;
+                    case 'renamed':
+                      dirEntry.getFile(f.previous_filename, function (fileEntry) {
+                        fileEntry.moveTo(dirEntry, f.filename);
+                      });
+                      break;
+                    default:
+                      console.log(f)
+                      break;
+                  }
+                }
+              });
+            });
+          }
+          idbKeyval.clear()
+        },
         showRepoElement(refElement) {
           let potentialRepo = refElement.nextElementSibling;
           if (potentialRepo && potentialRepo.id == "repo-link") {
@@ -20271,13 +20512,15 @@ const b = 1;
 <img src="${lib.assetURL}extension/极略/logo.webp" alt="极略三国"\
 style="width:100%;text-align:center;font-size:larger;font-family: 'STXinwei','xinwei';"\
 onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
-<li>极略全部武将·附带七杀卡包+极略三英武将，不需要请记得关闭。<li>帮助中查看更多内容
+<ul><li>极略全部武将·附带七杀卡包+极略三英武将，不需要请记得关闭。<li>帮助中查看更多内容</ul>
+<a onclick="if (jlsg) jlsg.checkUpdate(this)" style="cursor: pointer;text-decoration: underline;font-weight: bold;">
+检查更新<br></a>
 </div>`,
       author: "可乐，赵云，青冢，萧墨(17岁)",
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.2.0631",
+      version: "2.3.0706",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
