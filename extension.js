@@ -969,6 +969,9 @@ const b = 1;
                       number: null,
                       isCard: true,
                     },
+                    ai1: function (card) {
+                      return 6 - get.value(card);
+                    },
                     precontent: function () {
                       'step 0'
                       player.logSkill('jlsg_kanwu');
@@ -995,6 +998,7 @@ const b = 1;
                 },
                 // threaten: 1.3,
                 respondSha: true,
+                respondShan: true,
                 fireattack: true,
                 skillTagFilter: function (player) {
                   return _status.currentPhase != player && player.countCards('h');
@@ -3329,8 +3333,8 @@ const b = 1;
                       if (!ui.selected.cards.length) return -get.value(card);
                       if (get.attitude(evt.target, evt.player) < 0) return 7 - get.value(card) + get.value(ui.selected.cards[0]);
                       else return -1;
-                    }
-                  ).set('complexCard', true);
+                    })
+                    .set('complexCard', true);
                 }
                 'step 2'
                 if (result.bool) {
@@ -4066,9 +4070,9 @@ const b = 1;
                 save: true,
                 result: {
                   player: function (player) {
-                    // FIXME
-                    return 1;
-                  }
+                    if (_status.event.dying) return get.attitude(player, _status.event.dying);
+                    return 0;
+                  },
                 }
               }
             },
@@ -5864,6 +5868,7 @@ const b = 1;
                 order: 8,
                 result: {
                   player: function (player) {
+                    if (_status.event.dying) return get.attitude(player, _status.event.dying);
                     if (player.storage.jlsg_tianqi != undefined) return 1;
                     if (player.hp > 2 && player.storage.jlsg_tianqi == undefined) return -10;
                     if (Math.random() < 0.67) return 0.5;
@@ -16503,19 +16508,13 @@ const b = 1;
                 order: 5,
                 result: {
                   player: function (player) {
-                    if (player.isZhu) {
-                      if (player.hp <= 2) return -5;
-                      return -1;
-                    }
-                    return -1;
+                    return jlsg.getLoseHpEffect(player);
                   },
                   target: function (player, target) {
-                    if (ai.get.attitude(player, target) > 0) return 3;
-                    if (ai.get.attitude(player, target) < 0) {
-                      if (target.num('he') < 3) return 0;
-                      return -3;
+                    if (get.attitude(player, target) > 0) { return 4; }
+                    else {
+                      return Math.min(3, target.countDiscardableCards(player, 'he')) * 1.5;
                     }
-                    return 0;
                   }
                 }
               }
@@ -17187,7 +17186,7 @@ const b = 1;
                   club: ['jlsgsy_luanji', 'luanji'],
                   diamond: ['jlsgsy_quanheng', 'jlsg_quanheng'],
                 }
-                var skillStrs = mapping[get.suit(result.card)];
+                var skillStrs = mapping[result.suit];
                 if (skillStrs) {
                   game.trySkillAudio(skillStrs[0], player);
                   player.addTempSkill(skillStrs[1]);
@@ -20525,8 +20524,12 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.06.31更新<br>
+&ensp; 修复 三英神司马懿 博略 获得技能错误。<br>
+&ensp; 初步优化 SK孔融 礼让 & SK神郭嘉 天启 AI。<br>
 &ensp; 修复SK神华佗 重生 更换武将牌时回复体力。下调评级。<br>
 &ensp; 修复SK神关羽 索魂 时机。<br>
+&ensp; 优化SK向朗 勘误 AI。<br>
+&ensp; 优化SK神夏侯惇 啖睛 AI。<br>
 &ensp; 重写SK董卓 暴征 优化AI 修复描述。<br>
 &ensp; 大幅优化七杀包 青梅煮酒 选牌AI。<br>
 <span style="font-size: large;">历史：</span><br>
