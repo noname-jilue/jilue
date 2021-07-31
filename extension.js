@@ -1760,33 +1760,48 @@ const b = 1;
               subfrequent: ['1'],
               subSkill: {
                 strg: {
-                  trigger: { player: 'useCardEnd' },
+                  trigger: { player: 'useCard' },
                   filter: function (event, player) {
-                    return _status.currentPhase == player;
+                    if  (!player.isPhaseUsing()) return false;
+                    var phaseUse = _status.event.getParent('phaseUse');
+                    var hists = player.getHistory('useCard', function (evt) {
+                        return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
+                    })
+                    var suits = new Set(hists.map(e => get.suit(e.card)))
+                    return hists.contains(event) && suits.size == hists.length;
                   },
                   silent: true,
                   content: function () {
-                    var suit = get.suit(trigger.card), type = get.type(trigger.card, 'trick');
-                    if (['heart', 'diamond', 'spade', 'club'].contains(suit) &&
-                      !player.storage.jlsg_yaoming.suits.contains(suit)) {
-                      player.storage.jlsg_yaoming.suits.push(suit);
-                      player.addTempSkill('jlsg_yaoming_mark', 'phaseUseAfter');
-                      player.markSkill('jlsg_yaoming_mark');
-                    }
-                    if (!player.storage.jlsg_yaoming.types.contains(type)) {
-                      player.storage.jlsg_yaoming.types.push(type);
-                    }
+                    var phaseUse = _status.event.getParent('phaseUse');
+                    var hists = player.getHistory('useCard', function (evt) {
+                        return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
+                    })
+                    var suits = new Set(hists.map(e => get.suit(e.card)))
+                    player.storage.jlsg_yaoming = [trigger, suits]
+                    player.addTempSkill('jlsg_yaoming_mark', 'phaseUseAfter');
+                    player.markSkill('jlsg_yaoming_mark');
+                    
+                    // var suit = get.suit(trigger.card), type = get.type(trigger.card, 'trick');
+                    // if (['heart', 'diamond', 'spade', 'club'].contains(suit) &&
+                    //   !player.storage.jlsg_yaoming.suits.contains(suit)) {
+                    //   player.storage.jlsg_yaoming.suits.push(suit);
+                    //   player.addTempSkill('jlsg_yaoming_mark', 'phaseUseAfter');
+                    //   player.markSkill('jlsg_yaoming_mark');
+                    // }
+                    // if (!player.storage.jlsg_yaoming.types.contains(type)) {
+                    //   player.storage.jlsg_yaoming.types.push(type);
+                    // }
                   }
                 },
                 mark: {
                   onremove: function (player) {
-                    player.storage.jlsg_yaoming = { suits: [] };
-
+                    delete player.storage.jlsg_yaoming;
                   },
                   intro: {
                     content: function (storage, player) {
                       var str = '使用过的花色：';
-                      str += player.storage.jlsg_yaoming.suits.reduce((a, b) => a + get.translation(b), '');
+                      var suits = [...player.storage.jlsg_yaoming[1]].sort()
+                      str += suits.reduce((a, b) => a + get.translation(b), '');
                       return str;
                     },
                   },
@@ -1799,13 +1814,6 @@ const b = 1;
                 //   }
                 // }
               },
-              isNew(event, player) {
-                if (!event.card) return false;
-                var suit = get.suit(event.card);
-                if (!suit) return false;
-                var suits = player.getStorage('jlsg_yaoming').suits;
-                return !(suits && suits.contains(suit));
-              },
             },
             jlsg_yaoming_: {
               audio: "ext:极略:4",
@@ -1814,32 +1822,23 @@ const b = 1;
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 0
-                  && lib.skill.jlsg_yaoming.isNew(event, player);
+                return player.storage.jlsg_yaoming &&
+                player.storage.jlsg_yaoming[0] == event &&
+                player.storage.jlsg_yaoming[1].size == 1;
               },
               // usable: 1,
               frequent: true,
               content: function () {
                 player.draw();
               },
-              ai: {
-                effect: {
-                  player: function (card, player, target) {
-                    if (!player.storage.jlsg_yaoming) return;
-                    var suits = player.storage.jlsg_yaoming.suits;
-                    if (!suits.contains(get.suit(card))) {
-                      return [1, 0.6];
-                    }
-                  },
-                }
-              },
             },
             jlsg_yaoming_2: {
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 1
-                  && lib.skill.jlsg_yaoming.isNew(event, player);
+                return player.storage.jlsg_yaoming &&
+                player.storage.jlsg_yaoming[0] == event &&
+                player.storage.jlsg_yaoming[1].size == 2;
               },
               // usable: 1,
               direct: true,
@@ -1865,9 +1864,10 @@ const b = 1;
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 2
-                  && lib.skill.jlsg_yaoming.isNew(event, player)
-                  && player.canMoveCard();
+                return player.storage.jlsg_yaoming &&
+                player.storage.jlsg_yaoming[0] == event &&
+                player.storage.jlsg_yaoming[1].size == 3 &&
+                player.canMoveCard();
               },
               // usable: 1,
               prompt2: '你可以移动场上的一张牌',
@@ -1886,8 +1886,9 @@ const b = 1;
               audio: "ext:极略:true",
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return player.storage.jlsg_yaoming.suits.length == 3
-                  && lib.skill.jlsg_yaoming.isNew(event, player);
+                return player.storage.jlsg_yaoming &&
+                player.storage.jlsg_yaoming[0] == event &&
+                player.storage.jlsg_yaoming[1].size == 4;
               },
               // usable: 1,
               direct: true,
@@ -19367,8 +19368,7 @@ const b = 1;
               if (latestVersion.startsWith('v')) {
                 latestVersion = latestVersion.slice(1)
               }
-              // FIXME: debug update
-              if (true || latestVersion > version) {
+              if (latestVersion > version) {
                 refNode.innerHTML = `更新至 ${latestVersion}<br>`;
                 window.jlsg.updateData = data;
                 var newFunc = `jlsg.updateGuard(this)`;
@@ -19409,9 +19409,8 @@ const b = 1;
             }
             currentTag = tags.filter(t => t < currentTag).reduce((a, b) => a < b ? b : a);
           }
-          // FIXME: debug
-          var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/v2.1.0208...v2.2.0631`
-          // var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/${currentTag}...${latestTag}`
+          // var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/v2.1.0208...v2.2.0631`
+          var compareURI = `https://api.github.com/repos/xiaoas/jilue/compare/${currentTag}...${latestTag}`
           var cNode, data;
           try {
             refNode.insertAdjacentHTML('afterend',
@@ -20519,11 +20518,12 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.3.0706",
+      version: "2.3.0731",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.06.31更新<br>
+2021.07.31更新<br>
+&ensp; 重写SK全琮 邀名。<br>
 &ensp; 修复 三英神司马懿 博略 获得技能错误。<br>
 &ensp; 优化 SK孔融 礼让 & SK神郭嘉 天启 救人AI。<br>
 &ensp; 修复SK神华佗 重生 更换武将牌时回复体力。下调评级。<br>
