@@ -877,10 +877,11 @@ const b = 1;
             jlsg_cangshu: {
               audio: "ext:极略:2",
               trigger: { global: "useCard" },
-              usable: 1,
+              // usable: 1,
               direct: true,
               filter: function (event, player) {
-                return event.player != player && get.type(event.card) == "trick" && player.countCards("h", { type: "basic" }) != 0;
+                if (event.player == player || get.type(event.card) != "trick" || player.hasSkill('jlsg_cangshu2')) return false;
+                return game.online ? player.countCards("h") : player.countCards("h", { type: "basic" });
               },
               content: function () {
                 "step 0"
@@ -892,6 +893,7 @@ const b = 1;
                 "step 1"
                 if (result.bool) {
                   player.logSkill("jlsg_cangshu", trigger.player);
+                  player.addTempSkill('jlsg_cangshu2');
                   // player.$give(result.cards, trigger.player);
                   trigger.player.gain(result.cards, player, 'giveAuto');
                 } else {
@@ -905,12 +907,16 @@ const b = 1;
                 trigger.cancel();
               },
             },
+            jlsg_cangshu2: {
+
+            },
             jlsg_kanwu: {
               audio: "ext:极略:1",
               enable: ['chooseToUse', 'chooseToRespond'],
               hiddenCard: function (player, name) {
                 if (get.type(name) != 'basic' || name == 'shan') return false;
-                return _status.currentPhase != player && player.countCards('h');
+                return _status.currentPhase != player && player.countCards('h') && 
+                (game.online ? player.countCards("h") : player.countCards("h", { type: ['delay', 'trick'] }));
               },
               filter: function (event, player) {
                 if (_status.currentPhase == player || !player.countCards('h', { type: ['delay', 'trick'] })) return false;
@@ -5865,7 +5871,7 @@ const b = 1;
                 }
               },
               ai: {
-                expose: 0.5,
+                expose: 0.15,
                 order: 8,
                 result: {
                   player: function (player) {
@@ -20518,10 +20524,14 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.3.0731",
+      version: "2.3.0806",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
+2021.08.06更新<br>
+&ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
+&ensp; 优化 SK于吉 AI。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.07.31更新<br>
 &ensp; 重写SK全琮 邀名。<br>
 &ensp; 修复 三英神司马懿 博略 获得技能错误。<br>
@@ -20533,15 +20543,6 @@ Visit Repository</a><br>
 &ensp; 优化SK神夏侯惇 啖睛 AI。<br>
 &ensp; 重写SK董卓 暴征 优化AI 修复描述。<br>
 &ensp; 大幅优化七杀包 青梅煮酒 选牌AI。<br>
-<span style="font-size: large;">历史：</span><br>
-2021.06.30更新<br>
-&ensp; 更新武将 <div style="display:inline" data-nature="thundermm">SK神华佗</div>。<br>
-&ensp; 优化SR周瑜 筹略。<br>
-&ensp; 优化SK邓芝 素俭 AI。<br>
-&ensp; 修复SK孔融 礼让 无法救人。<br>
-&ensp; 修复SK神赵云 龙魂。<br>
-&ensp; 修复SR曹操 招降 AI。<br>
-&ensp; 优化三英蔡夫人 乱嗣 目标选择。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
