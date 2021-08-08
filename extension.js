@@ -915,8 +915,8 @@ const b = 1;
               enable: ['chooseToUse', 'chooseToRespond'],
               hiddenCard: function (player, name) {
                 if (get.type(name) != 'basic' || name == 'shan') return false;
-                return _status.currentPhase != player && player.countCards('h') && 
-                (game.online ? player.countCards("h") : player.countCards("h", { type: ['delay', 'trick'] }));
+                return _status.currentPhase != player && player.countCards('h') &&
+                  (game.online ? player.countCards("h") : player.countCards("h", { type: ['delay', 'trick'] }));
               },
               filter: function (event, player) {
                 if (_status.currentPhase == player || !player.countCards('h', { type: ['delay', 'trick'] })) return false;
@@ -1768,10 +1768,10 @@ const b = 1;
                 strg: {
                   trigger: { player: 'useCard' },
                   filter: function (event, player) {
-                    if  (!player.isPhaseUsing()) return false;
+                    if (!player.isPhaseUsing()) return false;
                     var phaseUse = _status.event.getParent('phaseUse');
                     var hists = player.getHistory('useCard', function (evt) {
-                        return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
+                      return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
                     })
                     var suits = new Set(hists.map(e => get.suit(e.card)))
                     return hists.contains(event) && suits.size == hists.length;
@@ -1780,13 +1780,13 @@ const b = 1;
                   content: function () {
                     var phaseUse = _status.event.getParent('phaseUse');
                     var hists = player.getHistory('useCard', function (evt) {
-                        return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
+                      return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
                     })
                     var suits = new Set(hists.map(e => get.suit(e.card)))
                     player.storage.jlsg_yaoming = [trigger, suits]
                     player.addTempSkill('jlsg_yaoming_mark', 'phaseUseAfter');
                     player.markSkill('jlsg_yaoming_mark');
-                    
+
                     // var suit = get.suit(trigger.card), type = get.type(trigger.card, 'trick');
                     // if (['heart', 'diamond', 'spade', 'club'].contains(suit) &&
                     //   !player.storage.jlsg_yaoming.suits.contains(suit)) {
@@ -1829,8 +1829,8 @@ const b = 1;
               trigger: { player: 'useCard' },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
-                player.storage.jlsg_yaoming[0] == event &&
-                player.storage.jlsg_yaoming[1].size == 1;
+                  player.storage.jlsg_yaoming[0] == event &&
+                  player.storage.jlsg_yaoming[1].size == 1;
               },
               // usable: 1,
               frequent: true,
@@ -1843,8 +1843,8 @@ const b = 1;
               trigger: { player: 'useCard' },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
-                player.storage.jlsg_yaoming[0] == event &&
-                player.storage.jlsg_yaoming[1].size == 2;
+                  player.storage.jlsg_yaoming[0] == event &&
+                  player.storage.jlsg_yaoming[1].size == 2;
               },
               // usable: 1,
               direct: true,
@@ -1871,9 +1871,9 @@ const b = 1;
               trigger: { player: 'useCard' },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
-                player.storage.jlsg_yaoming[0] == event &&
-                player.storage.jlsg_yaoming[1].size == 3 &&
-                player.canMoveCard();
+                  player.storage.jlsg_yaoming[0] == event &&
+                  player.storage.jlsg_yaoming[1].size == 3 &&
+                  player.canMoveCard();
               },
               // usable: 1,
               prompt2: '你可以移动场上的一张牌',
@@ -1893,8 +1893,8 @@ const b = 1;
               trigger: { player: 'useCard' },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
-                player.storage.jlsg_yaoming[0] == event &&
-                player.storage.jlsg_yaoming[1].size == 4;
+                  player.storage.jlsg_yaoming[0] == event &&
+                  player.storage.jlsg_yaoming[1].size == 4;
               },
               // usable: 1,
               direct: true,
@@ -2435,14 +2435,15 @@ const b = 1;
               audio: "ext:极略:1",
               enable: 'phaseUse',
               filter: function (event, player) {
-                return !player.get('e', '2');
+                return !player.get('e', '2') &&
+                  game.countPlayer(p => p.countCards('he') && player != p && !p.hasSkill('jlsg_shejian2'));
               },
               filterTarget: function (card, player, target) {
                 return target.countCards('he') && player != target && !target.hasSkill('jlsg_shejian2');
               },
               content: function () {
                 'step 0'
-                target.addTempSkill('jlsg_shejian2', 'phaseAfter');
+                target.addTempSkill('jlsg_shejian2');
                 player.discardPlayerCard('he', target, true);
                 target.chooseBool('是否对' + get.translation(player) + '使用一张【杀】？').ai = function (event, player) {
                   return get.effect(player, { name: 'sha' }, target, target) + 3;
@@ -20531,6 +20532,7 @@ Visit Repository</a><br>
 2021.08.06更新<br>
 &ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
 &ensp; 优化 SK于吉 AI。<br>
+&ensp; 优化 SK祢衡 舌剑 UX。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.07.31更新<br>
 &ensp; 重写SK全琮 邀名。<br>
