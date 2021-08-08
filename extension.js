@@ -1422,33 +1422,16 @@ const b = 1;
               audio: "ext:极略:2",
               trigger: { player: 'damageEnd' },
               filter: function (event, player) {
-                return event.source && event.source.countCards('he') > 0 && event.source != player;
+                return event.source && event.source != player && event.source.countCards('h') != 0;
               },
               check: function (event, player) {
                 return 1;
               },
               frequent: true,
               content: function () {
-                "step 0"
-                player.chooseCardButton(trigger.source, trigger.source.getCards('hej')).set('filterButton', function (button) {
+                player.discardPlayerCard(trigger.source, 'h', 'visible').set('filterButton', function (button, player) {
                   return get.color(button.link) == 'red';
-                }).set('ai', function (button) {
-                  var target = trigger.source;
-                  var att = get.attitude(player, target);
-                  var card = button.link;
-                  var names = ['baiyin', 'rewrite_baiyin'];
-                  if (get.effect(target, { name: 'guohe' }, player) < 0) return -10;
-                  if (target.isDamaged() && names.contains(card.name) && get.position(card) == 'e') return att;
-                  if (att <= 0) {
-                    return get.value(card);
-                  } else {
-                    return 7 - get.value(card);
-                  }
-                });
-                "step 1"
-                if (result.bool) {
-                  trigger.source.discard(result.links[0], player);
-                }
+                }).set('logSkill', [event.name, trigger.source]);
               },
               ai: {
                 maixie_defend: true,
@@ -1463,44 +1446,55 @@ const b = 1;
               },
               content: function () {
                 'step 0'
-                player.chooseCardButton(target, target.getCards('hej')).set('filterButton', function (button) {
-                  return get.color(button.link) == 'black';
-                }).set('ai', function (button) {
-                  var att = get.attitude(player, target);
-                  var card = button.link;
-                  var names = ['baiyin', 'rewrite_baiyin'];
-                  if (get.effect(target, { name: 'guohe' }, player) < 0) return -10;
-                  if (target.isDamaged() && names.contains(card.name) && get.position(card) == 'e') return att;
-                  if (att <= 0) {
-                    return get.value(card);
-                  } else {
-                    return 7 - get.value(card);
-                  }
-                  return 0;
-                });
+                game.log(target, '观看了', player, '的手牌');
+                target.viewHandcards(player);
                 'step 1'
-                if (result.bool) {
-                  target.discard(result.links[0], player);
+                if (get.mode() == 'identity') {
+                  player.chooseControl(['观看其身份牌', '观看其手牌', 'cancel2'], 1).set('prompt', '选择一项');
+                }
+                'step 2'
+                debugger;
+                if (!result || !result.control || result.control === '观看其手牌') {
+                  player.discardPlayerCard(target, 'h', 'visible').set('filterButton', function (button, player) {
+                    return get.color(button.link) == 'black';
+                  });
+                } 
+                else if (result && result.control === '观看其身份牌' && target.identity) {
+                  game.log(player,'观看了',target,'的身份');
+                  var idt = target.identity;
+                  var styleStr = {
+                    zhu: `data-nature="fire"`,
+                    zhong: `data-nature="metal"`,
+                    fan: `data-nature="wood"`,
+                    nei: 'data-nature="thunder"',
+                  }[idt];
+                  var tr = {
+                    zhu: '主公',
+                    zhong: '忠臣',
+                    fan: '反贼',
+                    nei: '内奸',
+                  }[idt] || get.translation(idt);
+                  player.chooseControl('ok').set('dialog',[get.translation(target) + '的身份',`<span ${styleStr} style="font-family: huangcao, xinwei;font-size:larger;color: white;">${tr}</span>`]);
                 }
               },
               ai: {
                 order: 4,
-                result: {
-                  target: function (player, target) {
-                    var result = 0;
-                    if (target.hasSkillTag('noe')) result += 4 + target.countCards('e');
-                    if (target.hasSkillTag('nolose') || target.hasSkillTag('nodiscard')) result += 5 + target.countCards('he') / 2;
-                    if (target.hasCard(function (card) {
-                      return ['baiyin', 'rewrite_baiyin'].contains(card.name);
-                    }, 'e') && target.isDamaged()) return 10 + result;
-                    if (target.hasCard(function (card) {
-                      var baiyin = ['baiyin', 'rewrite_baiyin'].contains(card.name);
-                      var bol = true;
-                      return get.color(card) == 'black' && (baiyin && (target.isDamaged() ? !bol : bol));
-                    }, 'e')) return -6 + result;
-                    return -5 + result;
-                  },
-                }
+                // result: {
+                //   target: function (player, target) {
+                //     var result = 0;
+                //     if (target.hasSkillTag('noe')) result += 4 + target.countCards('e');
+                //     if (target.hasSkillTag('nolose') || target.hasSkillTag('nodiscard')) result += 5 + target.countCards('he') / 2;
+                //     if (target.hasCard(function (card) {
+                //       return ['baiyin', 'rewrite_baiyin'].contains(card.name);
+                //     }, 'e') && target.isDamaged()) return 10 + result;
+                //     if (target.hasCard(function (card) {
+                //       var baiyin = ['baiyin', 'rewrite_baiyin'].contains(card.name);
+                //       var bol = true;
+                //       return get.color(card) == 'black' && (baiyin && (target.isDamaged() ? !bol : bol));
+                //     }, 'e')) return -6 + result;
+                //     return -5 + result;
+                //   },
+                // }
               }
             },
             jlsg_kuangzheng: {
@@ -7319,8 +7313,8 @@ const b = 1;
             jlsg_zhige_info: "你可以弃置你装备区内的所有牌(至少一张)，视为使用一张【杀】或【闪】。",
             jlsg_shangyi: "尚义",
             jlsg_wangsi: "忘私",
-            jlsg_shangyi_info: "出牌阶段限一次，你可以选择一名有手牌的其他角色，然后观看其所有类型的牌，并可以弃置其中一张黑色牌。",
-            jlsg_wangsi_info: "当你受到伤害后，你可以观看伤害来源的所有类型的牌，并可以弃置其中一张红色牌。",
+            jlsg_shangyi_info: "出牌阶段限一次，你可以令一名其他角色观看你的手牌，然后你选择一项：观看其手牌，并可以弃置其中一张黑色牌；或观看其身份牌。",
+            jlsg_wangsi_info: "当你受到伤害后，你可以观看伤害来源的手牌，并可以弃置其中一张红色牌。",
             jlsg_bibu: "裨补",
             jlsg_bibu1: "裨补",
             jlsg_kuangzheng: "匡正",
@@ -20530,6 +20524,7 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.08.06更新<br>
+&ensp; 回滚 SK蒋钦 技能为原版。<br>
 &ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
 &ensp; 优化 SK于吉 AI。<br>
 &ensp; 优化 SK祢衡 舌剑 UX。<br>
