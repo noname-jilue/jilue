@@ -1760,15 +1760,15 @@ const b = 1;
               subfrequent: ['1'],
               subSkill: {
                 strg: {
-                  trigger: { player: 'useCard' },
+                  trigger: { player: ["useCard","respond"] },
                   filter: function (event, player) {
                     if (!player.isPhaseUsing()) return false;
                     var phaseUse = _status.event.getParent('phaseUse');
                     var hists = player.getHistory('useCard', function (evt) {
                       return evt.getParent('phaseUse') == phaseUse && evt.card && get.suit(evt.card)
                     })
-                    var suits = new Set(hists.map(e => get.suit(e.card)))
-                    return hists.contains(event) && suits.size == hists.length;
+                    var curSuit = get.suit(event.card);
+                    return hists.contains(event) && hists.every(e => e === event || get.suit(e.card) != curSuit);
                   },
                   silent: true,
                   content: function () {
@@ -1820,7 +1820,7 @@ const b = 1;
             },
             jlsg_yaoming_1: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCard' },
+              trigger: { player: ["useCard","respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1834,7 +1834,7 @@ const b = 1;
             },
             jlsg_yaoming_2: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCard' },
+              trigger: { player: ["useCard","respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1862,7 +1862,7 @@ const b = 1;
             jlsg_yaoming_3: {
               sub: true,
               audio: "ext:极略:true",
-              trigger: { player: 'useCard' },
+              trigger: { player: ["useCard","respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1884,7 +1884,7 @@ const b = 1;
             },
             jlsg_yaoming_4: {
               audio: "ext:极略:true",
-              trigger: { player: 'useCard' },
+              trigger: { player: ["useCard","respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -16927,7 +16927,8 @@ const b = 1;
               audio: "ext:极略:1",
               skillAnimation: true,
               trigger: { player: 'changeHp' },
-              forced: true,
+              locked: true,
+              silent: true,
               priority: 100,
               unique: true,
               mode: ['identity', 'guozhan', 'boss', 'stone'],
@@ -16941,14 +16942,19 @@ const b = 1;
                 } else {
                   event.finish(); return;
                 }
-                if (player.name1 === 'jlsgsy_' + slimName) {
-                  player.reinit(player.name1, player.name1 + 'baonu');
-                  player.update();
+                if (player.hp < 4) {
+                  player.hp = 4;
                 }
-                if (player.name2 && player.name2 === 'jlsgsy_' + slimName) {
-                  player.reinit(player.name2, player.name2 + 'baonu');
-                  player.update();
+                var name1 = player.name1, name2 = player.name2;
+                if (name1.startsWith('jlsgsy_') && !name1.endsWith('baonu')) {
+                  player.logSkill('jlsgsy_baonu' + name1.substr(7));
+                  player.reinit(name1, name1 + 'baonu');
                 }
+                if (name2 && name2.startsWith('jlsgsy_') && !name2.endsWith('baonu')) {
+                  player.logSkill('jlsgsy_baonu' + name2.substr(7));
+                  player.reinit(name2, name2 + 'baonu');
+                }
+                player.update();
                 ui.clear();
                 while (_status.event.name != 'phaseLoop') {
                   _status.event = _status.event.parent;
@@ -20524,8 +20530,10 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 2021.08.06更新<br>
+&ensp; 修改三英武将觉醒机制。现在双三英可以同时觉醒，且会恢复体力至4。<br>
 &ensp; 回滚 SK蒋钦 技能为原版。<br>
 &ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
+&ensp; 叒修复了 SK全琮的邀名<br>
 &ensp; 优化 SK于吉 AI。<br>
 &ensp; 优化 SK祢衡 舌剑 UX。<br>
 <span style="font-size: large;">历史：</span><br>
