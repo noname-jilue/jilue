@@ -1453,14 +1453,13 @@ const b = 1;
                   player.chooseControl(['观看其身份牌', '观看其手牌', 'cancel2'], 1).set('prompt', '选择一项');
                 }
                 'step 2'
-                debugger;
                 if (!result || !result.control || result.control === '观看其手牌') {
                   player.discardPlayerCard(target, 'h', 'visible').set('filterButton', function (button, player) {
                     return get.color(button.link) == 'black';
                   });
-                } 
+                }
                 else if (result && result.control === '观看其身份牌' && target.identity) {
-                  game.log(player,'观看了',target,'的身份');
+                  game.log(player, '观看了', target, '的身份');
                   var idt = target.identity;
                   var styleStr = {
                     zhu: `data-nature="fire"`,
@@ -1474,7 +1473,7 @@ const b = 1;
                     fan: '反贼',
                     nei: '内奸',
                   }[idt] || get.translation(idt);
-                  player.chooseControl('ok').set('dialog',[get.translation(target) + '的身份',`<span ${styleStr} style="font-family: huangcao, xinwei;font-size:larger;color: white;">${tr}</span>`]);
+                  player.chooseControl('ok').set('dialog', [get.translation(target) + '的身份', `<span ${styleStr} style="font-family: huangcao, xinwei;font-size:larger;color: white;">${tr}</span>`]);
                 }
               },
               ai: {
@@ -1760,7 +1759,7 @@ const b = 1;
               subfrequent: ['1'],
               subSkill: {
                 strg: {
-                  trigger: { player: ["useCard","respond"] },
+                  trigger: { player: ["useCard", "respond"] },
                   filter: function (event, player) {
                     if (!player.isPhaseUsing()) return false;
                     var phaseUse = _status.event.getParent('phaseUse');
@@ -1820,7 +1819,7 @@ const b = 1;
             },
             jlsg_yaoming_1: {
               audio: "ext:极略:true",
-              trigger: { player: ["useCard","respond"] },
+              trigger: { player: ["useCard", "respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1834,7 +1833,7 @@ const b = 1;
             },
             jlsg_yaoming_2: {
               audio: "ext:极略:true",
-              trigger: { player: ["useCard","respond"] },
+              trigger: { player: ["useCard", "respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1862,7 +1861,7 @@ const b = 1;
             jlsg_yaoming_3: {
               sub: true,
               audio: "ext:极略:true",
-              trigger: { player: ["useCard","respond"] },
+              trigger: { player: ["useCard", "respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -1884,7 +1883,7 @@ const b = 1;
             },
             jlsg_yaoming_4: {
               audio: "ext:极略:true",
-              trigger: { player: ["useCard","respond"] },
+              trigger: { player: ["useCard", "respond"] },
               filter: function (event, player) {
                 return player.storage.jlsg_yaoming &&
                   player.storage.jlsg_yaoming[0] == event &&
@@ -4780,46 +4779,60 @@ const b = 1;
                 return get.attitude(player, event.source) < 0;
               },
               filter: function (event, player) {
-                return event.source != undefined && event.source.countCards('h') > 0;
+                return event.source && event.source.countCards('h') > 0;
               },
               content: function () {
-                event.cards = trigger.source.get('h');
-                var numBasic = 0;
-                var numEquip = 0;
-                var numTrick = 0;
-                for (var i = 0; i < event.cards.length; i++) {
-                  switch (get.type(event.cards[i], 'trick')) {
-                    case 'basic':
-                      numBasic++;
-                      break;
-                    case 'trick':
-                      numTrick++;
-                      break;
-                    case 'equip':
-                      numEquip++;
-                      break;
-                  }
-                }
+                'step 0'
                 trigger.source.showHandcards();
-                var num = Math.max(numBasic, numEquip, numTrick);
-                event.types = [];
-                switch (num) {
-                  case numBasic:
-                    event.types.push('basic');
-                  case numEquip:
-                    event.types.push('equip');
-                  case numTrick:
-                    event.types.push('trick');
+                var cards = [
+                  trigger.source.getCards('h', { type: 'basic' }),
+                  trigger.source.getCards('h', { type: ['trick', 'delay'] }),
+                  trigger.source.getCards('h', { type: 'equip' }),
+                ];
+                var maxNum = cards.reduce((a, b) => a.length > b.length ? a : b).length;
+                if (cards.filter(cs => cs.length == maxNum).length == 1) {
+                  trigger.source.discard(cards.filter(cs => cs.length == maxNum)[0]);
+                  event.finish();
+                  return;
                 }
-                trigger.source.chooseToDiscard('请弃置手牌中类别相同且最多的所有牌', num, true).ai = function (card) {
-                  if (ui.selected.cards.length == 0 && event.types.length == 2) return (get.type(card, 'trick') == event.types[0] || get.type(card, 'trick') == event.types[1]);
-                  if (ui.selected.cards.length == 0 && event.types.length == 3) return (get.type(card, 'trick') == event.types[0] || get.type(card, 'trick') == event.types[1] || get.type(card, 'trick') == event.types[3]);
-                  if (ui.selected.cards.length == 0) return (get.type(card, 'trick') == event.types[0]);
-                  for (var i = 0; i < ui.selected.cards.length; i++) {
-                    if (get.type(card, 'trick') == get.type(ui.selected.cards[i], 'trick')) return true;
+                var choices = [], choice, v = Infinity, tempv;
+                if (cards[0].length == maxNum) {
+                  choices.push('基本牌');
+                  choice = '基本牌';
+                  v = cards[0].reduce((a, b) => a + get.value(b, trigger.source), 0);
+                }
+                if (cards[1].length == maxNum) {
+                  choices.push('锦囊牌');
+                  tempv = cards[1].reduce((a, b) => a + get.value(b, trigger.source), 0);
+                  if (tempv < v) {
+                    choice = '锦囊牌';
+                    v = tempv;
                   }
-                  return false;
-                };
+                }
+                if (cards[2].length == maxNum) {
+                  choices.push('装备牌');
+                  tempv = cards[2].reduce((a, b) => a + get.value(b, trigger.source), 0);
+                  if (tempv < v) {
+                    choice = '装备牌';
+                    v = tempv;
+                  }
+                }
+                player.chooseControl(choices).set('prompt', '弃置一种类型的手牌').set('choice', choice).set('ai', function () {
+                  return _status.event.choice;
+                });
+                'step 1'
+                switch (result.control) {
+                  case '基本牌':
+                    trigger.source.discard(trigger.source.getCards('h', { type: 'basic' }));
+                    break;
+                  case '锦囊牌':
+                    trigger.source.discard(trigger.source.getCards('h', { type: ['trick', 'delay'] }));
+
+                    break;
+                  case '装备牌':
+                    trigger.source.discard(trigger.source.getCards('h', { type: 'equip' }));
+                    break;
+                }
               },
             },
             jlsg_yanliang: {
@@ -14155,10 +14168,10 @@ const b = 1;
             jlsg_jilve2: {},
             jlsg_tongtian: {
               audio: "ext:极略:1",
-              srlose: true,
               enable: 'phaseUse',
               unique: true,
               skillAnimation: true,
+              limited: true,
               position: 'he',
               mark: true,
               marktext: "通",
@@ -16304,9 +16317,6 @@ const b = 1;
               global: 'jlsg_guiyuan_ai',
               enable: 'phaseUse',
               usable: 1,
-              check: function (event, player) {
-                return player.hp > 1 || player.canSave(player);
-              },
               content: function () {
                 'step 0'
                 player.loseHp();
@@ -16332,6 +16342,11 @@ const b = 1;
               },
               ai: {
                 order: 12,
+                result: {
+                  player: function (player) {
+                    return (player.hp > 1 || player.canSave(player)) ? 1 : 0;
+                  }
+                }
               }
             },
             jlsg_guiyuan_ai: {
@@ -17955,7 +17970,6 @@ const b = 1;
                 event.target.chooseCard(`交给${get.translation(player)}一张装备区内的牌或者失去一点体力`, 'e', function (card) {
                   return get.type(card) == 'equip';
                 }).ai = function (card, cards2) {
-                  debugger;
                   if (event.target.hp == event.target.maxHp) {
                     return 6 - get.value(card);
                   }
@@ -20532,6 +20546,8 @@ Visit Repository</a><br>
 2021.08.06更新<br>
 &ensp; 修改三英武将觉醒机制。现在双三英可以同时觉醒，且会恢复体力至4。<br>
 &ensp; 回滚 SK蒋钦 技能为原版。<br>
+&ensp; 重写SK杨修 鸡肋。<br>
+&ensp; 修复 SK神华佗 归元 AI。<br>
 &ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
 &ensp; 叒修复了 SK全琮的邀名<br>
 &ensp; 优化 SK于吉 AI。<br>
