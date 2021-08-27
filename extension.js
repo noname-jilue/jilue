@@ -10539,7 +10539,9 @@ const b = 1;
                     'step 0'
                     player.removeSkill('jlsg_jiexi_after');
                     if (trigger.target.countCards('h') && player.countCards('h')) {
-                      player.chooseBool('是否继续发动【劫袭】？');
+                      var choice = get.effect_use(trigger.target, { name: 'guohe' }, player, player) > 1;
+                      player.chooseBool('是否继续发动【劫袭】？')
+                        .set('ai', () => _status.event.choice).set('choice', choice);
                     } else {
                       event.finish();
                     }
@@ -13682,7 +13684,7 @@ const b = 1;
                 return player.countCards('he', { suit: 'spade' }) > 0;
               },
               check: function (card) {
-                return 6 - get.value(card)
+                return 7 - get.value(card)
               },
               filterCard: function (card) {
                 return get.suit(card) == 'spade';
@@ -13707,9 +13709,9 @@ const b = 1;
                 // target.discard(target.get('h', function (card) {
                 //   return get.type(card) != 'basic';
                 // }));
-                if (cards) {
+                if (cards.length) {
                   target.discard(cards, player);
-                  target.damage(cards.length, player);
+                  target.damage(cards.length);
                 }
               },
               ai: {
@@ -16230,7 +16232,7 @@ const b = 1;
                 return player != target;
               },
               check: function (card) {
-                8 - get.value(card);
+                10 - get.value(card);
               },
               content: function () {
                 target.damage(cards.length);
@@ -16817,7 +16819,7 @@ const b = 1;
             jlsg_yinshi: '隐世',
             jlsg_zhitian: '知天',
             jlsg_zhiji: '掷戟',
-            jlsg_zhiji_damage: '掷戟·摸牌',
+            jlsg_zhiji_damage: '掷戟',
             jlsg_yuanhua: '元化',
             jlsg_guiyuan: '归元',
             jlsg_chongsheng: '重生',
@@ -20547,7 +20549,9 @@ Visit Repository</a><br>
 &ensp; 修改三英武将觉醒机制。现在双三英可以同时觉醒，且会恢复体力至4。<br>
 &ensp; 回滚 SK蒋钦 技能为原版。<br>
 &ensp; 重写SK杨修 鸡肋。<br>
+&ensp; 优化 SR甘宁 劫袭 AI。<br>
 &ensp; 修复 SK神华佗 归元 AI。<br>
+&ensp; 修复 SK神典韦 掷戟 AI。<br>
 &ensp; 修复 SK向朗 藏书 bug，优化勘误提示。<br>
 &ensp; 叒修复了 SK全琮的邀名<br>
 &ensp; 优化 SK于吉 AI。<br>
