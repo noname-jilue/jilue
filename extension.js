@@ -473,10 +473,11 @@ const b = 1;
           connect: true,
           characterSort: {
             jlsg_sk: {
-              jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue'],
+              jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue', 'jlsgsk_yuji'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng'],
-              jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi', 'jlsgsk_luzhi'],
+              jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi',
+                'jlsgsk_luzhi', 'jlsgsk_mifuren'],
               jlsg_pojun: ['jlsgsk_zhuran', 'jlsgsk_yanliang', 'jlsgsk_chendao', 'jlsgsk_dingfeng', 'jlsgsk_dongzhuo',
                 'jlsgsk_yujin', 'jlsgsk_panfeng', 'jlsgsk_jiangqin', 'jlsgsk_guanxing'],
               jlsg_yinyang: ['jlsgsk_zuoci', 'jlsgsk_guanlu', 'jlsgsk_wangyi', 'jlsgsk_zhanglu', 'jlsgsk_kongrong',
@@ -5787,7 +5788,7 @@ const b = 1;
               }
             },
             jlsg_guhuo: {
-              audio: "ext:极略:2",
+              audio: "ext:极略:3",
               trigger: { global: 'phaseBegin' },
               filter: function (event, player) {
                 return player.canCompare(event.player); // && !event.player.hasSkill("jlsg_chanyuan");
@@ -5807,79 +5808,120 @@ const b = 1;
                 'step 0'
                 player.chooseToCompare(trigger.player);
                 'step 1'
+                var target = trigger.player;
                 if (result.bool) {
                   var list = [];
-                  for (var i of lib.inpile) {
-                    if (!lib.translate[i + '_info']) continue;
-                    if (lib.card[i].type == 'trick') list.push(['trick', '', i]);
+                  for (var name of lib.inpile) {
+                    if (name == 'sha') {
+                      if (lib.filter.cardEnabled({ name: name }, player)) list.push(['基本', '', 'sha']);
+                      if (lib.filter.cardEnabled({ name: name, nature: 'fire' }, player)) list.push(['基本', '', 'sha', 'fire']);
+                      if (lib.filter.cardEnabled({ name: name, nature: 'thunder' }, player)) list.push(['基本', '', 'sha', 'thunder']);
+                      if ((get.mode() != 'guozhan' || _status.mode == 'yingbian')
+                        && lib.filter.cardEnabled({ name: name, nature: 'ice' }, player))
+                        list.push(['基本', '', 'sha', 'ice']);
+                    }
+                    else if (get.type(name) == 'trick' && lib.filter.cardEnabled({ name: name }, player)) list.push(['锦囊', '', name]);
+                    else if (get.type(name) == 'basic' && lib.filter.cardEnabled({ name: name }, player)) list.push(['基本', '', name]);
                   }
                   var dialog = ui.create.dialog('蛊惑', [list, 'vcard']);
-                  var next = player.chooseButton(dialog, true);
+                  var next = player.chooseButton(dialog);
+                  var choice, value = 0;
+                  for (let [_, __, cardName, nature] of list) { // choose button ai
+                    let card = { name: cardName, nature: nature }
+                    let info = get.info(card);
+                    let range;
+                    if (info.notarget) {
+                      continue;
+                    }
+                    {
+                      let select = get.copy(info.selectTarget);
+                      if (select == undefined) {
+                        range = [1, 1];
+                      }
+                      else if (typeof select == 'number') range = [select, select];
+                      else if (get.itemtype(select) == 'select') range = select;
+                      else if (typeof select == 'function') range = select(card, target);
+                      game.checkMod(card, target, range, 'selectTarget', target);
+                    }
+                    let newV = 0;
+                    let targets = game.filterPlayer();
+                    let valueList = [];
+                    for (var i = 0; i < targets.length; i++) {
+                      if (target.canUse(card, targets[i], null, true)) {
+                        var eff = get.effect_use(targets[i], card, target, player);
+                        valueList.push(eff);
+                      }
+                    }
+                    valueList.sort().reverse();
+                    for (var i = 0; i < valueList.length; i++) {
+                      if (i >= range[0] && (i == range[1] || range[1] != -1 && valueList[i] <= 0)) break;
+                      newV += valueList[i];
+                    }
+                    console.log(newV, card);
+                    if (newV > value) {
+                      choice = [cardName, nature];
+                      value = newV;
+                    }
+                  }
                   next.filterButton = function (button, player) {
-                    return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
+                    return true;
                   }
                   next.ai = function (button) {
-                    var player = _status.event.player;
-                    var recover = 0, lose = 1;
-                    for (var i = 0; i < game.players.length; i++) {
-                      if (!game.players[i].isOut()) {
-                        if (game.players[i].hp < game.players[i].maxHp) {
-                          if (get.attitude(player, game.players[i]) > 0) {
-                            if (game.players[i].hp < 2) {
-                              lose--;
-                              recover += 0.5;
-                            }
-                            lose--;
-                            recover++;
-                          } else if (get.attitude(player, game.players[i]) < 0) {
-                            if (game.players[i].hp < 2) {
-                              lose++;
-                              recover -= 0.5;
-                            }
-                            lose++;
-                            recover--;
-                          }
-                        } else {
-                          if (get.attitude(player, game.players[i]) > 0) {
-                            lose--;
-                          } else if (get.attitude(player, game.players[i]) < 0) {
-                            lose++;
-                          }
-                        }
-                      }
-                    }
-                    var shunTarget = false;
-                    var chaiTarget = false;
-                    for (var i = 0; i < game.players.length; i++) {
-                      if (player.canUse('shunshou', game.players[i]) && get.effect(game.players[i], { name: 'shunshou' }, player)) {
-                        shunTarget = true;
-                      }
-                      if (player.canUse('guohe', game.players[i]) && get.effect(game.players[i], { name: 'guohe' }, player) >= 0) {
-                        chaiTarget = true;
-                      }
-                    }
-                    if (lose > recover && lose > 0) return (button.link[2] == 'wanjian') ? 1 : -1;
-                    if (lose < recover && recover > 0) return (button.link[2] == 'taoyuan') ? 1 : -1;
-                    if (game.players.length < 4) return (button.link[2] == 'shunshou') ? 1 : -1;
-                    if (player.countCards('h') < 3) return (button.link[2] == 'wuzhong') ? 1 : -1;
-                    return (button.link[2] == 'guohe') ? 1 : -1;
+                    return button.link[2] === _status.event.choice[0] &&
+                      (button.link[3] || true) === (_status.event.choice[1] || true);
                   }
+                  next.choice = choice;
                 } else {
-                  player.damage(trigger.player);
+                  player.damage(target);
                   event.finish();
                 }
                 'step 2'
-                if (result.bool) {
-                  lib.skill.jlsg_guhuo2.viewAs = { name: result.buttons[0].link[2] };
-                  var next = player.chooseToUse();
-                  next.set('openskilldialog', '选择' + get.translation(result.buttons[0].link[2]) + '的目标');
-                  next.set('norestore', true);
-                  next.set('_backupevent', 'jlsg_guhuo2');
-                  next.backup('jlsg_guhuo2');
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                var target = trigger.player;
+                debugger;
+                event.card = { name: result.links[0][2], nature: result.links[0][3] };
+                var card = event.card;
+                var info = get.info(card);
+                var range;
+                if (!info.notarget) {
+                  var select = get.copy(info.selectTarget);
+                  if (select == undefined) {
+                    range = [1, 1];
+                  }
+                  else if (typeof select == 'number') range = [select, select];
+                  else if (get.itemtype(select) == 'select') range = select;
+                  else if (typeof select == 'function') range = select(card, target);
+                  game.checkMod(card, target, range, 'selectTarget', target);
+                }
+                if (info.notarget || range[1] == -1) {
+                  target.chooseUseTarget(card, true);
+                  event.finish();
+                } else {
+                  var next = player.chooseTarget();
+                  next.set('_get_card', card);
+                  next.set('filterTarget', function (card, player, target) {
+                    return lib.filter.targetInRange(card, _status.event.subject, target) 
+                      && lib.filter.targetEnabledx(card, _status.event.subject, target);
+                  });
+                  next.set('ai', function (target, targets) {
+                    return get.effect_use(target, [], _status.event.subject, _status.event.player);
+                  });
+                  next.set('selectTarget', range);
+                  // next.set('forced', true);
+                  next.set('subject', target);
+                  next.set('prompt', `选择${get.translation(card)}的目标`);
+                  next.set('prompt2', `由${get.translation(target)}使用`);
+                }
+                'step 3'
+                if(result.bool) {
+                  trigger.player.useCard(event.card, result.targets, 'noai');
                 }
               },
               ai: {
-                expose: 0.15,
+                expose: 0.1,
                 order: 8,
                 result: {
                   player: function (player) {
@@ -5891,13 +5933,6 @@ const b = 1;
                 },
                 threaten: 4,
               }
-            },
-            jlsg_guhuo2: {
-              filterCard: function () {
-                return false;
-              },
-              selectCard: 0,
-              popname: true,
             },
             jlsg_fulu: {
               audio: false,
@@ -7273,8 +7308,8 @@ const b = 1;
             jlsg_ruzong_info: '你可以将【闪】/【无懈可击】当【无懈可击】/【闪】使用或打出。',
             jlsg_leiji_info: '当其他角色使用【闪】时，你可以将牌堆或弃牌堆里的一张【闪电】置入一名角色的判定区。',
             jlsg_shanxi_info: '锁定技，你不能成为【闪电】的目标，其他角色的【闪电】的判定牌生效后，你获得之。',
-            jlsg_guhuo_info: '其他角色的回合开始时，你可以与其拼点：若你赢，可以视为使用一张非延迟锦囊牌；若你没赢，该角色对你造成1点伤害。',
-            jlsg_fulu_info: '其他角色的回合结束时，你可以令其摸一张牌，然后若此回合内该角色对你造成过伤害，你令其获得【缠怨】（锁定技，当你受到伤害时，你令于吉恢复1点体力并失去【缠怨】；当于吉受到伤害时，你失去1点体力并失去【缠怨】）。',
+            jlsg_guhuo_info: '其他角色的回合开始时，你可以与其拼点：若你赢，你令其视为使用一张由你指定的基本牌或非延时锦囊，由你指定目标；若你没赢，其对你造成1点伤害。',
+            jlsg_fulu_info: '当你受到一点伤害后，你可以令最近三名对你造成伤害的角色随机弃置一张牌，最近三名令你回复体力的角色摸一张牌。',
             jlsg_gongshen_info: '出牌阶段，你可以弃置3张牌，然后摸一张牌，若此时你的手牌数为最少（或之一），你恢复1点体力。',
             jlsg_jianyue_info: '一名角色的回合结束阶段开始时，若该角色的手牌数为最少（或之一），你可以令其从弃牌堆随机获得牌直到其手牌数不为最少（或之一）。',
             jlsgsk_simashi: "SK司马师",
