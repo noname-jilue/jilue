@@ -5935,88 +5935,143 @@ const b = 1;
               }
             },
             jlsg_fulu: {
-              audio: false,
-              trigger: { global: 'phaseEnd' },
+              audio: "ext:极略:3",
+              init: function (player) {
+                player.storage.jlsg_fulu1 = player.storage.jlsg_fulu1 || [];
+                player.storage.jlsg_fulu2 = player.storage.jlsg_fulu2 || [];
+              },
+              trigger: { player: 'damageEnd' },
               filter: function (event, player) {
-                return player != event.player;
+                return event.num > 0;
               },
-              logTarget: 'player',
-              prompt: function (event, player) {
-                var str = '';
-                str += '是否对' + get.translation(event.player) + '发动【符箓】？';
-                return str;
-              },
-              check: function (event, player) {
-                if (player.storage.jlsg_fulu && player.storage.jlsg_fulu.contains(event.player) && get.attitude(player, event.player) < 0) return 1;
-                if (player.storage.jlsg_fulu && !player.storage.jlsg_fulu.contains(event.player) && get.attitude(player, event.player) > 0) return 1;
-                return 0;
-              },
+              direct: true,
               content: function () {
-                trigger.player.draw();
-                if (player.storage.jlsg_fulu && player.storage.jlsg_fulu.contains(trigger.player)) {
-                  trigger.player.addSkill('jlsg_chanyuan');
-                  trigger.player.storage.jlsg_chanyuan = player;
+                'step 0'
+                if (trigger.source) {
+                  player.storage.jlsg_fulu1.remove(trigger.source);
+                  player.storage.jlsg_fulu1.unshift(trigger.source);
+                  player.storage.jlsg_fulu1.splice(3);
+                }
+                event.cnt = trigger.num;
+                'step 1'
+                --event.cnt;
+                if (player.storage.jlsg_fulu1.every(p => !p.countCards('he'))
+                  && !player.storage.jlsg_fulu2.length) {
+                  event.finish();
+                  return;
+                }
+                let v = 0;
+                for (let p of player.storage.jlsg_fulu1) {
+                  v += get.attitude(player, p) > 0 ? -1 : 1;
+                }
+                for (let p of player.storage.jlsg_fulu2) {
+                  v += get.attitude(player, p) > 0 ? 1 : -1;
+                }
+                player.chooseBool(get.prompt2(event.name), v >= 0).set('logSkill', event.name);
+                'step 2'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                player.storage.jlsg_fulu1.slice().sortBySeat().forEach(
+                  p => p.randomDiscard(false)
+                );
+                game.asyncDraw(player.storage.jlsg_fulu2.slice().sortBySeat());
+                'step 3'
+                if (event.cnt) {
+                  event.goto(1);
                 }
               },
-              group: ['jlsg_fulu_damage', 'jlsg_fulu_clear'],
+              group: ['jlsg_fulu_recover'],
               subSkill: {
-                damage: {
-                  trigger: { player: 'damageEnd' },
-                  forced: true,
+                recover: {
+                  trigger: { player: 'recoverEnd' },
                   silent: true,
-                  popup: false,
                   filter: function (event, player) {
-                    return event.source && event.source != player && _status.currentPhase == event.source;
+                    return event.source;
                   },
                   content: function () {
-                    if (!player.storage.jlsg_fulu) {
-                      player.storage.jlsg_fulu = [];
-                    }
-                    player.storage.jlsg_fulu.add(trigger.source);
+                    player.storage.jlsg_fulu2.remove(trigger.source);
+                    player.storage.jlsg_fulu2.unshift(trigger.source);
+                    player.storage.jlsg_fulu2.splice(3);
                   }
                 },
-                clear: {
-                  trigger: { player: 'phaseEnd' },
-                  forced: true,
-                  silent: true,
-                  popup: false,
-                  content: function () {
-                    delete player.storage.jlsg_fulu;
-                  }
-                }
               }
             },
-            jlsg_chanyuan: {
-              trigger: { global: 'damage' },
-              forced: true,
+            jlsg_guixiu: {
+              audio: "ext:极略:1",
+              trigger: { player: 'phaseDiscardBefore' },
+              frequent: true,
               filter: function (event, player) {
-                return event.player == player.storage.jlsg_chanyuan;
+                return !player.getStat('damage');
               },
               content: function () {
-                player.loseHp();
-                delete player.storage.jlsg_chanyuan;
-                player.removeSkill('jlsg_chanyuan');
+                trigger.cancel();
+                player.draw();
               },
-              mark: true,
-              marktext: '缠',
-              intro: {
-                content: '锁定技，当你受到伤害时，你令于吉恢复1点体力并失去【缠怨】；当于吉受到伤害时，你失去1点体力并失去【缠怨】',
-              },
-              group: ['jlsg_chanyuan_die'],
-              subSkill: {
-                die: {
-                  trigger: { player: 'damage' },
-                  forced: true,
-                  content: function () {
-                    event.player = player.storage.jlsg_chanyuan;
-                    if (event.player.isAlive()) {
-                      event.player.recover();
-                    }
-                    delete player.storage.jlsg_chanyuan;
-                    player.removeSkill('jlsg_chanyuan');
-                  }
+            },
+            jlsg_cunsi: {
+              trigger: { player: 'die' },
+              skillAnimation: true,
+              animationColor: 'orange',
+              direct: true,
+              forceDie: true,
+              content: function () {
+                'step 0'
+                let prompt = `###${get.prompt(event.name)}###将区域中所有牌移出游戏，然后令一名角色获得【勇决】`;
+                player.chooseTarget(prompt, lib.filter.notMe).set('ai', function (target) {
+                  return get.attitude(_status.event.player, target);
+                });
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
                 }
-              }
+                var target = result.targets[0];
+                player.logSkill(event.name, target);
+                if (player.countCards('hej')) {
+                  let cards = player.getCards('hej');
+                  if (!target.storage.jlsg_yongjue) {
+                    target.storage.jlsg_yongjue = [];
+                  }
+                  target.storage.jlsg_yongjue.push(...cards);
+                }
+                target.addSkill('jlsg_yongjue');
+              },
+              derivation: 'jlsg_yongjue',
+            },
+            jlsg_yongjue: {
+              trigger: { source: 'damageBegin1' },
+              filter: function (event) {
+                return event.card && event.card.name == 'sha' && event.notLink();
+              },
+              forced: true,
+              content: function () {
+                trigger.num++;
+              },
+              ai: {
+                damageBonus: true,
+              },
+              group: 'jlsg_yongjue2',
+            },
+            jlsg_yongjue2: {
+              marktext: "嗣",
+              intro: {
+                name: "存嗣",
+                content: 'cards',
+              },
+              trigger:{
+                source:'dieAfter',
+              },
+              filter:function(event,player,name){
+                return player.storage.jlsg_yongjue && player.storage.jlsg_yongjue.length;
+              },
+              forced: true,
+              content: function() {
+                player.gain(player.storage.jlsg_yongjue, 'fromStorage');
+                player.unmarkSkill('jlsg_yongjue2');
+                delete player.storage.jlsg_yongjue;
+              },
             },
             jlsg_gongshen: {
               audio: "ext:极略:2",
