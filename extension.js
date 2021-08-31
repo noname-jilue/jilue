@@ -19598,7 +19598,13 @@ const b = 1;
           }
           var files = data.files;
           game.saveExtensionConfig('极略', 'pendingFiles', JSON.stringify(files))
-          var idbKeyval = await import('./modules/idb-keyval.js')
+          var idbKeyval;
+          try {
+            idbKeyval = await import('./modules/idb-keyval.js')
+          }
+          catch (e) {
+            idbKeyval = await import('https://cdn.jsdelivr.net/npm/idb-keyval@5/+esm')
+          }
           var required = files.filter(f => ['added', 'modified'].includes(f.status))
           var blobs = await idbKeyval.getMany(required.map(f => f.sha))
           // var downloads = required.map((f,i) => blobs[i] || fetch(f.raw_url))
@@ -19688,7 +19694,7 @@ const b = 1;
                 case 'added':
                 case 'modified':
                   let blob = blobMap.get(f.sha)
-                  lib.node.fs.writeFile(prefix + f.filename, blob, e => e && console.log(f, e))
+                  lib.node.fs.writeFile(prefix + f.filename, Buffer.from(blob), e => e && console.log(f, e))
                   break;
                 case 'removed':
                   lib.node.fs.rm(prefix + f.filename, e => e && console.log(f, e))
