@@ -64,7 +64,8 @@ const b = 1;
         // jlsgsk_simashi: 'jin_simashi',
         jlsgsk_jiangqin: 'jiangqing',
         jlsgsk_guanyu: 'jsp_guanyu',
-        jlsgsk_jiping: 'sp_jiben'
+        jlsgsk_jiping: 'sp_jiben',
+        jlsgsk_mifuren: 'sp_mifuren',
       };
       var trivialSolveCharacterReplace = function (name, prefix = '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -270,6 +271,7 @@ const b = 1;
             'jlsgsk_wangping',
             'jlsgsk_zhangbao',
             'jlsgsr_xuzhu',
+            'jlsgsk_yuji',
           ],
           bm: [
             'jlsgsr_huanggai',
@@ -282,6 +284,7 @@ const b = 1;
             'jlsgsk_yuji',
             'jlsgsk_dingfeng',
             'jlsgsk_zangba',
+            'jlsgsk_mifuren',
           ],
           c: [
             'jlsgsk_gongsunzan',
@@ -291,7 +294,7 @@ const b = 1;
           d: [],
           rarity: {
             legend: [ // 传说
-
+              'jlsgsk_yuji',
             ],
             epic: [ // 史诗
               "jlsgsk_zhangning",
@@ -310,6 +313,7 @@ const b = 1;
               "jlsgsk_kuaiyue",
               "jlsgsk_luzhi",
               "jlsgsk_zoushi",
+              "jlsgsk_mifuren",
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -541,6 +545,7 @@ const b = 1;
             jlsgsk_sunluyu: ['female', 'wu', 3, ['jlsg_huilian', 'jlsg_wenliang'], []],
             jlsgsk_luzhi: ['male', 'qun', 3, ['jlsg_jinglun', 'jlsg_ruzong'], []],
             jlsgsk_yuji: ['male', 'qun', 3, ['jlsg_guhuo', 'jlsg_fulu'], []],
+            jlsgsk_mifuren: ['female', 'shu', 3, ['jlsg_guixiu', 'jlsg_cunsi'], []],
             jlsgsk_zhangning: ['female', 'qun', 3, ['jlsg_leiji', 'jlsg_shanxi'], []],
             jlsgsk_guonvwang: ['female', 'wei', 3, ['jlsg_gongshen', 'jlsg_jianyue'], []],
             jlsgsk_chengyu: ['male', 'wei', 3, ['jlsg_pengri', 'jlsg_danmou'], []],
@@ -5881,7 +5886,6 @@ const b = 1;
                   return;
                 }
                 var target = trigger.player;
-                debugger;
                 event.card = { name: result.links[0][2], nature: result.links[0][3] };
                 var card = event.card;
                 var info = get.info(card);
@@ -5967,12 +5971,13 @@ const b = 1;
                 for (let p of player.storage.jlsg_fulu2) {
                   v += get.attitude(player, p) > 0 ? 1 : -1;
                 }
-                player.chooseBool(get.prompt2(event.name), v >= 0).set('logSkill', event.name);
+                player.chooseBool(get.prompt2(event.name), v >= 0);
                 'step 2'
                 if (!result.bool) {
                   event.finish();
                   return;
                 }
+                player.logSkill(event.name);
                 player.storage.jlsg_fulu1.slice().sortBySeat().forEach(
                   p => p.randomDiscard(false)
                 );
@@ -6011,6 +6016,7 @@ const b = 1;
               },
             },
             jlsg_cunsi: {
+              audio: "ext:极略:1",
               trigger: { player: 'die' },
               skillAnimation: true,
               animationColor: 'orange',
@@ -6018,7 +6024,7 @@ const b = 1;
               forceDie: true,
               content: function () {
                 'step 0'
-                let prompt = `###${get.prompt(event.name)}###将区域中所有牌移出游戏，然后令一名角色获得【勇决】`;
+                let prompt = `###${get.prompt(event.name)}###将区域中所有牌移出游戏，然后令一名角色获得〖勇决〗`;
                 player.chooseTarget(prompt, lib.filter.notMe).set('ai', function (target) {
                   return get.attitude(_status.event.player, target);
                 });
@@ -6027,16 +6033,22 @@ const b = 1;
                   event.finish();
                   return;
                 }
+                event.target = result.targets[0];
                 var target = result.targets[0];
                 player.logSkill(event.name, target);
+                target.addSkill('jlsg_yongjue');
+                'step 2'
+                var target = result.targets[0];
                 if (player.countCards('hej')) {
                   let cards = player.getCards('hej');
-                  if (!target.storage.jlsg_yongjue) {
-                    target.storage.jlsg_yongjue = [];
+                  player.$give(cards,target,false);
+                  player.lose(cards, ui.special, 'toStorage');
+                  if (!target.storage.jlsg_yongjue2) {
+                    target.storage.jlsg_yongjue2 = [];
                   }
-                  target.storage.jlsg_yongjue.push(...cards);
+                  target.storage.jlsg_yongjue2.push(...cards);
+                  target.markSkill('jlsg_yongjue2');
                 }
-                target.addSkill('jlsg_yongjue');
               },
               derivation: 'jlsg_yongjue',
             },
@@ -6046,7 +6058,13 @@ const b = 1;
                 return event.card && event.card.name == 'sha' && event.notLink();
               },
               forced: true,
+              direct: true,
               content: function () {
+                {
+                  let gender = player.sex ? player.sex : ['male', 'female'].randomGet();
+                  if (gender === 'male') player.logSkill('jlsg_yongjue11');
+                  else player.logSkill('jlsg_yongjue12');
+                }
                 trigger.num++;
               },
               ai: {
@@ -6055,6 +6073,7 @@ const b = 1;
               group: 'jlsg_yongjue2',
             },
             jlsg_yongjue2: {
+              audio: "ext:极略:2",
               marktext: "嗣",
               intro: {
                 name: "存嗣",
@@ -6064,14 +6083,41 @@ const b = 1;
                 source:'dieAfter',
               },
               filter:function(event,player,name){
-                return player.storage.jlsg_yongjue && player.storage.jlsg_yongjue.length;
+                return player.storage.jlsg_yongjue2 && player.storage.jlsg_yongjue2.length;
               },
-              forced: true,
+              skillAnimation: true,
+              animationColor: 'orange',
+              locked: true,
+              direct: true,
               content: function() {
-                player.gain(player.storage.jlsg_yongjue, 'fromStorage');
+                'step 0'
+                {
+                  let gender = player.sex ? player.sex : ['male', 'female'].randomGet();
+                  if (gender === 'male') player.logSkill('jlsg_yongjue21');
+                  else player.logSkill('jlsg_yongjue22');
+                }
+                'step 1'
+                player.$draw(player.storage.jlsg_yongjue2);
+                player.gain(player.storage.jlsg_yongjue2, 'log', 'fromStorage');
                 player.unmarkSkill('jlsg_yongjue2');
-                delete player.storage.jlsg_yongjue;
+                delete player.storage.jlsg_yongjue2;
               },
+            },
+            jlsg_yongjue11: {
+              inherit: 'jlsg_yongjue',
+              audio: "ext:极略:true",
+            },
+            jlsg_yongjue12: {
+              inherit: 'jlsg_yongjue',
+              audio: "ext:极略:true",
+            },
+            jlsg_yongjue21: {
+              inherit: 'jlsg_yongjue2',
+              audio: "ext:极略:true",
+            },
+            jlsg_yongjue22: {
+              inherit: 'jlsg_yongjue2',
+              audio: "ext:极略:true",
             },
             jlsg_gongshen: {
               audio: "ext:极略:2",
@@ -7144,6 +7190,7 @@ const b = 1;
             jlsgsk_luzhi: 'SK卢植',
             jlsgsk_zhangning: 'SK张宁',
             jlsgsk_yuji: 'SK于吉',
+            jlsgsk_mifuren: 'SK糜夫人',
             jlsgsk_guonvwang: 'SK郭女王',
             jlsgsk_chengyu: 'SK程昱',
             jlsgsk_zhangren: 'SK张任',
@@ -7243,7 +7290,10 @@ const b = 1;
             jlsg_shanxi: '闪戏',
             jlsg_guhuo: '蛊惑',
             jlsg_fulu: '符箓',
-            jlsg_chanyuan: '缠怨',
+            jlsg_guixiu: '闺秀',
+            jlsg_cunsi: '存嗣',
+            jlsg_yongjue: '勇决',
+            jlsg_yongjue2: '勇决',
             jlsg_gongshen: '恭慎',
             jlsg_jianyue: '俭约',
             jlsg_pengri: '捧日',
@@ -7365,6 +7415,9 @@ const b = 1;
             jlsg_shanxi_info: '锁定技，你不能成为【闪电】的目标，其他角色的【闪电】的判定牌生效后，你获得之。',
             jlsg_guhuo_info: '其他角色的回合开始时，你可以与其拼点：若你赢，你令其视为使用一张由你指定的基本牌或非延时锦囊，由你指定目标；若你没赢，其对你造成1点伤害。',
             jlsg_fulu_info: '当你受到一点伤害后，你可以令最近三名对你造成伤害的角色随机弃置一张牌，最近三名令你回复体力的角色摸一张牌。',
+            jlsg_guixiu_info: '若你于此回合内未造成过伤害，你可以跳过弃牌阶段并摸一张牌。',
+            jlsg_cunsi_info: '当你死亡时，你可以将区域内的所有牌移出游戏，然后令一名角色获得〖勇决〗',
+            jlsg_yongjue_info: '锁定技，你使用【杀】造成的伤害+1；你杀死一名角色后，你获得所有〖存嗣〗移出游戏的牌。',
             jlsg_gongshen_info: '出牌阶段，你可以弃置3张牌，然后摸一张牌，若此时你的手牌数为最少（或之一），你恢复1点体力。',
             jlsg_jianyue_info: '一名角色的回合结束阶段开始时，若该角色的手牌数为最少（或之一），你可以令其从弃牌堆随机获得牌直到其手牌数不为最少（或之一）。',
             jlsgsk_simashi: "SK司马师",
@@ -20631,11 +20684,14 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.3.0806",
+      version: "2.3.0831",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-2021.08.06更新<br>
+小提示：可以试着用极略内置的更新beta功能更新了<br>
+2021.08.31更新<br>
+&ensp; 更新武将<div style="display:inline" data-nature="metalmm">SK于吉</div>。<br>
+&ensp; 新增武将<div style="display:inline" data-nature="soilmm">SK糜夫人</div>。<br>
 &ensp; 修改三英武将觉醒机制。现在双三英可以同时觉醒，且会恢复体力至4。<br>
 &ensp; 回滚 SK蒋钦 技能为原版。<br>
 &ensp; 重写SK杨修 鸡肋。<br>
