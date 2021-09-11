@@ -66,6 +66,7 @@ const b = 1;
         jlsgsk_guanyu: 'jsp_guanyu',
         jlsgsk_jiping: 'sp_jiben',
         jlsgsk_mifuren: 'sp_mifuren',
+        jlsgsk_hejin: 're_hejin',
       };
       var trivialSolveCharacterReplace = function (name, prefix = '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -191,7 +192,6 @@ const b = 1;
           a: [
             'jlsgsoul_zhouyu',
             'jlsgsoul_zuoci',
-            'jlsgsr_zhaoyun',
             'jlsgsr_simayi',
             'jlsgsr_guojia',
             'jlsgsr_diaochan',
@@ -228,6 +228,7 @@ const b = 1;
             'jlsgsr_machao',
             'jlsgsr_ganning',
             'jlsgsr_caocao',
+            'jlsgsr_zhaoyun',
             'jlsgsk_chendao',
             'jlsgsk_guanxing',
             'jlsgsk_huangyueying',
@@ -1437,7 +1438,7 @@ const b = 1;
               content: function () {
                 player.discardPlayerCard(trigger.source, 'h', 'visible').set('filterButton', function (button, player) {
                   return get.color(button.link) == 'red';
-                }).set('logSkill', [event.name, trigger.source]);
+                }) // .set('logSkill', [event.name, trigger.source]);
               },
               ai: {
                 maixie_defend: true,
@@ -7354,7 +7355,7 @@ const b = 1;
             jlsg_yinbing_info: '你攻击范围内的一名其他角色成为【杀】的目标时，你可以获得其装备区的一张牌，然后将该【杀】转移给你（你不得是此【杀】的使用者）；当你成为【杀】的目标时，你可以弃置一张牌，然后摸X张牌（X为你已损失的体力值）。',
             jlsg_fenwei_info: '当你使用【杀】对目标角色造成伤害时，你可以展示该角色的一张手牌：若为【桃】或【酒】，则你获得之；若不为基本牌，你弃掉该牌并令该伤害+1。',
             jlsg_shiyong_info: '锁定技，当你受到一次红色【杀】或【酒】【杀】造成的伤害后，须减1点体力上限。',
-            jlsg_angyang_info: '每当你指定目标后或成为目标后一张【决斗】或红色的【杀】时，你可以摸一张牌，若对方判定区内有牌，你改为摸两张。',
+            jlsg_angyang_info: '每当你使用（指定目标后）或被使用（成为目标后）一张【决斗】或红色的【杀】时，你可以摸一张牌，若对方判定区内有牌，你改为摸两张。',
             jlsg_weifeng_info: '回合开始阶段，若你的手牌数小于你的体力值，你可以与一名角色拼点，赢的角色摸两张牌。',
             jlsg_xieli_info: '主公技，当你需要打出一张拼点牌时，你可请场上吴将帮你出，所有吴将给出牌后，你必须从中挑选一张作为拼点牌并弃掉其余。',
             jlsg_jushou_info: '回合结束阶段，你可以摸(X+1)张牌，最多5张。若如此做，将你的武将牌翻面。X为仅计算攻击范围和距离时，场上可以攻击到你的人数。',
@@ -11600,7 +11601,7 @@ const b = 1;
                   player.useCard({ name: 'sha' }, _status.currentPhase, false);
                 }
                 "step 4"
-                if (event.cards.length) event.goto(2);
+                if (event.cards.length) event.goto(1);
               }
             },
             jlsg_tuwei: {
@@ -20690,11 +20691,16 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.3.0831",
+      version: "2.3.0905",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 小提示：可以试着用极略内置的更新beta功能更新了<br>
+2021.09.05更新<br>
+&ensp; 修复SK蒋钦 忘私 技能配音。<br>
+&ensp; 修复SK孙策 昂扬 技能描述。<br>
+&ensp; 修复SR赵云 救主。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.08.31更新<br>
 &ensp; 更新武将<div style="display:inline" data-nature="metalmm">SK于吉</div>。<br>
 &ensp; 新增武将<div style="display:inline" data-nature="soilmm">SK糜夫人</div>。<br>
@@ -20708,18 +20714,6 @@ Visit Repository</a><br>
 &ensp; 叒修复了 SK全琮的邀名<br>
 &ensp; 优化 SK于吉 AI。<br>
 &ensp; 优化 SK祢衡 舌剑 UX。<br>
-<span style="font-size: large;">历史：</span><br>
-2021.07.31更新<br>
-&ensp; 重写SK全琮 邀名。<br>
-&ensp; 修复 三英神司马懿 博略 获得技能错误。<br>
-&ensp; 优化 SK孔融 礼让 & SK神郭嘉 天启 救人AI。<br>
-&ensp; 修复SK神华佗 重生 更换武将牌时回复体力。下调评级。<br>
-&ensp; 修复SK神关羽 索魂 时机。<br>
-&ensp; 优化SK向朗 勘误 AI。<br>
-&ensp; 修复SK神夏侯惇&SK神张辽 血量。<br>
-&ensp; 优化SK神夏侯惇 啖睛 AI。<br>
-&ensp; 重写SK董卓 暴征 优化AI 修复描述。<br>
-&ensp; 大幅优化七杀包 青梅煮酒 选牌AI。<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
