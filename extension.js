@@ -19653,6 +19653,8 @@ const b = 1;
           if (!game.download) {
             throw "Not implemented";
           }
+          cNode.innerHTML += ' 成功<br>请酌情等待五秒后再重启';
+          console.log('writing files');
           if (lib.node && lib.node.fs) {
             let prefix = __dirname + '/extension/极略/'
             for (let [i, f] of files.entries()) {
