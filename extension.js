@@ -19646,7 +19646,7 @@ const b = 1;
           }
           // required.forEach((f, i) => blobs[i] || myMap.set(fetch(f.raw_url), f))
           refNode.insertAdjacentHTML('afterend',
-            `<div>正在下载<span>0</span>/${required.length}</div><br>`
+            `<div>正在下载<span>0</span>/${required.length}请耐心等待</div><br>`
           ); cNode = refNode.nextSibling;
           var [valNode] = cNode.getElementsByTagName('span')
           var finishedCnt = {
@@ -19706,7 +19706,7 @@ const b = 1;
           if (!game.download) {
             throw "Not implemented";
           }
-          cNode.innerHTML += ' 成功<br>请酌情等待五秒后再重启';
+          cNode.innerHTML += ' 成功<br>请酌情等待五秒后再重启不是不可以探测安装完了但是我太懒了';
           console.log('writing files');
           if (lib.node && lib.node.fs) {
             let prefix = __dirname + '/extension/极略/'
@@ -19730,7 +19730,7 @@ const b = 1;
             }
           } else {
             window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
-              entry.getDirectory('extension/极略/', function (dirEntry) {
+              entry.getDirectory('extension/极略/', {}, function (dirEntry) {
                 for (let [i, f] of files.entries()) {
                   switch (f.status) {
                     case 'added':
