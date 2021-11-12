@@ -20716,7 +20716,10 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-小提示：可以试着用极略内置的更新beta功能更新了<br>
+小提示：可以用极略内置的更新功能更新了<br>
+新QQ群：574935857<br>
+由于老群群主消失无法再对群做出有效管理遂建立新交流群。<br>
+如果老群群主复活，就把新群转作为部将拓展内测群<br>
 2021.11.12更新<br>
 &ensp; 添加七杀 锦囊袋。<br>
 &ensp; 修复SK邓芝 素俭 AI。<br>
