@@ -83,6 +83,7 @@ const b = 1;
         jlsgsk_jiping: 'sp_jiben',
         jlsgsk_mifuren: 'sp_mifuren',
         jlsgsk_hejin: 're_hejin',
+        jlsgsk_zoushi: 're_zoushi',
       };
       var trivialSolveCharacterReplace = function (name, prefix = '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -1257,7 +1258,7 @@ const b = 1;
               },
               content: function () {
                 "step 0"
-                player.chooseTarget(get.prompt(event.name), function (card, player, target) {
+                player.chooseTarget(get.prompt2(event.name), function (card, player, target) {
                   return player != target && target.countDiscardableCards(player, 'he') > 0;
                 }).set('ai', function (target) {
                   return -get.attitude(_status.event.player, target);
@@ -1281,6 +1282,7 @@ const b = 1;
               audio: "ext:极略:1",
               group: ['jlsg_gangzhi2'],
               trigger: { player: 'damageBefore' },
+              prompt2: '弃置所有手牌，然后防止此伤害。',
               filter: function (event, player) {
                 return player.countCards('h') != 0;
               },
@@ -1315,6 +1317,7 @@ const b = 1;
               filter: function (event, player) {
                 return player.countCards('h') == 0;
               },
+              prompt2: '将武将牌翻面，然后将手牌数补至体力上限。',
               content: function () {
                 "step 0"
                 player.turnOver();
@@ -20712,14 +20715,16 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.3.1112",
+      version: "2.3.1113",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 小提示：可以用极略内置的更新功能更新了<br>
 新QQ群：574935857<br>
-由于老群群主消失无法再对群做出有效管理遂建立新交流群。<br>
-如果老群群主复活，就把新群转作为部将拓展内测群<br>
+2021.11.13更新<br>
+&ensp; 添加SK邹氏 同将替换。<br>
+&ensp; 优化SK田丰 UX。<br>
+<span style="font-size: large;">历史：</span><br>
 2021.11.12更新<br>
 &ensp; 添加七杀 锦囊袋。<br>
 &ensp; 修复SK邓芝 素俭 AI。<br>
@@ -20727,19 +20732,7 @@ Visit Repository</a><br>
 &ensp; 优化七杀 青梅煮酒 使用&留牌逻辑。<br>
 &ensp; 优化七杀 木牛流马 AI。<br>
 &ensp; 修复SK左慈 名牌。<br>
-<span style="font-size: large;">历史：</span><br>
-2021.10.01更新<br>
-&ensp; 接入无名杀最新判断生效框架的修改。<br>
-&ensp; 修复SK神典韦 掷戟 AI。<br>
-&ensp; 修复SR刘备 仇袭 AI。<br>
-&ensp; 优化SK于禁 整毅 UX <br>
-&ensp; 加强SK于吉 一二技能 上调评级。<br>
-&ensp; 优化SK司马昭 UX <br>
-&ensp; 修复SK蒋钦 忘私 技能配音。<br>
-&ensp; 修复SK孙策 昂扬 技能描述。<br>
-&ensp; 修复SK颜良 虎步。<br>
-&ensp; 修复SK神孙尚香 良缘。<br>
-&ensp; 修复SR赵云 救主。<br>
+
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
