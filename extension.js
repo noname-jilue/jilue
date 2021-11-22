@@ -8409,6 +8409,7 @@ const b = 1;
               check: function (event, player) {
                 if (!event.player) return -1;
                 if (get.attitude(player, event.player) > 0) return false;
+                if (event.player.hasSkillTag('filterDamage')) return false;
                 if (event.player.hasSkillTag('filterDamage', null, {
                   player: player,
                   card: event.card,
@@ -20723,6 +20724,7 @@ Visit Repository</a><br>
 新QQ群：574935857<br>
 2021.11.13更新<br>
 &ensp; 添加SK邹氏 同将替换。<br>
+&ensp; 优化SR许褚 虎啸 AI。<br>
 &ensp; 优化SK田丰 UX。<br>
 <span style="font-size: large;">历史：</span><br>
 2021.11.12更新<br>
