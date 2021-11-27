@@ -31,7 +31,7 @@ const b = 1;
         };
         if (lib.device) {
           window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
-            entry.getDirectory('extension/极略/', {}, function (dirEntry) {}, callback);
+            entry.getDirectory('extension/极略/', {}, function (dirEntry) { }, callback);
           });
         } else {
           fetch(lib.assetURL + "extension/极略/extension.js").catch(e => {
@@ -600,7 +600,7 @@ const b = 1;
                 for (var i of lib.inpile) {
                   if (get.type(i) != 'basic' || i == 'shan') continue;
                   if (event.filterCard({ name: i }, player, event)) return true;
-                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
+                  if (i == 'sha' && lib.inpile_nature.some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
                     return true;
                   }
                 }
@@ -613,9 +613,7 @@ const b = 1;
                     if (get.type(i) != 'basic' || i == 'shan') continue;
                     list.push(['basic', '', i]);
                     if (i == 'sha') {
-                      list.push(['basic', '', i, 'fire']);
-                      list.push(['basic', '', i, 'thunder']);
-                      list.push(['basic', '', i, 'ice']);
+                      for (var j of lib.inpile_nature) list.push(['basic', '', i, j]);
                     }
                   }
                   return ui.create.dialog('整毅', [list, 'vcard']);
@@ -694,7 +692,7 @@ const b = 1;
                 respondSha: true,
                 // respondShan: true,
                 fireattack: true,
-                skillTagFilter:function(player){
+                skillTagFilter: function (player) {
                   return _status.currentPhase == player ? player.countCards('h') - player.hp == 1 : player.hp - player.countCards('h') == 1;
                 },
               },
@@ -950,7 +948,7 @@ const b = 1;
                 for (var i of lib.inpile) {
                   if (get.type(i) != 'basic' || i == 'shan') continue;
                   if (event.filterCard({ name: i }, player, event)) return true;
-                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
+                  if (i == 'sha' && lib.inpile_nature.some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
                     return true;
                   }
                 }
@@ -963,9 +961,7 @@ const b = 1;
                     if (get.type(i) != 'basic' || i == 'shan') continue;
                     list.push(['basic', '', i]);
                     if (i == 'sha') {
-                      list.push(['basic', '', i, 'fire']);
-                      list.push(['basic', '', i, 'thunder']);
-                      list.push(['basic', '', i, 'ice']);
+                      for (var j of lib.inpile_nature) list.push(['basic', '', i, j]);
                     }
                   }
                   return ui.create.dialog('勘误', [list, 'vcard']);
@@ -5419,14 +5415,21 @@ const b = 1;
               audio: "ext:极略:2",
               // forbid:['guozhan'],
               trigger: {
-                player: ['phaseBegin', 'enterGame'],
-                global: 'gameDrawAfter',
+                player: 'enterGame',
+                global: 'phaseBefore',
               },
               forced: true,
               unique: true,
               priority: -555,
               init: function (player) {
                 player.storage.jlsg_qianhuan_fenpei = [];
+              },
+              filter: function (event, player) {
+                if (event.name == 'phase') {
+                  return event.player == player || game.phaseNumber == 0;
+                } else {
+                  return true;
+                }
               },
               content: function () {
                 "step 0"
@@ -5588,15 +5591,15 @@ const b = 1;
               },
               group: ['jlsg_qianhuan2'],
             },
-            jlsg_qianhuan2: {
-              trigger: { global: 'gameDrawAfter' },
+            jlsg_qianhuan2: { // remove the other avatar
+              trigger: { global: 'phaseBefore' },
               forced: true,
               priority: 100,
               unique: true,
               popup: false,
               silent: true,
               filter: function (event, player) {
-                return get.config('double_character'); // || lib.config.mode == 'guozhan';
+                return game.phaseNumber == 0 && get.config('double_character'); // || lib.config.mode == 'guozhan';
               },
               content: function () {
                 "step 0"
@@ -5841,16 +5844,16 @@ const b = 1;
                 if (result.bool) {
                   var list = [];
                   for (var name of lib.inpile) {
-                    if (name == 'sha') {
-                      if (lib.filter.cardEnabled({ name: name }, player)) list.push(['基本', '', 'sha']);
-                      if (lib.filter.cardEnabled({ name: name, nature: 'fire' }, player)) list.push(['基本', '', 'sha', 'fire']);
-                      if (lib.filter.cardEnabled({ name: name, nature: 'thunder' }, player)) list.push(['基本', '', 'sha', 'thunder']);
-                      if ((get.mode() != 'guozhan' || _status.mode == 'yingbian')
-                        && lib.filter.cardEnabled({ name: name, nature: 'ice' }, player))
-                        list.push(['基本', '', 'sha', 'ice']);
+                    var type = get.type(name);
+                    if (lib.filter.cardEnabled({ name: name }, player)) {
+                      list.push([type, '', name]);
                     }
-                    else if (get.type(name) == 'trick' && lib.filter.cardEnabled({ name: name }, player)) list.push(['锦囊', '', name]);
-                    else if (get.type(name) == 'basic' && lib.filter.cardEnabled({ name: name }, player)) list.push(['基本', '', name]);
+                    if (name == 'sha') {
+                      for (var j of lib.inpile_nature) {
+                        if (lib.filter.cardEnabled({ name: name, nature: j }, player))
+                          list.push([type, '', name, j]);
+                      }
+                    }
                   }
                   var dialog = ui.create.dialog('蛊惑', [list, 'vcard']);
                   var next = player.chooseButton(dialog);
@@ -6989,8 +6992,9 @@ const b = 1;
                 return get.type(event.card) == 'trick' || event.card.name == 'sha';
               },
               check: function (event, player) {
+                if (event.card.name == 'tiesuo') return false;
                 var target = event.target;
-                var effect = get.effect(target, { name: 'tiesuo' }, player, player);
+                var effect = 0.5 * get.effect(target, { name: 'tiesuo' }, player, player);
                 if (player.hasSkill('jlsg_huoshui')) {
                   effect += (target.isLinked() ? -0.8 : 0.8) *
                     get.effect(target, { name: 'shunshou' }, player, player);
@@ -6999,7 +7003,7 @@ const b = 1;
                 }
                 if (target.isLinked() && !target.hasSkillTag('noturn')) {
                   effect += get.attitude(player, target) * (
-                    target.isTurnedOver() ? 6 : -6
+                    target.isTurnedOver() ? 8 : -8
                   );
                 }
                 return effect > 0;
@@ -12651,11 +12655,11 @@ const b = 1;
                   var newCardDiff = event.cards1
                     .filter(c => get.type(c) == type)
                     .reduce((a, b) => a - get.value(b, player) * Math.sign(get.attitude(target, player)) + get.value(b, target), 0);
-                    if (newCardDiff > cardDiff) {
-                      cardDiff = newCardDiff;
-                    }
+                  if (newCardDiff > cardDiff) {
+                    cardDiff = newCardDiff;
+                  }
                 }
-                
+
                 target.chooseToDiscard(dialog, function (card) {
                   let event = _status.event.getParent();
                   return !event.types.contains(get.type(card, 'trick'));
@@ -12978,7 +12982,7 @@ const b = 1;
                 for (var i of lib.inpile) {
                   if (get.type(i) != 'basic' || i == 'shan') continue;
                   if (event.filterCard({ name: i }, player, event)) return true;
-                  if (i == 'sha' && ['fire', 'thunder', 'ice'].some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
+                  if (i == 'sha' && lib.inpile_nature.some(nat => event.filterCard({ name: i, nature: nat }, player, event))) {
                     return true;
                   }
                 }
@@ -12993,9 +12997,7 @@ const b = 1;
                     if (type != 'basic') continue;
                     list.push([type, '', i]);
                     if (i == 'sha') {
-                      list.push([type, '', i, 'fire']);
-                      list.push([type, '', i, 'thunder']);
-                      list.push([type, '', i, 'ice']);
+                      for (var j of lib.inpile_nature) list.push([type, '', i, j]);
                     }
                   }
                   return ui.create.dialog('忠候', [list, 'vcard']);
@@ -14001,14 +14003,14 @@ const b = 1;
             },
             jlsg_qixing: {
               audio: "ext:极略:1",
-              trigger: { global: 'gameDrawAfter', player: 'phaseBegin' },
-              forced: true,
-              check: function (event, player) {
-                return player.hp <= 1;
+              trigger: {
+                global: 'phaseBefore',
+                player: 'enterGame'
               },
+              forced: true,
               marktext: '星',
               filter: function (event, player) {
-                return !player.storage.jlsg_qixing;
+                return !event.name != 'phase' || game.phaseNumber == 0;
               },
               content: function () {
                 "step 0"
@@ -15454,7 +15456,11 @@ const b = 1;
                   if (i == 'shan' || i == 'wuxie') continue;
                   var type = get.type(i);
                   if ((type == 'basic' || type == 'trick') && event.filterCard({ name: i }, player, event)) return true;
-                  if (i == 'sha' && (event.filterCard({ name: i, nature: 'ice' }, player, event) || event.filterCard({ name: i, nature: 'fire' }, player, event) || event.filterCard({ name: i, nature: 'thunder' }, player, event))) return true;
+                  if (i == 'sha') {
+                    for (var j of lib.inpile_nature) {
+                      if (event.filterCard({ name: i, nature: j }, player, event)) return true;
+                    }
+                  }
                 }
                 return false;
               },
@@ -15470,9 +15476,7 @@ const b = 1;
                       list1.push([type, '', i]);
                       if (event.filterCard({ name: i }, player, event)) list1Tag = true;
                       if (i == 'sha') {
-                        list1.push([type, '', i, 'fire']);
-                        list1.push([type, '', i, 'thunder']);
-                        list1.push([type, '', i, 'ice']);
+                        for (var j of lib.inpile_nature) list.push([type, '', i, j]);
                       }
                     }
                     if (type == 'trick') {
@@ -16403,11 +16407,11 @@ const b = 1;
               },
               ai: {
                 order: 10,
-                result:{
-                  target:-1.5
+                result: {
+                  target: -1.5
                 },
-                tag:{
-                  damage:1
+                tag: {
+                  damage: 1
                 },
               }
             },
@@ -18671,7 +18675,7 @@ const b = 1;
                 player.logSkill('jlsgqs_jinnangdai');
                 player.draw();
               },
-              ai:{
+              ai: {
                 equipValue: 6
               }
             },
@@ -19161,9 +19165,9 @@ const b = 1;
               discard: false,
               lose: true,
               check: function (card) {
-                var player=get.owner(card);
+                var player = get.owner(card);
                 return 6 - ai.get.value(card);
-                if(!ui.selected.cards.length && card.name=='du' 
+                if (!ui.selected.cards.length && card.name == 'du'
                   && game.hasPlayer(p => get.attitude(player, p) < 0 && !p.hasSkillTag('nodu'))) return 20;
                 return 8 - get.value(card);
               },
@@ -19176,15 +19180,15 @@ const b = 1;
                 expose: 0.1,
                 order: 8,
                 result: {
-                  target:function(player,target){
-                    if(target.hasSkillTag('nogain')) return 0;
-                    if(ui.selected.cards.length&&ui.selected.cards[0].name=='du'){
-                      if(target.hasSkillTag('nodu')) return 0;
+                  target: function (player, target) {
+                    if (target.hasSkillTag('nogain')) return 0;
+                    if (ui.selected.cards.length && ui.selected.cards[0].name == 'du') {
+                      if (target.hasSkillTag('nodu')) return 0;
                       return -10;
                     }
-                    if(target.hasJudge('lebu')) return 0;
-                    var nh=target.countCards('h');
-                    return Math.max(1,5-nh);
+                    if (target.hasJudge('lebu')) return 0;
+                    var nh = target.countCards('h');
+                    return Math.max(1, 5 - nh);
                   }
                 },
               }
@@ -19347,7 +19351,7 @@ const b = 1;
               }
             },
             jlsgqs_jinnangdai: {
-              equipSkill:true,
+              equipSkill: true,
               mod: {
                 maxHandcard: function (player, current) {
                   return current + 1;
@@ -20723,7 +20727,10 @@ Visit Repository</a><br>
 小提示：可以用极略内置的更新功能更新了<br>
 新QQ群：574935857<br>
 2021.11.13更新<br>
+&ensp; 接入无名杀游戏开始时机修改。修改SK左慈 千幻时机。<br>
+&ensp; 接入无名杀属性杀修改。<br>
 &ensp; 添加SK邹氏 同将替换。<br>
+&ensp; 优化Sk邹氏 娇媚 AI。<br>
 &ensp; 优化SR许褚 虎啸 AI。<br>
 &ensp; 优化SK田丰 UX。<br>
 <span style="font-size: large;">历史：</span><br>
