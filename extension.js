@@ -608,7 +608,7 @@ const b = 1;
             jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
             jlsgsk_zhugeguo: ["female", 'shu', 3, ["jlsg_yuhua", "jlsg_dengxian"], []],
             jlsgsk_xizhicai: ["male", 'wei', 3, ["jlsg_tiance", "jlsg_jiexin"], []],
-            jlsgsk_guansuo: ["male", 'shu', 3, ["jlsg_zhengnan", "jlsg_tongxin"], []],
+            jlsgsk_guansuo: ["male", 'shu', 4, ["jlsg_zhengnan", "jlsg_tongxin"], []],
             jlsgsk_baosanniang: ["male", 'shu', 3, ["jlsg_jianwu", "jlsg_zhennan", "jlsg_tongxin"], []],
           },
           characterIntro: {
@@ -21415,7 +21415,7 @@ Visit Repository</a><br>
 新QQ群：915469500<br>
 2022.02.15更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK关索</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK戏志才</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK鲍三娘</div><br>
 &ensp; 修复SK卞夫人 母仪 暗将触发。<br>
 &ensp; 修复部分获得牌的技能无法触发毒。<br>
 &ensp; 修复SR司马懿 鬼才 无法触发天妒。<br>
