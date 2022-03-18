@@ -217,6 +217,8 @@ const b = 1;
             'jlsgsoul_zhangliao',
             'jlsgsk_yuji',
             'jlsgsk_xizhicai',
+            'jlsgsk_dongbai',
+            'jlsgsk_xushi',
           ],
           a: [
             'jlsgsoul_zhouyu',
@@ -7871,7 +7873,7 @@ const b = 1;
                   if (cards.length > trigger.selectCard[0]) {
                     var card = cards.map((c, i) => [trigger.ai(c), i])
                       .sort((pair1, pair2) => pair1[0] - pair2[0])[1];
-                    evt.set('card', cards[card])
+                    trigger.set('card', cards[card])
                       .set('ai', function (card) {
                         return (card === _status.event.card ? 5 : 0) - get.useful(card);
                       });
@@ -21729,11 +21731,11 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.4.0318",
+      version: "2.4.0317",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-新QQ群：915469500<br>
+新QQ群：392224094<br>
 2022.03.18更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="metalmm">SK董白</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK徐氏</div><br>
