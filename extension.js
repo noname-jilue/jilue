@@ -4416,9 +4416,6 @@ const b = 1;
                   trigger.player.draw();
                 }
               },
-              init: function (player) {
-                player.getExpansions('jlsg_lirang') = [];
-              },
               intro:{
                 content:'expansion',
                 markcount:'expansion',
@@ -18069,7 +18066,7 @@ const b = 1;
                 _status.jlsg_luocha_list = [];
                 for (var c of _status.characterlist) {
                   _status.jlsg_luocha_list.addArray(
-                    lib.character[c][3].filter(s => lib.skill[s].shaRelated && lib.translate[s] && lib.translate[s + '_info'])
+                    lib.character[c][3].filter(s => lib.skill[s] && lib.skill[s].shaRelated && lib.translate[s] && lib.translate[s + '_info'])
                   );
                 }
               },
