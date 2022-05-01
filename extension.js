@@ -18069,7 +18069,7 @@ const b = 1;
                 _status.jlsg_luocha_list = [];
                 for (var c of _status.characterlist) {
                   _status.jlsg_luocha_list.addArray(
-                    lib.character[c][3].filter(s => lib.skill[s].shaRelated)
+                    lib.character[c][3].filter(s => lib.skill[s].shaRelated && lib.translate[s] && lib.translate[s + '_info'])
                   );
                 }
               },
@@ -18116,6 +18116,7 @@ const b = 1;
             jlsg_shajue: {
               audio: "ext:极略:2",
               enable: 'phaseUse',
+              usable: 1,
               filterTarget: lib.filter.notMe,
               precontent: function() {
                 player.loseHp();
@@ -18171,7 +18172,7 @@ const b = 1;
                   var skills = player.getSkills();
                   skills = skills.remove('jlsg_guiqu');
                   for (var s of skills) {
-                    if (!lib.translate[s]) {
+                    if (!lib.translate[s] || !lib.translate[s + '_info']) {
                       continue;
                     }
                     var td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
@@ -18209,7 +18210,7 @@ const b = 1;
               },
               mod:{
                 maxHandcard:function(player,num){
-                  return player.getSkills().length;
+                  return player.getSkills().filter(s => lib.translate[s] && lib.translate[s + '_info']).length;
                 }
               }
             },
