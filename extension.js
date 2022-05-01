@@ -18125,7 +18125,7 @@ const b = 1;
                 event.cards = new Set(player.getCards('h'));
                 "step 1"
                 var card = player.getCards('h', c => event.cards.has(c)).randomGet();
-                if (!card || target.isOut()) {
+                if (!card || !target.isIn()) {
                   event.finish();
                   return;
                 }
@@ -18158,7 +18158,7 @@ const b = 1;
                 return player.isDying() && player.canUse({name: 'tao', isCard: true}, player) && player.getSkills().length > 1;
               },
               hiddenCard:function(player,name){
-                return name === 'tao' && player.getSkills().length > 1;
+                return player.isDying() && name === 'tao' && player.getSkills().length > 1;
               },
               chooseButton: {
                 dialog:function(event,player) {
@@ -18171,6 +18171,9 @@ const b = 1;
                   var skills = player.getSkills();
                   skills = skills.remove('jlsg_guiqu');
                   for (var s of skills) {
+                    if (!lib.translate[s]) {
+                      continue;
+                    }
                     var td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
                     td.innerHTML='<span>'+(lib.translate[s])+'</span>';
                     td.link=s;
