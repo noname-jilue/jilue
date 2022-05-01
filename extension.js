@@ -1296,7 +1296,7 @@ const b = 1;
               audio: "ext:极略:1",
               trigger: {
                 player: 'loseAfter',
-                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               direct: true,
               filter: function (event, player) {
@@ -3540,7 +3540,7 @@ const b = 1;
             jlsg_muniu: {
               audio: "ext:极略:2",
               trigger: {
-                global: ['equipAfter', 'addJudgeAfter', 'loseAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['equipAfter', 'addJudgeAfter', 'loseAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               filter: function (event, player) {
                 if (_status.currentPhase != player) return false;
@@ -4386,15 +4386,15 @@ const b = 1;
               filter: function (event, player) {
                 if (event.player != player && !player.hasSkill('jlsg_lirang')) return false;
                 if (game.online) {
-                  return player.storage.jlsg_lirang.length < 4 && event.player.countCards('h');
+                  return player.getExpansions('jlsg_lirang').length < 4 && event.player.countCards('h');
                 }
-                var liSuits = player.storage.jlsg_lirang.map(c => get.suit(c));
+                var liSuits = player.getExpansions('jlsg_lirang').map(c => get.suit(c));
                 return event.player.countCards('h', c => !liSuits.contains(get.suit(c)));
               },
               direct: true,
               content: function () {
                 'step 0'
-                var liSuits = player.storage.jlsg_lirang.map(c => get.suit(c));
+                var liSuits = player.getExpansions('jlsg_lirang').map(c => get.suit(c));
                 var next = trigger.player.chooseCard(get.prompt('jlsg_lirang', player, trigger.player));
                 next.filterCard = function (card) {
                   return !liSuits.contains(get.suit(card));
@@ -4412,20 +4412,20 @@ const b = 1;
                 'step 1'
                 if (result.bool) {
                   player.logSkill('jlsg_lirang', trigger.player);
-                  trigger.player.$give(result.cards.length, player, false);
-                  trigger.player.lose(result.cards, ui.special, 'toStorage');
-                  player.storage.jlsg_lirang = player.storage.jlsg_lirang.concat(result.cards);
-                  player.markSkill('jlsg_lirang');
-                  player.syncStorage('jlsg_lirang');
-                  // player.updateMarks('jlsg_lirang');
+                  player.addToExpansion(result.cards,trigger.player,'give').gaintag.add(event.name);
                   trigger.player.draw();
                 }
               },
               init: function (player) {
-                player.storage.jlsg_lirang = [];
+                player.getExpansions('jlsg_lirang') = [];
               },
-              intro: {
-                content: 'cards'
+              intro:{
+                content:'expansion',
+                markcount:'expansion',
+              },
+              onremove:function(player,skill){
+                var cards=player.getExpansions(skill);
+                if(cards.length) player.loseToDiscardpile(cards);
               },
               group: ['jlsg_lirang2'],
               ai: {
@@ -4435,11 +4435,11 @@ const b = 1;
             jlsg_lirang2: {
               enable: 'chooseToUse',
               filter: function (event, player) {
-                return player.storage.jlsg_lirang.length >= 2 && event.filterCard({ name: 'tao' }, player, event);
+                return player.getExpansions('jlsg_lirang').length >= 2 && event.filterCard({ name: 'tao' }, player, event);
               },
               chooseButton: {
                 dialog: function (event, player) {
-                  return ui.create.dialog('礼让', player.storage.jlsg_lirang, 'hidden');
+                  return ui.create.dialog('礼让', player.getExpansions('jlsg_lirang'), 'hidden');
                 },
                 select: 2,
                 backup: function (links, player) {
@@ -4451,7 +4451,7 @@ const b = 1;
                     cards: links,
                     onuse: function (result, player) {
                       result.cards = lib.skill[result.skill].cards;
-                      player.storage.jlsg_lirang.remove(result.cards);
+                      player.getExpansions('jlsg_lirang').remove(result.cards);
                       player.syncStorage('jlsg_lirang');
                       player.markAuto('jlsg_lirang2')
                       // player.logSkill('jlsg_lirang2',result.targets);
@@ -4486,7 +4486,7 @@ const b = 1;
                 return 0;
               },
               filter: function (event, player) {
-                if (player.storage.jlsg_lirang.length < 2) return false;
+                if (player.getExpansions('jlsg_lirang').length < 2) return false;
                 if (event.type == 'dying') {
                   return event.filterCard({ name: 'tao' }, player);
                 }
@@ -4505,7 +4505,7 @@ const b = 1;
               selectTarget: -1,
               chooseButton: {
                 dialog: function (event, player) {
-                  return ui.create.dialog('礼让', player.storage.jlsg_lirang, 'hidden');
+                  return ui.create.dialog('礼让', player.getExpansions('jlsg_lirang'), 'hidden');
                 },
                 select: 2,
                 check: function (event, player) {
@@ -4523,9 +4523,9 @@ const b = 1;
                     onuse: function (result, player) {
                       result.cards = lib.skill.jlsg_lirang2_backup.cards;
                       var cards = result.cards;
-                      player.storage.jlsg_lirang.remove(cards);
+                      player.getExpansions('jlsg_lirang').remove(cards);
                       player.syncStorage('jlsg_lirang');
-                      if (!player.storage.jlsg_lirang.length) {
+                      if (!player.getExpansions('jlsg_lirang').length) {
                         player.unmarkSkill('jlsg_lirang');
                       } else {
                         player.markSkill('jlsg_lirang');
@@ -7161,7 +7161,7 @@ const b = 1;
               audio: "ext:极略:2",
               trigger: {
                 player: 'loseAfter',
-                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               usable: 1,
               // frequent: true,
@@ -7203,7 +7203,7 @@ const b = 1;
               audio: "ext:极略:1",
               direct: true,
               trigger: {
-                global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               filter: function (event, player) {
                 if (_status.currentPhase != player || !player.countCards('h')) return false;
@@ -12118,7 +12118,7 @@ const b = 1;
               frequent: true,
               trigger: {
                 player: 'loseAfter',
-                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               filter: function (event, player) {
                 if (player.countCards('h')) return false;
@@ -16977,7 +16977,7 @@ const b = 1;
                 return get.attitude(player, event.player) > 0;
               },
               trigger: {
-                global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               direct: true,
               filter: function (event, player) {
@@ -17972,7 +17972,7 @@ const b = 1;
                 gain: {
                   audio: "jlsg_qianqi",
                   trigger: {
-                    global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter'],
+                    global: ['loseAfter', 'equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
                   },
                   forced: true,
                   filter: function (event, player) {
@@ -18156,7 +18156,7 @@ const b = 1;
               unique: true,
               enable:'chooseToUse',
               filter: function(event, player) {
-                return player.isDying() && player.canUse({name: 'tao', isCard: true}, player) && player.getSkills().length > 1;
+                return player.isDying() && event.filterCard({ name: 'tao' }, player, event) && player.getSkills().length > 1;
               },
               hiddenCard:function(player,name){
                 return player.isDying() && name === 'tao' && player.getSkills().length > 1;
@@ -18169,7 +18169,7 @@ const b = 1;
                   table.style.margin='0';
                   table.style.width='100%';
                   table.style.position='relative';
-                  var skills = player.skills.clone();
+                  var skills = player.skills.slice();
                   skills = skills.remove('jlsg_guiqu');
                   for (var s of skills) {
                     if (!lib.translate[s] || !lib.translate[s + '_info']) {
