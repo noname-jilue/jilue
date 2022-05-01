@@ -18169,7 +18169,7 @@ const b = 1;
                   table.style.margin='0';
                   table.style.width='100%';
                   table.style.position='relative';
-                  var skills = player.getSkills();
+                  var skills = player.skills.clone();
                   skills = skills.remove('jlsg_guiqu');
                   for (var s of skills) {
                     if (!lib.translate[s] || !lib.translate[s + '_info']) {
@@ -18210,7 +18210,7 @@ const b = 1;
               },
               mod:{
                 maxHandcard:function(player,num){
-                  return player.getSkills().filter(s => lib.translate[s] && lib.translate[s + '_info']).length;
+                  return player.skills.filter(s => lib.translate[s] && lib.translate[s + '_info']).length;
                 }
               }
             },
