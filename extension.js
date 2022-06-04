@@ -8181,7 +8181,7 @@ const b = 1;
                   return;
                 }
                 event.card = { name: result.links[0][2], nature: result.links[0][3] };
-                player.chooseUseTarget(event.card, true, false, 'nodistance');
+                player.chooseUseTarget(event.card, true, 'nodistance');
               },
               ai: {
                 result: {
@@ -8491,7 +8491,7 @@ const b = 1;
             jlsg_jijun: '集军',
             jlsg_jijun_info: '出牌阶段限一次，你可以将任意张不同花色的手牌置于武将牌上，称为「兵」,然后获得其中其余与你本次放入的牌同花色的牌，并可视为使用一张基本牌（无距离和次数限制）。',
             jlsg_fangtong: '方统',
-            jlsg_fangtong_info: '锁定技，若你的「兵」的点数之和不小于：9，你拥有技能〖雷击〗；18，你拥有技能〖咒缚〗；27，你拥有技能〖神道〗；9，你拥有技能〖变天〗。结束阶段，你将手牌数补至X张（X为你因〖方统〗激活的技能数）',
+            jlsg_fangtong_info: '锁定技，若你的「兵」的点数之和不小于：9，你拥有技能〖雷击〗；18，你拥有技能〖咒缚〗；27，你拥有技能〖神道〗；36，你拥有技能〖变天〗。结束阶段，你将手牌数补至X张（X为你因〖方统〗激活的技能数）',
 
             jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
             jlsg_huoshui_info: '回合结束阶段，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
@@ -16282,30 +16282,28 @@ const b = 1;
                 "step 2"
                 if (result.bool) {
                   event.cardx = result.cards[0] || result.links[0];
-                  player.respond(event.cardx, 'highlight', 'noOrdering');
+                  if (event.target != player) {
+                    event.target.$throw(event.cardx);
+                    event.target.lose(event.cardx, ui.ordering, 'visible').relatedEvent = trigger;
+                    game.broadcastAll(function(card){
+                      if(card.clone){
+                        card.clone.classList.add('thrownhighlight');
+                      }
+                    },event.cardx);
+                  } else {
+                    player.respond(event.cardx, 'highlight', event.name, 'noOrdering');
+                  }
                 } else {
                   event.finish();
                 }
                 "step 3"
-                if (result.bool) {
-                  player.logSkill('jlsg_old_shendao', event.target);
-                  if (trigger.player.judging[0].clone) {
-                    trigger.player.judging[0].clone.classList.remove('thrownhighlight');
-                    game.broadcast(function (card) {
-                      if (card.clone) {
-                        card.clone.classList.remove('thrownhighlight');
-                      }
-                    }, trigger.player.judging[0]);
-                    game.addVideo('deletenode', player, get.cardsInfo([trigger.player.judging[0].clone]));
-                  }
-                  ui.discardPile.appendChild(trigger.player.judging[0]);
-                  trigger.player.judging[0] = event.cardx;
-                  if (!get.owner(event.cardx, 'judge')) {
-                    trigger.position.appendChild(event.cardx);
-                  }
-                  game.log(trigger.player, '的判定牌改为', event.cardx);
-                  game.delay(2);
-                }
+                player.logSkill(event.name, event.target);
+                player.gain(trigger.player.judging[0], 'gain2');
+                trigger.player.judging[0] = event.cardx;
+                trigger.orderingCards.add(event.cardx);
+                game.log(trigger.player, '的判定牌改为', event.cardx);
+                "step 4"
+                game.delayx(2);
               },
               ai: {
                 tag: {
@@ -18340,7 +18338,7 @@ const b = 1;
             jlsg_mod_dianjie_info: '你的回合外，当你使用或打出一张【闪】后，或你主动跳过出牌阶段后：你可以进行一次判定，若为黑色，你对一名角色造成1点雷电伤害；若为红色，你可以令一至二名未横置的角色横置。',
             jlsg_dianjie_info: '你可以跳过你的摸牌阶段或出牌阶段，然后判定：若结果为黑色，你对一名角色造成2点雷电伤害；若结果为红色，你令至多两名武将牌未横置的角色将其武将牌横置。',
             jlsg_mod_shendao_info: '锁定技，对一名角色的判定牌生效前，你亮出牌堆顶的两张牌，选择其中一张直接代替之，若不是你的回合，你将另一种牌收入手牌。',
-            jlsg_shendao_info: '一名角色的判定牌生效前，你可以用一张手牌或场上的牌代替之',
+            jlsg_shendao_info: '一名角色的判定牌生效前，你可以打出一张手牌或用场上的牌代替之，然后获得原判定牌。',
             jlsg_leihun_info: '锁定技，你受到的雷电伤害均视为体力恢复。',
             jlsg_shelie_info: '锁定技，摸牌阶段开始时，你跳过之，改为选择指定获得某种类型的牌（最多四次），然后从牌堆随机摸取之。',
             jlsg_gongxin_info: '出牌阶段限一次，你可以观看一次任意一名角色的手牌并展示其中所有的红桃牌，然后若展示的牌数：为一，你弃置之并对其造成一点伤害；大于一，你获得其中一张红桃牌。',
@@ -22072,13 +22070,14 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.4.0514",
+      version: "2.4.0604",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 新QQ群：392224094<br>
-2022.05.14更新<br>
+2022.06.04更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="metalmm">SK张梁</div><br>
+&ensp; 修改SK神张角 神道<br>
 &ensp; 修复SK神诸葛亮 狂风<br>
 &ensp; 修复SK王异 贞烈<br>
 &ensp; 优化SK吴懿 制敌 UX<br>
