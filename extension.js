@@ -22841,6 +22841,7 @@ Visit Repository</a><br>
 新QQ群：392224094<br>
 2022.07.24更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK孙休</div><br>
+&ensp; 大幅优化了诸多新武将的立绘清晰度<br>
 &ensp; 修复SK孙策 威风 优化AI<br>
 &ensp; 优化SK神司马徽 知天 AI<br>
 <span style="font-size: large;">历史：</span><br>
