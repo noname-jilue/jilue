@@ -2803,10 +2803,11 @@ const b = 1;
                 'step 0'
                 target.addTempSkill('jlsg_shejian2');
                 player.discardPlayerCard('he', target, true);
+                'step 1'
                 target.chooseBool('是否对' + get.translation(player) + '使用一张【杀】？').ai = function (event, player) {
                   return get.effect(player, { name: 'sha' }, target, target) + 3;
                 }
-                'step 1'
+                'step 2'
                 if (result.bool) {
                   target.useCard({ name: 'sha' }, player, false);
                 }
@@ -2864,13 +2865,15 @@ const b = 1;
                     var targetHEValue = coeff * event.target.getCards('h').reduce((a, b) => a + get.value(b, event.target), 0)
                       + event.target.getCards('e').reduce((a, b) => a + get.value(b, event.target), 0);
                     var playerHEValue = player.getCards('he').reduce((a, b) => a + get.value(b, player), 0);
-                    return (coeff * targetHEValue * get.attitude(player, event.target)
-                      - targetHEValue * get.attitude(player, player) > 0)
-                      ? prompt[0] : 'cancel2';
+                    debugger;
+                    return (- coeff * targetHEValue * get.attitude(player, event.target)
+                      - playerHEValue * get.attitude(player, player) > 0)
+                      ? event.prompts.indexOf(0) : 'cancel2';
                   }
                 };
                 player.chooseControlList(event.prompts.map(n => prompts[n]), ai, get.prompt(event.name, event.target));
                 'step 1'
+                debugger;
                 if (result.control == 'cancel2') {
                   event.finish();
                   return;
@@ -17957,7 +17960,7 @@ const b = 1;
                   list2.add(players[i].name1);
                   list2.add(players[i].name2);
                 }
-
+                var currentSkills = game.expandSkills(player.getSkills());
                 for (var i in lib.character) {
                   if (lib.character[i][4].contains('boss')) continue;
                   if (lib.character[i][4].contains('minskin')) continue;
@@ -17966,6 +17969,12 @@ const b = 1;
                   if (lib.character[i][4].contains('stonehidden')) continue;
                   if (list2.contains(i)) continue;
                   for (var j = 0; j < lib.character[i][3].length; j++) {
+                    if (!lib.translate[lib.character[i][3][j] + "_info"]) {
+                      continue;
+                    }
+                    if (currentSkills.contains(lib.character[i][3][j])) {
+                      continue;
+                    }
                     var info = lib.skill[lib.character[i][3][j]];
 
                     if (info && (info.gainable || !info.unique) && !info.zhuSkill && !info.juexingji && !info.limited) {
@@ -22843,6 +22852,7 @@ Visit Repository</a><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK孙休</div><br>
 &ensp; 大幅优化了诸多新武将的立绘清晰度<br>
 &ensp; 修复SK孙策 威风 优化AI<br>
+&ensp; 修复SK祢衡 狂傲 修复AI<br>
 &ensp; 优化SK神司马徽 知天 AI<br>
 <span style="font-size: large;">历史：</span><br>
 2022.07.24更新<br>
