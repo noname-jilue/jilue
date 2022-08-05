@@ -22843,12 +22843,12 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.4.0724",
+      version: "2.4.0805",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 新QQ群：392224094<br>
-2022.07.24更新<br>
+2022.08.05更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK孙休</div><br>
 &ensp; 大幅优化了诸多新武将的立绘清晰度<br>
 &ensp; 修复SK孙策 威风 优化AI<br>
