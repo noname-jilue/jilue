@@ -197,6 +197,7 @@ const b = 1;
             'jlsgsk_caiwenji',
             'jlsgsoul_ganning',
             'jlsgsoul_sp_lvbu',
+            'jlsgsoul_xiahoudun',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -223,6 +224,7 @@ const b = 1;
             'jlsgsk_xushi',
             'jlsgsk_caorui',
             'jlsgsk_sunxiu',
+            'jlsgsk_zhangrang',
           ],
           a: [
             'jlsgsoul_zhouyu',
@@ -245,7 +247,6 @@ const b = 1;
             'jlsgsoul_zhangjiao',
             'jlsgsk_zuoci',
             'jlsgsoul_lvbu',
-            'jlsgsoul_xiahoudun',
             'jlsgsr_zhugeliang',
             'jlsgsr_zhangliao',
             'jlsgsr_liubei',
@@ -370,6 +371,7 @@ const b = 1;
               'jlsgsk_baosanniang',
               'jlsgsk_dongbai',
               'jlsgsk_sunxiu',
+              'jlsgsk_zhangrang',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -525,6 +527,7 @@ const b = 1;
       if (config.oldCharacterReplace) {
         lib.jlsgsoul_zhangliao[3] = ['jlsg_old_nizhan', 'jlsg_old_cuifeng', 'jlsg_old_weizhen'];
         lib.jlsgsoul_ganning[3] = ['jlsg_old_lvezhen', 'jlsg_old_youlong'];
+        lib.jlsgsoul_xiahoudun[3] = ['jlsg_old_danjing', 'jlsg_old_zhonghun'];
       }
       console.timeEnd(_status.extension);
     },
@@ -542,7 +545,7 @@ const b = 1;
           characterSort: {
             jlsg_sk: {
               jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue', 'jlsgsk_yuji',
-                'jlsgsk_panshu',],
+                'jlsgsk_panshu', 'jlsgsk_zhangrang'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng',
                 'jlsgsk_zhoufei', 'jlsgsk_liuchen'],
@@ -647,6 +650,7 @@ const b = 1;
             jlsgsk_caorui: ["male", 'wei', 3, ["jlsg_huituo", "jlsg_xingshuai"], []],
             jlsgsk_liuchen: ["male", 'shu', 4, ["jlsg_zhanjue"], []],
             jlsgsk_sunxiu: ["male", 'wu', 3, ["jlsg_yanzhu", "jlsg_xingxue"], []],
+            jlsgsk_zhangrang: ["male", 'qun', 3, ["jlsg_taoluan"], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -2316,7 +2320,7 @@ const b = 1;
                   switch (_status.event.discardNum) {
                     case 0:
                     case 1:
-                      att1 *= 2;
+                      att1 *= 2.5;
                       att2 = 0;
                       break;
                     case 2:
@@ -6282,6 +6286,10 @@ const b = 1;
               },
               content: function () {
                 'step 0'
+                if (trigger.player.ai.shown > player.ai.shown) {
+                  player.addExpose(0.3);
+                }
+                'step 1'
                 var isLess = !(ui.discardPile.hasChildNodes() == false) && !game.hasPlayer(function (target) {
                   return trigger.player.countCards('h') > target.countCards('h');
                 });
@@ -7103,7 +7111,7 @@ const b = 1;
               },
               content: function () {
                 'step 0'
-                if (target.ai.shown > player.ai.shown) {
+                if (trigger.target.ai.shown > player.ai.shown) {
                   player.addExpose(0.3);
                 }
                 player.loseHp();
@@ -8063,6 +8071,9 @@ const b = 1;
               trigger: {
                 source: "damageSource",
               },
+              filter: function (event, player) {
+                return event.card && event.card.name == 'sha';
+              },
               content: function () {
                 player.draw();
               }
@@ -8717,11 +8728,11 @@ const b = 1;
               content: function () {
                 'step 0'
                 player.chooseTarget(get.prompt2(event.name))
-                .set('ai', function(target) {
-                  var player = _status.event.player;
-                  return get.attitude(player, target) * (Math.min(target.maxHp, target.countCards('h') + target.countMark('jlsg_yanzhu')) - target.countCards('h'))
-                   + get.attitude(player, player) * Math.max(0, target.countCards('h') + target.countMark('jlsg_yanzhu') - target.maxHp);
-                });
+                  .set('ai', function (target) {
+                    var player = _status.event.player;
+                    return get.attitude(player, target) * (Math.min(target.maxHp, target.countCards('h') + target.countMark('jlsg_yanzhu')) - target.countCards('h'))
+                      + get.attitude(player, player) * Math.max(0, target.countCards('h') + target.countMark('jlsg_yanzhu') - target.maxHp);
+                  });
                 'step 1'
                 if (!result.bool) {
                   event.finish();
@@ -8736,12 +8747,16 @@ const b = 1;
                 target.draw(player, target.countMark('jlsg_yanzhu'));
                 'step 2'
                 if (target.countCards('h') > target.maxHp) {
-                  target.chooseCard(target.countCards('h') - target.maxHp, true)
-                    .set('ai', function(card) {
+                  if (target == player) {
+                    event.goto(4);
+                    return;
+                  }
+                  target.chooseCard(`请选择手牌交给${get.translation(player)}`, target.countCards('h') - target.maxHp, true)
+                    .set('ai', function (card) {
                       var player = _status.event.player, target = _status.event.target;
                       return -get.value(card, player) * get.attitude(player, player)
-                       + get.value(card, target) * get.attitude(player, target);
-                  }).set('target', player)
+                        + get.value(card, target) * get.attitude(player, target);
+                    }).set('target', player)
                 } else {
                   target.removeMark('jlsg_yanzhu', Infinity)
                   event.finish();
@@ -8752,7 +8767,120 @@ const b = 1;
                 }
                 'step 4'
                 target.removeMark('jlsg_yanzhu', Infinity)
-              
+
+              },
+            },
+            jlsg_taoluan: {
+              audio: "ext:极略:2",
+              trigger: {
+                global: 'useCardToPlayered',
+              },
+              init: function (player) {
+                player.storage.jlsg_taoluan = [];
+              },
+              intro: {
+
+              },
+              filter: function (event, player) {
+                if (!event.isFirstTarget) {
+                  return false;
+                }
+                if (game.countPlayer(p => p.isDying())) {
+                  return false;
+                }
+                var type = get.type(event.card);
+                if (!['basic', 'trick'].contains(type)) {
+                  return false;
+                }
+                if (lib.card[event.card.name].notarget) {
+                  return false;
+                }
+                if (!player.countDiscardableCards(player, 'he')) {
+                  return false;
+                }
+                return lib.skill.jlsg_taoluan.getPile(player, type);
+              },
+              direct: true,
+              content: function (event, player) {
+                'step 0'
+                var maxEffect = -Infinity, maxCardName = null;
+                {
+                  var type = get.type(trigger.card);
+                  for (let cardName of lib.skill.jlsg_taoluan.getPile(player, type)) {
+                    let card = { ...trigger.card, name: cardName };
+                    let effect = 0;
+                    for (let t of trigger.targets) {
+                      // ai is so stupid
+                      if (t == trigger.player && cardName == 'shunshou') {
+                        continue;
+                      }
+                      if (t.isHealthy() && cardName == 'tao') {
+                        continue;
+                      }
+                      effect += get.effect(t, card, trigger.player, player);
+                    }
+                    if (effect > maxEffect) {
+                      maxEffect = effect;
+                      maxCardName = cardName;
+                    }
+                  }
+                  for (let t of trigger.targets) {
+                    maxEffect -= get.effect(t, trigger.card, trigger.player, player);
+                  }
+                }
+                // console.log(maxEffect, trigger.card.name, maxCardName);
+                var prompt = `###${get.prompt(event.name, trigger.player)}###${get.translation(trigger.player)}对${trigger.targets.map(p => get.translation(p)).join('、')}使用了${lib.translate[trigger.card.name]}`;
+                player.chooseToDiscard('he', get.prompt2(event.name, trigger.player))
+                  .set("ai", function (card) {
+                    return _status.event.effect - get.value(card) * 2 - 2;
+                  })
+                  .set('effect', maxEffect)
+                  .set('logSkill', [event.name, trigger.player]);
+                event.maxCardName = maxCardName;
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                for (let p of trigger.targets) {
+                  if (p.ai.shown > player.ai.shown) {
+                    player.addExpose(0.15);
+                  }
+                }
+                var type = get.type2(trigger.card);
+                var dialog = lib.skill.jlsg_taoluan.getPile(player, type);
+                dialog = dialog.map(i => [type, '', i]);
+                dialog = ui.create.dialog('蛊惑', [dialog, 'vcard']);
+                player.chooseButton(dialog, true).set("ai", function (button) {
+                  return button.link[2] == _status.event.choice;
+                }).set('choice', event.maxCardName);
+                'step 2'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                var name = result.links[0][2];
+                player.popup(name);
+                game.log(player, "将", trigger.card, "改为", { ...trigger.card, name });
+                trigger.card.name = name;
+                player.addTempSkill('jlsg_taoluan2', 'roundStart');
+                player.markAuto('jlsg_taoluan2', [name]);
+              },
+              getPile(player, type) {
+                return lib.inpile
+                  .filter(c => type == get.type(c) &&
+                    !lib.card[c].complexSelect &&
+                    !lib.card[c].notarget &&
+                    !player.getStorage('jlsg_taoluan2').includes(c)
+                  );
+              },
+            },
+            jlsg_taoluan2: {
+              onremove: true,
+              intro: {
+                content: function (storage, player, skill) {
+                  return '本轮声明了' + storage.reduce((a, b) => a + ' ' + get.translation(b), '');
+                },
               },
             },
           },
@@ -8834,6 +8962,7 @@ const b = 1;
             jlsgsk_caorui: 'SK曹叡',
             jlsgsk_liuchen: 'SK刘谌',
             jlsgsk_sunxiu: 'SK孙休',
+            jlsgsk_zhangrang: 'SK张让',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -9003,14 +9132,17 @@ const b = 1;
             jlsg_yuyou_info: '锁定技，你一次获得至少两张牌后，你须选择保留其中一张并弃置其余的牌，然后你可以令一名男性角色选择一项：1.弃置等量的牌；2.失去一点体力。',
             jlsg_huituo: '恢拓',
             jlsg_huituo_info: '准备阶段，你可以选择一名角色并选择一项：1.令其回复体力至唯一最多；2.令其摸牌至唯一最多；3.令其从弃牌堆或牌堆随机选择装备并依次使用，直到装备区没有空位；4.令其获得〖恢拓〗。每项限一次。',
+            jlsg_xingshuai: '兴衰',
+            jlsg_xingshuai_info: '你受到其他角色造成的伤害后，可以令一名其他角色选择一项：1.翻面；2.令你与此回合结束后执行一个额外的回合。',
             jlsg_zhanjue: '战绝',
             jlsg_zhanjue_info: '出牌阶段，你可以将所有手牌当作【决斗】使用。此【决斗】结算后，你与以此法受到伤害的角色各摸一张牌。若你在同一阶段内以此法摸了两张或更多的牌，则此技能失效直到回合结束。当你失去一个区域内所有牌后，可以对一名角色造成1点伤害。',
             jlsg_yanzhu: '宴诛',
             jlsg_yanzhu_info: '出牌阶段限三次，你可以令一名角色获得一枚“宴诛”标记，然后若其拥有的标记数为：1，你令其摸X张牌；2，你令其弃置X张牌；3，你对其造成X点伤害。（X为与其拥有标记数相同的角色数量）',
             jlsg_xingxue: '兴学',
             jlsg_xingxue_info: '回合结束阶段，你可以令一名角色摸等同于其拥有“宴诛”标记数的牌，然后其将超出体力上限的牌交给你，并弃置其所有“宴诛”标记。',
-            jlsg_xingshuai: '兴衰',
-            jlsg_xingshuai_info: '你受到其他角色造成的伤害后，可以令一名其他角色选择一项：1.翻面；2.令你与此回合结束后执行一个额外的回合。',
+            jlsg_taoluan: '滔乱',
+            jlsg_taoluan2: '滔乱',
+            jlsg_taoluan_info: '一名角色使用基本牌或非延时锦囊牌指定目标后（濒死状态除外），你可以弃置一张牌，令其使用的牌名改为由你指定的另一张同类型的牌，每轮每种牌名限一次。',
             jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
             jlsg_huoshui_info: '回合结束阶段，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
@@ -10935,9 +11067,6 @@ const b = 1;
               srlose: true,
               enable: 'phaseUse',
               usable: 1,
-              filter: function (event, player) {
-                return player.countCards('h') > 0;
-              },
               filterTarget: function (card, player, target) {
                 if (!target.hasSex('male')) return false;
                 return target.countCards('h') && player != target;
@@ -17667,7 +17796,7 @@ const b = 1;
               marktext: '缘',
               trigger: { global: 'phaseEnd' },
               filter: function (event, player) {
-                return event.player.hasSkill('jlsg_liangyuan');
+                return event.player.hasSkill('jlsg_liangyuan') && event.getParent().name == "phaseLoop";
               },
               forced: true,
               content: function () {
@@ -17927,8 +18056,7 @@ const b = 1;
                 nodamage: true,
                 effect: {
                   target: function (card, player, target, current) {
-                    if (get.tag(card, 'damage')) return [0, 0.5];
-                    return [1, 0.5];
+                    if (get.tag(card, 'damage')) return [0, 0.3];
                     // if (target.countCards('h') < target.maxHp) return [0, 2];
                   }
                 },
@@ -17962,11 +18090,8 @@ const b = 1;
                 }
                 var currentSkills = game.expandSkills(player.getSkills());
                 for (var i in lib.character) {
-                  if (lib.character[i][4].contains('boss')) continue;
-                  if (lib.character[i][4].contains('minskin')) continue;
-                  if (lib.character[i][4].contains('hiddenboss')) continue;
-                  if (lib.character[i][4].contains('Unaffected')) continue;
-                  if (lib.character[i][4].contains('stonehidden')) continue;
+                  if (lib.filter.characterDisabled2(i)) continue;
+                  if (lib.filter.characterDisabled(i)) continue;
                   if (list2.contains(i)) continue;
                   for (var j = 0; j < lib.character[i][3].length; j++) {
                     if (!lib.translate[lib.character[i][3][j] + "_info"]) {
@@ -18277,7 +18402,7 @@ const b = 1;
                 order: 9.5,
               }
             },
-            jlsg_danjing: {
+            jlsg_old_danjing: {
               audio: "ext:极略:2",
               enable: 'phaseUse',
               usable: 1,
@@ -18293,12 +18418,12 @@ const b = 1;
                 };
                 'step 1'
                 if (result.control == '令其摸三张牌') {
-                  player.logSkill('jlsg_danjing1');
+                  player.logSkill('jlsg_old_danjing1');
                   player.loseHp();
                   target.draw(3);
                 }
                 else {
-                  player.logSkill('jlsg_danjing2');
+                  player.logSkill('jlsg_old_danjing2');
                   player.loseHp();
                   target.chooseToDiscard(3, 'he', true);
                 }
@@ -18318,15 +18443,15 @@ const b = 1;
                 }
               }
             },
-            jlsg_danjing1: {
+            jlsg_old_danjing1: {
               unique: true,
               audio: "ext:极略:true"
             },
-            jlsg_danjing2: {
+            jlsg_old_danjing2: {
               unique: true,
               audio: "ext:极略:true"
             },
-            jlsg_zhonghun: {
+            jlsg_old_zhonghun: {
               unique: true,
               limited: true,
               audio: "ext:极略:2",
@@ -18341,13 +18466,18 @@ const b = 1;
                 };
                 'step 1'
                 if (result.bool) {
-                  player.logSkill('jlsg_zhonghun', result.targets);
-                  for (var i = 0; i < player.skills.length; i++) {
-                    result.targets[0].addSkill(player.skills[i]);
+                  player.logSkill('jlsg_old_zhonghun', result.targets);
+                  var skills = player.getSkills(null, false, false).filter(function (i) {
+                    var info = get.info(i);
+                    return info && !info.charlotte;
+                  });
+                  for (var i = 0; i < skills; i++) {
+                    result.targets[0].addSkillLog(player.skills[i]);
                   }
                 }
               }
             },
+
             jlsg_qinyin: {
               audio: "ext:极略:2",
               direct: true,
@@ -18913,6 +19043,148 @@ const b = 1;
                 trigger.next.push(next);
               },
             },
+            jlsg_danjing: {
+              audio: "ext:极略:2",
+              trigger: {
+                player: [
+                  "damageEnd",
+                  "loseHpEnd",
+                  "loseMaxHpEnd",
+                  "discardEnd",
+                ],
+              },
+              direct: true,
+              content: function () {
+                'step 0'
+                player.chooseTarget(lib.filter.notMe).set("ai",
+                  function (target) {
+                    return -get.attitude(_status.event.player, target) + Math.random() - 0.5;
+                  },
+                );
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                var target = result.targets[0];
+                player.logSkill(event.name, target);
+                if (target.ai.shown > player.ai.shown) {
+                  player.addExpose(0.2);
+                }
+                switch (trigger.name) {
+                  case "damage":
+                    target.damage(trigger.num);
+                    break;
+                  case "loseHp":
+                    target.loseHp(trigger.num);
+                    break;
+                  case "loseMaxHp":
+                    target.loseMaxHp(trigger.num);
+                    break;
+                  case "discard":
+                    target.chooseToDiscard(true, trigger.cards.length);
+                    break;
+                }
+              },
+              ai:{
+                maixie_defend:true,
+              },
+            },
+            jlsg_zhonghun: {
+              audio: "ext:极略:2",
+              unique: true,
+              limited: true,
+              enable: "phaseUse",
+              skillAnimation: true,
+              animationColor: 'thunder',
+              filterTarget: lib.filter.notMe,
+              content() {
+                'step 0'
+                player.awakenSkill(event.name);
+                'step 1'
+                player.loseMaxHp();
+                target.gainMaxHp();
+                target.recover();
+                'step 2'
+                player.storage.jlsg_zhonghun2 = target;
+                player.addSkill("jlsg_zhonghun");
+              },
+              ai:{
+                order:3,
+                result:{
+                  player:function(player,target){
+                    if (['nei', 'rYe', 'bYe'].contains(player.identity)) {
+                      return -5;
+                    }
+                    return player.isHealthy() ? -1 : 0;
+                  },
+                  target:function(player,target){
+                    if(target.hp==1) return 5;
+                    if(target.hp==2) return 2;
+                    return 1;
+                  }
+                },
+                threaten:2
+              },
+              group: "jlsg_zhonghun3",
+            },
+            jlsg_zhonghun3: {
+              trigger:{
+                global:'phaseBefore',
+                player:'enterGame',
+              },
+              filter:function(event,player){
+                return (event.name!='phase'||game.phaseNumber==0);
+              },
+              direct: true,
+              content: function() {
+                'step 0'
+                player.chooseTarget(get.prompt2("jlsg_zhonghun"),lib.filter.notMe).set("ai",
+                  function (target) {
+                    return get.attitude(_status.event.player, target) - 10;
+                  }
+                );
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                player.addExpose(0.4);
+                player.useSkill("jlsg_zhonghun", result.targets);
+              },
+            },
+            jlsg_zhonghun2: {
+              audio: "jlsg_zhonghun",
+              intro: {
+                content: "player",
+              },
+              locked: true,
+              forced: false,
+              trigger: {
+                global: "damageBegin4",
+                player: "dieBegin",
+              },
+              filter: function (event, player) {
+                if (event.name == "damage") {
+                  return player.storage.jlsg_zhonghun2 == event.player;
+                } else {
+                  return player.storage.jlsg_zhonghun2;
+                }
+              },
+              content: function () {
+                if (trigger.name == "damage") {
+                  trigger.player = player;
+                } else {
+                  var skills = player.getSkills(null, false, false).filter(function (i) {
+                    var info = get.info(i);
+                    return info && !info.charlotte;
+                  });
+                  for (var s of skills) {
+                    trigger.player.addSkillLog(s);
+                  }
+                }
+              },
+            },
           },
           translate: {
             jlsg_soul: "魂烈包",
@@ -18957,6 +19229,16 @@ const b = 1;
             jlsg_youlong: '游龙',
             jlsg_youlong2: '游龙',
             jlsg_youlong_info: '锁定技，你始终背面朝上。其他角色的回合结束时，你摸一张牌并执行一个额外的出牌阶段。',
+            jlsg_danjing: "啖睛",
+            jlsg_danjing2: "啖睛",
+            jlsg_danjing3: "啖睛",
+            jlsg_danjing4: "啖睛",
+            jlsg_danjing5: "啖睛",
+            jlsg_danjing_info: "当你受到伤害后/失去体力后/扣减体力上限后/弃置牌后，你可以令一名其他角色也执行等量相同的效果。",
+            jlsg_zhonghun: "忠魂",
+            jlsg_zhonghun2: "忠魂",
+            jlsg_zhonghun3: "忠魂",
+            jlsg_zhonghun_info: "限定技，游戏开始时，或出牌阶段，你可以减1点体力上限并选择一名其他角色，令其加1点体力上限并回复1点体力。此后当其受到伤害时，若伤害来源不是你，将此伤害转移给你；你死亡时，其获得你的所有技能。",
             jlsg_qinyin: '琴音',
             jlsg_qinyin1: '琴音',
             jlsg_qinyin2: '琴音',
@@ -19042,12 +19324,12 @@ const b = 1;
             jlsg_chongsheng: '重生',
             jlsg_old_lvezhen: '掠阵',
             jlsg_old_youlong: '游龙',
-            jlsg_danjing: '啖睛',
-            jlsg_danjing1: '啖睛',
-            jlsg_danjing2: '啖睛',
+            jlsg_old_danjing: '啖睛',
+            jlsg_old_danjing1: '啖睛',
+            jlsg_old_danjing2: '啖睛',
+            jlsg_old_zhonghun: '忠魂',
             jlsg_feiying: '飞影',
             jlsg_guixin: '归心',
-            jlsg_zhonghun: '忠魂',
             jlsg_old_dianjie: '电界',
             jlsg_old_shendao: '神道',
 
@@ -19117,8 +19399,8 @@ const b = 1;
             jlsg_chongsheng_info: '限定技，一名角色进入濒死状态时，你可以令其回复X点体力（过量回复改为摸牌），然后其可以从随机三张同势力武将牌中选择一张替换之。（X为你发动〖元化〗移除牌的数量且至少为1）',
             jlsg_old_lvezhen_info: '当你使用【杀】指定目标后，你可以将牌堆顶的3张牌置入弃牌堆，其中每有一张非基本牌，你弃置目标角色一张牌。',
             jlsg_old_youlong_info: '出牌阶段，若弃牌堆的牌数多于牌堆，你可以将黑色手牌当【顺手牵羊】使用。',
-            jlsg_danjing_info: '出牌阶段限一次，你可以失去1点体力，然后令一名其他角色摸三张牌或弃置三张牌。',
-            jlsg_zhonghun_info: '限定技，当你死亡时，你可以令一名其他角色获得你当前的所有技能。',
+            jlsg_old_danjing_info: '出牌阶段限一次，你可以失去1点体力，然后令一名其他角色摸三张牌或弃置三张牌。',
+            jlsg_old_zhonghun_info: '限定技，当你死亡时，你可以令一名其他角色获得你当前的所有技能。',
           },
         };
         if (lib.device || lib.node) {
@@ -19279,13 +19561,13 @@ const b = 1;
                 for (var i = 0; i < game.players.length; i++) {
                   if (game.players[i] == player) continue;
                   if (!game.players[i].isOut()) {
-                    if (ai.get.attitude(player, game.players[i]) < 0) {
-                      if (game.players[i].num('he') >= 2) {
+                    if (get.attitude(player, game.players[i]) < 0) {
+                      if (game.players[i].countCards('he') >= 2) {
                         hasAtt++;
                       }
                     }
-                    else if (ai.get.attitude(player, game.players[i]) > 0) {
-                      if (game.players[i].num('j') > 0) {
+                    else if (get.attitude(player, game.players[i]) > 0) {
+                      if (game.players[i].countCards('j') > 0) {
                         hasAtt++;
                       }
                     }
@@ -19300,9 +19582,10 @@ const b = 1;
                 player.chooseTarget(function (card, player, target) {
                   return player != target && target.num('hej');
                 }, '###是否发动【荒淫】?###请选择获得牌的目标').ai = function (target) {
-                  if (target.num('j')) return ai.get.attitude(player, target);
-                  if (target.num('he')) return -ai.get.attitude(player, target);
-                  return -ai.get.attitude(player, target);
+                  var player = _status.event.player;
+                  if (target.num('j')) return get.attitude(player, target);
+                  if (target.num('he')) return -get.attitude(player, target);
+                  return -get.attitude(player, target);
                 };
                 "step 2"
                 if (result.bool) {
@@ -22843,29 +23126,28 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.4.0805",
+      version: "2.4.0820",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 新QQ群：392224094<br>
+2022.08.20更新<br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="metalmm">SK张让</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神夏侯惇</div><br>
+&ensp; 优化 SK孙休 UX<br>
+&ensp; 优化 SK蔡文姬 陈情 AI<br>
+&ensp; 优化 SK郭女王 AI<br>
+&ensp; 修复 SK神司马徽 知天 将池<br>
+&ensp; 修复 SK神孙尚香 良缘<br>
+&ensp; 修复 SK周泰 奋激 AI<br>
+&ensp; 修复 SR貂蝉 曼舞<br>
+&ensp; 修复 SK吴懿 制敌<br>
+<span style="font-size: large;">历史：</span><br>
 2022.08.05更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK孙休</div><br>
-&ensp; 大幅优化了诸多新武将的立绘清晰度<br>
 &ensp; 修复SK孙策 威风 优化AI<br>
 &ensp; 修复SK祢衡 狂傲 修复AI<br>
 &ensp; 优化SK神司马徽 知天 AI<br>
-<span style="font-size: large;">历史：</span><br>
-2022.07.24更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神甄姬</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神甘宁</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK刘谌</div><br>
-&ensp; 优化SK王异 秘计 AI<br>
-&ensp; 优化SR陆逊 代劳 AI<br>
-&ensp; 优化SK董允 裨补 AI<br>
-&ensp; 优化SR刘备 仇袭 AI<br>
-&ensp; 优化SR周瑜 筹略 AI<br>
-&ensp; 优化SK布骘 折节 AI<br>
-&ensp; 优化SR周瑜 伪报 动画<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
