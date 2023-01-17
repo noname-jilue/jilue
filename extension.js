@@ -6473,7 +6473,7 @@ const b = 1;
                   popup: false,
                   forced: true,
                   silent: true,
-                  trigger: { global: ["loseAfter", "cardsDiscardAfter"] },
+                  trigger: { global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter", "equipAfter"] },
                   filter: function (event, player) {
                     /* actually, all cards that entered discard counts */
                     // var p;
@@ -6485,8 +6485,7 @@ const b = 1;
                     //     return false;
                     //   }
                     // }
-                    return !player.hasSkill('jlsg_fushe_debuff') && event.cards.some(c => get.position(c, true) == 'd' &&
-                      get.suit(c) + '2' === player.storage.jlsg_fushe);
+                    return !player.hasSkill('jlsg_fushe_debuff') && event.getd().some(c => get.suit(c) + '2' === player.storage.jlsg_fushe);
                   },
                   content: function () {
                     'step 0'
@@ -11722,6 +11721,7 @@ const b = 1;
               forced: true,
               popup: false,
               silent: true,
+              charlotte: true,
               marktext: "拜",
               intro: {
                 content: 'cards',
@@ -11729,22 +11729,17 @@ const b = 1;
               init: function (player) {
                 player.storage.jlsg_baiyue = [];
               },
-              trigger: { global: ["loseAfter", "cardsDiscardAfter"] },
+              trigger: { global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter", "equipAfter"] },
               filter: function (event, player) {
                 if (_status.currentPhase != player) return false;
-                var p;
-                if (event.player) {
-                  if (event.player == player) return false;
-                } else {
-                  var evt = event.getParent();
-                  if (!(evt.name == 'orderingDiscard' && evt.relatedEvent && evt.relatedEvent.player !== player)) { // && ['useCard','respond'].contains(evt.relatedEvent.name)
-                    return false;
-                  }
-                }
-                return (event.cards2 || event.cards).some(c => get.position(c, true) == 'd');
+                var cards = event.getd();
+                cards.removeArray(event.getd(player));
+                return cards.length;
               },
               content: function () {
-                player.markAuto("jlsg_baiyue", (trigger.cards2 || trigger.cards).filterInD('d'));
+                var cards = trigger.getd();
+                cards.removeArray(trigger.getd(player));
+                player.markAuto("jlsg_baiyue", cards.filterInD('d'));
                 player.addTempSkill('jlsg_baiyue_phaseEnd');
               },
               subSkill: {
@@ -12150,30 +12145,65 @@ const b = 1;
               audio: "ext:极略:1",
               srlose: true,
               trigger: {
-                global: ["loseAfter", "cardsDiscardAfter"]
+                player: "loseAfter",
+                global: ["cardsDiscardAfter", "loseAsyncAfter", 'equipAfter'],
               },
               direct: true,
               filter: function (event, player) {
-                if (event.player) {
-                  if (event.player != player) return false;
-                } else {
+                if (event.name == 'cardsDiscard') { // judge
                   var evt = event.getParent();
-                  if (!(evt.name == 'orderingDiscard' && evt.relatedEvent && evt.relatedEvent.player === player)) { // && ['useCard','respond'].contains(evt.relatedEvent.name)
+                  if (!(evt.name == 'orderingDiscard' && evt.relatedEvent && evt.relatedEvent.player === player)) { 
                     return false;
                   }
+                  debugger;
+                  var relatedEvent = evt.relatedEvent;
+                  var loses = player.getHistory('lose', e => relatedEvent == (e.relatedEvent || e.getParent()));
+                  loses = loses.map(e => {
+                    e = e.getl(player);
+                    if (!e || !e.js) {
+                      return [];
+                    }
+                    return e.js;
+                  }).flat();
+                  loses = event.getd().filter(c => loses.includes(c));
+                  return loses.length;
+                  // return event.getd().filter(c => c.original === 'j');
                 }
-                return (event.cards2 || event.cards).some(c => get.position(c, true) == 'd' && get.suit(c) == 'diamond');
+                var cards = event.getd(player);
+                if (cards.some(c => get.suit(c, player) == 'diamond')) {
+                  return true;
+                }
+                var evt = event.getl(player);
+                if (!evt || !evt.js) {
+                  return false;
+                }
+                return evt.js.some(c => cards.includes(c));
               },
               content: function () {
                 'step 0'
-                event.count = (trigger.cards2 || trigger.cards).filter(card => get.suit(card) == 'diamond').length;
-                if (!event.count) {
-                  console.warn("婉柔找不到方片牌", trigger);
-                  event.finish();
+                if (trigger.name == 'cardsDiscard') {
+                  var relatedEvent = trigger.getParent().relatedEvent;
+                  var loses = player.getHistory('lose', e => relatedEvent == (e.relatedEvent || e.getParent()));
+                  loses = loses.map(e => {
+                    e = e.getl(player);
+                    if (!e || !e.js) {
+                      return [];
+                    }
+                    return e.js;
+                  }).flat();
+                  loses = trigger.getd().filter(c => loses.includes(c));
+                  event.count = loses.length;
+                } else {
+                  var evt = trigger.getl(player);
+                  if (!evt || !evt.js) {
+                    event.count = trigger.getd(player).filter(c => get.suit(c, player) == 'diamond').length;
+                  } else {
+                    event.count = trigger.getd(player).filter(c => get.suit(c, player) == 'diamond' || evt.js.includes(c)).length;
+                  }
                 }
                 'step 1'
                 --event.count;
-                player.chooseTarget('婉柔：选择一名目标令其摸一张牌').ai = function (target) {
+                player.chooseTarget(`###${get.prompt(event.name)}###令一名角色摸一张牌`).ai = function (target) {
                   return ai.get.attitude(player, target)
                 }
                 'step 2'
@@ -12188,28 +12218,6 @@ const b = 1;
               ai: {
                 threaten: 0.7
               },
-              group: 'jlsg_wanrou2'
-            },
-            jlsg_wanrou2: {
-              trigger: { player: 'loseEnd' },
-              filter: function (event, player) {
-                for (var i = 0; i < event.cards.length; i++) {
-                  if (event.cards[i].original == 'j') return true;
-                }
-                return false;
-              },
-              direct: true,
-              content: function () {
-                'step 0'
-                player.chooseTarget('婉柔：选择一名目标令其摸一张牌').ai = function (target) {
-                  return ai.get.attitude(player, target)
-                }
-                'step 1'
-                if (result.bool) {
-                  player.logSkill('jlsg_wanrou', result.targets[0]);
-                  result.targets[0].draw();
-                }
-              }
             },
             jlsg_zhouyan: {
               audio: "ext:极略:1",
@@ -12480,40 +12488,34 @@ const b = 1;
                   popup: false,
                   content: function () {
                     player.storage.jlsg_guoshi = [];
-                    player.addTempSkill('jlsg_guoshi_judge');
                     player.addTempSkill('jlsg_guoshi_discard');
                   }
                 },
-                judge: {
-                  trigger: { global: 'judgeAfter' },
-                  forced: true,
-                  popup: false,
-                  filter: function (event, player) {
-                    if (_status.currentPhase != player) return false;
-                    if (get.position(event.result.card) == 'd')
-                      return true;
-                    return false;
-                  },
-                  content: function () {
-                    if (trigger.result.card)
-                      player.storage.jlsg_guoshi.add(trigger.result.card);
-                  }
-                },
                 discard: {
-                  trigger: { global: 'discardAfter' },
+                  trigger: { global: ['loseAfter', 'loseAsyncAfter', 'cardsDiscardAfter'] },
                   filter: function (event, player) {
                     if (_status.currentPhase != player) return false;
-                    for (var i = 0; i < event.cards.length; i++) {
-                      if (get.position(event.cards[i]) == 'd') {
-                        return true;
+                    if (event.name == 'cardsDiscard') { // judge
+                      var evt = event.getParent();
+                      if (evt.name != 'orderingDiscard' || !evt.relatedEvent) {
+                        return false;
                       }
+                      if (evt.relatedEvent.name != 'judge') {
+                        return false;
+                      }
+                      return event.getd().length;
+                    } else { // discard
+                      if (event.type != 'discard') {
+                        return false;
+                      }
+                      return event.getd().length;
                     }
-                    return false;
                   },
                   forced: true,
                   popup: false,
                   content: function () {
-                    player.getStorage('jlsg_guoshi').addArray(trigger.cards.filterInD('d'));
+                    var cards = trigger.getd();
+                    player.getStorage('jlsg_guoshi').addArray(cards);
                   }
                 }
               },
@@ -13930,11 +13932,9 @@ const b = 1;
             jlsg_jiuzhu: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { global: ['loseAfter', 'cardsDiscardAfter'] },
+              trigger: { global: ['loseAfter', 'loseAsyncAfter', 'cardsDiscardAfter'] },
               filter: function (event, player) {
-                if (event.name == 'lose' && event.position != ui.discardPile) return false;
-                var criterion0 = event.cards.filter(card => card.name == 'shan' && get.position(card, true) == 'd')
-                  .length > 0;
+                var criterion0 = event.getd().some(card => card.name == 'shan' && get.position(card, true) == 'd');
 
                 var criterion1 = player.countCards('he', card => card.name != "shan") != 0;
                 // console.log(criterion0, criterion1, event.cards.map(card => card.name));
@@ -13943,8 +13943,7 @@ const b = 1;
               direct: true,
               content: function () {
                 'step 0'
-                event.cards = trigger.cards.slice(0);
-                event.cards = event.cards.filter(card => get.position(card) == 'd' && card.name == 'shan');
+                event.cards = trigger.getd().filter(card => get.position(card) == 'd' && card.name == 'shan');
                 // console.log(event.cards);
                 // console.log(_status.currentPhase);
                 'step 1'
@@ -13981,24 +13980,38 @@ const b = 1;
             jlsg_tuwei: {
               audio: "ext:极略:1",
               srlose: true,
-              trigger: { global: 'useCardAfter' },
+              trigger: { global: 'cardsDiscardAfter' },
               filter: function (event, player) {
-                if (event.player != player && !event.targets.contains(player)) return false;
-                var criterion0 = event.card.name == "sha" && event.card.isCard
-                  && (event.cards.length == 1 && event.cards[0].name === 'sha')
-                  && get.position(event.card.cards[0]) == 'd';
+                var cards = event.getd().filterInD('d').filter(c => c.name == 'sha');
+                if (!cards.length) {
+                  return false;
+                }
+                var evt = event.getParent();
+                if (evt.name != 'orderingDiscard' || !evt.relatedEvent) {
+                  return false;
+                }
+                evt = evt.relatedEvent;
+                if (evt.name != 'useCard') {
+                  return false;
+                }
+                if (evt.player != player && !evt.targets.contains(player)) return false;
+                var criterion0 = evt.card.name == "sha" && evt.card.isCard
+                  && (evt.cards.length == 1 && evt.cards[0].name === 'sha')
+                  && cards.includes(evt.cards[0]);
                 var criterion1 = player.countCards('h', card => get.tag(card, 'damage')) != 0;
                 return criterion0 && criterion1;
               },
               direct: true,
               content: function () {
                 'step 0'
+                let evt = trigger.getParent().relatedEvent;
+                let targets = evt.targets.slice().add(evt.player);
                 player.chooseCardTarget({
                   filterCard: function (card) {
                     return get.tag(card, 'damage');
                   },
                   filterTarget: function (card, player, target) {
-                    return (trigger.player == target || trigger.targets.contains(target)) && target.countDiscardableCards(player, 'he') != 0;
+                    return _status.event.targets.includes(target) && target.countDiscardableCards(player, 'he') != 0;
                   },
                   selectTarget: [1, 2],
                   ai1: function (card) {
@@ -14008,7 +14021,7 @@ const b = 1;
                     return -get.attitude(_status.event.player, target);
                   },
                   prompt: get.prompt2('jlsg_tuwei'),
-                });
+                }).set('targets', targets);
                 'step 1'
                 if (result.bool) {
                   player.discard(result.cards);
@@ -14023,7 +14036,7 @@ const b = 1;
                   event.finish();
                 }
                 'step 2'
-                if (targets.length == 2) {
+                if (event.targets.length == 2) {
                   player.discardPlayerCard(targets[1], 'he', true);
                 }
               },
@@ -22926,6 +22939,8 @@ const b = 1;
               trigger: { player: 'phaseUseBegin' },
               hidden: true,
               forced: true,
+              charlotte: true,
+              cardSkill: true,
               content: function () {
                 var num = Math.ceil(player.num('h') / 2);
                 player.chooseToDiscard(num, 'h', true);
@@ -24334,6 +24349,11 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
 新QQ群：392224094<br>
+2023.01.15更新<br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神黄盖</div><br>
+&ensp; 修复水淹七军效果优先级<br>
+&ensp; 根据无名杀新框架修改 拜月 重写 国士 婉柔 救主 突围 伏射<br>
+<span style="font-size: large;">历史：</span><br>
 2022.12.02更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神黄盖</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK朱治</div><br>
@@ -24342,20 +24362,6 @@ Visit Repository</a><br>
 &ensp; 修复SK辛宪英 才鉴 指定目标<br>
 &ensp; 修复SK王异 贞烈<br>
 &ensp; 修复SK曹节 怀璧 失去技能时的交互<br>
-<span style="font-size: large;">历史：</span><br>
-2022.11.05更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="metalmm">SK曹节</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK辛宪英</div><br>
-&ensp; 修复SP神张角 定命 濒死结算, 优化AI<br>
-&ensp; 修复SK神司马徽 知天 获得技能范围<br>
-&ensp; 修复SK神司马徽 隐世 AI。修复时机，优化动画<br>
-&ensp; 修复SR吕布 极武 SR张飞 蓄劲 攻击范围计算<br>
-&ensp; 修复SP神张角 获得标记目标错误<br>
-&ensp; 修复SK张让 可选卡范围 发动条件 修复描述<br>
-&ensp; 修复SK马超 追击 标记数<br>
-&ensp; 修复SK孙登 匡弼 触发条件<br>
-&ensp; 修复SK曹休 标记未消失<br>
-&ensp; 修复SK关索 征南 发动条件<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
