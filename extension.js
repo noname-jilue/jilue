@@ -200,6 +200,7 @@ const b = 1;
             'jlsgsoul_xiahoudun',
             'jlsgsk_xiahoushi',
             'jlsgsk_sundeng',
+            'jlsgsk_wuxian',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -229,6 +230,8 @@ const b = 1;
             'jlsgsk_sunxiu',
             'jlsgsk_zhangrang',
             'jlsgsk_xinxianying',
+            'jlsgsk_wanglang',
+            'jlsgsoul_sp_zhangliao',
           ],
           a: [
             'jlsgsoul_zhouyu',
@@ -271,6 +274,7 @@ const b = 1;
             'jlsgsk_zhangliang',
             'jlsgsk_panshu',
             'jlsgsoul_sp_zhangjiao',
+            'jlsgsk_jushou',
           ],
           bp: [
             'jlsgsr_zhouyu',
@@ -368,7 +372,6 @@ const b = 1;
               "jlsgsk_kuaiyue",
               "jlsgsk_luzhi",
               "jlsgsk_zoushi",
-              "jlsgsk_zhoufei",
               "jlsgsk_wuyi",
               "jlsgsk_zhangliang",
               "jlsgsk_panshu",
@@ -383,6 +386,8 @@ const b = 1;
               'jlsgsk_xiahoushi',
               'jlsgsk_sundeng',
               'jlsgsk_xinxianying',
+              'jlsgsk_wuxian',
+              'jlsgsk_wanglang',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -419,10 +424,12 @@ const b = 1;
               "jlsgsk_yanliang",
               "jlsgsk_machao",
               "jlsgsk_xushi",
+              "jlsgsk_zhoufei",
               "jlsgsk_liuchen",
               "jlsgsk_caoxiu",
               "jlsgsk_caojie",
               "jlsgsk_zhuzhi",
+              "jlsgsk_jushou",
             ],
             junk: [ // 平凡
               'jlsgsk_xuyou',
@@ -559,13 +566,13 @@ const b = 1;
           characterSort: {
             jlsg_sk: {
               jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue', 'jlsgsk_yuji',
-                'jlsgsk_panshu', 'jlsgsk_zhangrang', 'jlsgsk_xinxianying'],
+                'jlsgsk_panshu', 'jlsgsk_zhangrang', 'jlsgsk_xinxianying', 'jlsgsk_wuxian', 'jlsgsk_jushou',],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng',
                 'jlsgsk_zhoufei', 'jlsgsk_liuchen', 'jlsgsk_xiahoushi'],
               jlsg_renjie: ['jlsgsk_wangping', 'jlsgsk_buzhi', 'jlsgsk_maliang', 'jlsgsk_sunqian', 'jlsgsk_dongxi',
                 'jlsgsk_luzhi', 'jlsgsk_mifuren', 'jlsgsk_xizhicai', 'jlsgsk_zhangliang', 'jlsgsk_caorui',
-                'jlsgsk_sunxiu', 'jlsgsk_sundeng', 'jlsgsk_zhuzhi'],
+                'jlsgsk_sunxiu', 'jlsgsk_sundeng', 'jlsgsk_zhuzhi', 'jlsgsk_wanglang'],
               jlsg_pojun: ['jlsgsk_zhuran', 'jlsgsk_yanliang', 'jlsgsk_chendao', 'jlsgsk_dingfeng', 'jlsgsk_dongzhuo',
                 'jlsgsk_yujin', 'jlsgsk_panfeng', 'jlsgsk_jiangqin', 'jlsgsk_guanxing', 'jlsgsk_guansuo',
                 'jlsgsk_baosanniang', 'jlsgsk_dongbai', 'jlsgsk_xushi', 'jlsgsk_caoxiu', 'jlsgsk_caojie'],
@@ -671,6 +678,9 @@ const b = 1;
             jlsgsk_caojie: ["female", 'qun', 3, ["jlsg_huaibi", "jlsg_zhixi"], []],
             jlsgsk_xinxianying: ["female", 'wei', 3, ["jlsg_caijian", "jlsg_zhishix"], []],
             jlsgsk_zhuzhi: ["male", 'wu', 4, ["jlsg_anguo"], []],
+            jlsgsk_wanglang: ["male", 'wei', 3, ["jlsg_quanxiang", "jlsg_gushe", "jlsg_jici"], []],
+            jlsgsk_wuxian: ["female", 'shu', 3, ["jlsg_hechun", "jlsg_daiyan"], []],
+            jlsgsk_jushou: ["male", 'qun', 3, ["jlsg_jianying", "jlsg_shibei"], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -9481,6 +9491,91 @@ const b = 1;
                 }
               },
             },
+            jlsg_quanxiang: {
+              audio: "ext:极略:2",
+              enable: 'phaseUse',
+              filter: function (event, player) {
+                return !player.hasSkillTag('noCompareSource');
+              },
+              filterTarget: function (card, player, target) {
+                return player.canCompare(target);
+              },
+              content: function () {
+                'step 0'
+                player.chooseToCompare(target);
+                'step 1'
+                if (result.bool) {
+                  if (!target.storage.nohp && target.hp) {
+                    player.addSkill('jlsg_quanxiang2');
+                    let evt = target.loseHp(target.hp);
+                    player.storage.jlsg_quanxiang2 = [target, evt];
+                  }
+                } else {
+                  player.addMark('jlsg_raoshe', 2);
+                  if (player.countMark('jlsg_raoshe') >= 7) {
+                    player.die();
+                  }
+                }
+              },
+              ai: {
+                order: 8,
+                result: {
+                  target: -1,
+                },
+              },
+            },
+            jlsg_quanxiang2: {
+              trigger: { global: 'dyingAfter' },
+              forced: true,
+              charlotte: true,
+              filter: function (event, player) {
+                if (!player.storage.jlsg_quanxiang2) {
+                  return false;
+                }
+                return event.player === player.storage.jlsg_quanxiang2[0];
+              },
+              direct: true,
+              content: function (event, player) {
+                'step 0'
+                if (trigger.reason !== player.storage.jlsg_quanxiang2[1]) {
+                  event.goto(2);
+                  return;
+                }
+                trigger.player.recover(trigger.reason.num, player);
+                'step 1'
+                player.addMark('jlsg_raoshe', 1);
+                if (player.countMark('jlsg_raoshe') >= 7) {
+                  player.die();
+                }
+                'step 2'
+                player.removeSkill(event.name);
+              },
+            },
+            jlsg_raoshe: {
+              intro: {
+                name: "饶舌",
+                content: "mark",
+              },
+            },
+            jlsg_gushe: {
+              audio: "ext:极略:2",
+            },
+            jlsg_jici: {
+              audio: "ext:极略:2",
+            },
+            jlsg_hechun: {
+              audio: "ext:极略:2",
+            },
+            jlsg_daiyan: {
+              audio: "ext:极略:2",
+            },
+            jlsg_jianying: {
+              audio: "ext:极略:2",
+              inherit: 'dcjianying',
+            },
+            jlsg_shibei: {
+              audio: "ext:极略:2",
+            },
           },
           translate: {
             jlsg_sk: "SK武将",
@@ -9567,6 +9662,9 @@ const b = 1;
             jlsgsk_caojie: 'SK曹节',
             jlsgsk_xinxianying: 'SK辛宪英',
             jlsgsk_zhuzhi: 'SK朱治',
+            jlsgsk_wanglang: 'SK王朗',
+            jlsgsk_wuxian: 'SK吴苋',
+            jlsgsk_jushou: 'SK沮授',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -9769,6 +9867,21 @@ const b = 1;
             jlsg_zhishix_info: "出牌阶段，你可以将三张花色各不相同的「鉴」置入弃牌堆，摸三张牌，并获得随机一名魏势力武将的技能。",
             jlsg_anguo: "安国",
             jlsg_anguo_info: "摸牌阶段，你可以少摸一张牌，然后令一名随机角色随机使用一张装备牌，若此牌为：武器牌，其摸X张牌（X为此武器牌的攻击范围）；防具或宝物牌，其回复1点体力；坐骑牌，重复此流程。",
+            jlsg_quanxiang: "劝降",
+            jlsg_quanxiang2: "劝降",
+            jlsg_quanxiang_info: "出牌阶段，你可以与一名角色拼点。若你赢，你令其失去所有体力且你此阶段不能再发动此技能，若其以此法进入濒死状态后脱离濒死状态，你令其回复等量的体力，然后你获得1枚「饶舌」标记。若你没赢，你获得2枚「饶舌」标记。若你拥有7枚「饶舌」标记，你死亡。",
+            jlsg_raoshe: "饶舌",
+            jlsg_gushe: "鼓舌",
+            jlsg_gushe_info: "锁定技，你的拼点牌点数+X (X为「饶舌」标记数)，当你拼点赢/没赢后，你获得对方/你的拼点牌。",
+            jlsg_jici: "激词",
+            jlsg_jici_info: "当你受到其他角色对你造成的伤害时，你可以令其摸一张牌，然后与其拼点。若你赢，你防止此伤害。若你没赢，你将此伤害改为1点，然后获得1枚「饶舌」标记。若你拥有7枚「饶舌」标记，你死亡。",
+            jlsg_hechun: "贺春",
+            jlsg_hechun_info: "出牌阶段限一次，你可以令所有其他角色展示并交给你一张牌， 然后你可以令以此法交给你黑色/红色牌的角色失去/回复1点体力。",
+            jlsg_daiyan: "怠宴",
+            jlsg_daiyan_info: "回合结束时，你可以令一名角色获得一个额外的回合，若你已对其发动过此技能，你令其先失去X点体力(X为你对其再次发动此技能的次数)",
+            // jlsg_jianying: "渐营",
+            jlsg_shibei: "矢北",
+            jlsg_shibei_info: "每回合限一次，当你受到伤害后，你可以回复1点体力，然后你可以将一张牌当对你造成此伤害的牌使用。若如此做，当你于此回合内再次受到伤害后，你失去1点体力。",
 
             jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
             jlsg_huoshui_info: '回合结束阶段，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
@@ -20635,8 +20748,8 @@ const b = 1;
         var jlsg_sy = {
           name: 'jlsg_sy',
           character: {
-            // jlsgsy_lvbu: ['male', 'shen', 8, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_baonulvbu'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            // jlsgsy_lvbubaonu: ['male', 'shen', 4, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_xiuluo', 'jlsgsy_shenwei', 'jlsgsy_shenji'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            jlsgsy_lvbu: ['male', 'shen', 8, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_baonulvbu'], ['qun', 'boss', 'bossallowed'], 'qun'],
+            jlsgsy_lvbubaonu: ['male', 'shen', 4, ['jlsgsy_wushuang', 'mashu', 'jlsgsy_xiuluo', 'jlsgsy_shenwei', 'jlsgsy_shenji'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
             jlsgsy_dongzhuo: ['male', 'shen', 8, ['jlsgsy_zongyu', 'jlsgsy_lingnue', 'jlsgsy_baozheng', 'jlsgsy_baonudongzhuo'], ['qun', 'boss', 'bossallowed'], 'qun'],
             jlsgsy_dongzhuobaonu: ['male', 'shen', 4, ['jlsgsy_zongyu', 'jlsgsy_lingnue', 'jlsgsy_baozheng', 'jlsgsy_nishi', 'jlsgsy_hengxing'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
             jlsgsy_zhangjiao: ['male', 'shen', 8, ['jlsgsy_bujiao', 'jlsgsy_taiping', 'jlsgsy_baonuzhangjiao'], ['qun', 'boss', 'bossallowed'], 'qun'],
@@ -22015,9 +22128,9 @@ const b = 1;
             jlsgsy_quanheng: '权衡',
 
 
-            // jlsgsy_xiuluo_info:'回合开始阶段，你可以弃一张手牌来弃置你判定区中的一张相同花色的延时锦囊牌。',
-            // jlsgsy_shenwei_info:'锁定技，摸牌阶段，你额外摸两张牌，你的手牌上限+2。',
-            // jlsgsy_shenji_info:'若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
+            jlsgsy_xiuluo_info: '回合开始阶段，你可以弃一张手牌来弃置你判定区中的一张相同花色的延时锦囊牌。',
+            jlsgsy_shenwei_info: '锁定技，摸牌阶段，你额外摸两张牌，你的手牌上限+2。',
+            jlsgsy_shenji_info: '若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
             jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
             jlsgsy_chanxian_info: '出牌阶段限一次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
             jlsgsy_canlue_info: '你从其他角色处获得牌时，可对其造成等量的伤害；锁定技，其他角色获得你的牌时，须弃置等量的牌',
@@ -24348,9 +24461,13 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-新QQ群：392224094<br>
+新QQ群：392224094 新春快乐<br>
 2023.01.15更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神黄盖</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SP神张辽</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">三英神吕布</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="metalmm">SK沮授</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK王朗</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK吴苋</div><br>
 &ensp; 修复水淹七军效果优先级<br>
 &ensp; 根据无名杀新框架修改 拜月 重写 国士 婉柔 救主 突围 伏射<br>
 <span style="font-size: large;">历史：</span><br>
