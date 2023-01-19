@@ -559,6 +559,7 @@ const b = 1;
         window.__configCharactersBackup = lib.config.characters;
         lib.config.characters = ["jlsg_sk", "jlsg_sr", "jlsg_soul", "jlsg_sy"];
       }
+      let trigger;
       game.import('character', function () { // SK
         var jlsg_sk = {
           name: 'jlsg_sk',
@@ -19728,82 +19729,40 @@ const b = 1;
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               filter: function (event, player) {
-                if (player.countCards('h') >= 3) return false;
+                if (player.countCards('h') >= 4) return false;
                 var evt = event.getl(player);
                 return evt && evt.hs && evt.hs.length;
               },
               frequent: true,
               content: function () {
                 'step 0'
-                player.drawTo(3);
+                player.drawTo(4);
                 'step 1'
-                var validSuits = lib.suit.filter(s => player.countCards('h', { suit: s }) >= 3)
-                if (!validSuits.length) {
+                let cards = trigger.getl(player).hs;
+                let suit = get.suit(cards, player);
+                if (!suit) {
                   event.finish();
                   return;
                 }
-                var config = {
-                  prompt: get.prompt(event.name),
-                  prompt2: '弃置三张牌，然后对一名角色造成伤害',
-                  filterCard: function (card, player) {
-                    if (ui.selected.cards.length) {
-                      return get.suit(card) == get.suit(ui.selected.cards[0]);
-                    }
-                    return _status.event.validSuits.includes(get.suit(card));
-                  },
-                  selectCard: 3,
-                  complexCard: true,
-                  // filterTarget: lib.filter.notMe,
-                  ai1: function (card) {
-                    return 8 - get.value(card);
-                  },
-                  ai2: function (target) {
-                    var att = get.attitude(_status.event.player, target);
-                    return -att - 4 + Math.random();
-                  },
-                };
-                // not working for some reason
-                // if (validSuits.length == 1 && player.countCards('h', { suit: validSuits[0] }) == 3) {
-                //   config.selectCard = -1;
-                //   config.filterCard = function (card, player) {
-                //     return get.suit(card) == _status.event.validSuits[0];
-                //   };
-                //   config.complexCard = false;
-                // }
-                player.chooseCardTarget(config)
-                  .set("validSuits", validSuits)
-                  .set("custom", {
-                    replace: {},
-                    add: {
-                      card() {
-                        delete this.card;
-                        if (game.online) {
-                          return;
-                        }
-                        if (game.me != _status.event.player) {
-                          return;
-                        }
-                        if (_status.event.validSuits.length == 1) {
-                          let suit = _status.event.validSuits[0];
-                          let cards = _status.event.player.getCards('h', { suit: suit });
-                          if (cards.length == 3) {
-                            ui.selected.cards.addArray(cards);
-                            cards.forEach(c => {
-                              c.classList.add("selected");
-                              c.updateTransform(true);
-                            })
-                          }
-                        }
-                        setTimeout(() => {
-                          game.check();
-                        });
-                      },
-                    },
-                  });
+                let storage = player.storage[event.name];
+                storage.unshift(suit);
+                if (storage.length > 4) {
+                  storage.length = 4;
+                }
+                player.markSkill(event.name);
+
+                storage = new Set(storage);
+                if (storage.size == 4) {
+                  player.chooseTarget(`###${get.prompt(event.name)}###对一名角色造成1点雷电伤害`)
+                    .set('ai', function (target) {
+                      return get.damageEffect(target, _status.event.player, _status.event.player, 'thunder');
+                    });
+                } else {
+                  event.finish();
+                }
                 'step 2'
                 if (result.bool) {
-                  player.discard(result.cards);
-                  result.targets[0].damage(3);
+                  result.targets[0].damage('thunder');
                 }
               },
               ai: {
@@ -20549,7 +20508,7 @@ const b = 1;
             jlsg_juechen: '绝尘',
             jlsg_juechen_info: '当你使用【杀】对其他角色造成伤害时，你可以防止此伤害，改为令其失去X点体力（X为伤害值），或减一点体力上限。',
             jlsg_shenfu: '神赋',
-            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至三张，然后你可以弃置三张花色相同的手牌并对一名角色造成三点伤害。',
+            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至四张。若你本次失去的手牌有花色，你记录之，然后若你最近四次以此法记录的花色各不相同，你可以对一名角色造成1点雷电伤害。',
             jlsg_lvezhen: '掠阵',
             jlsg_lvezhen_info: '出牌阶段限一次，你使用【杀】或锦囊指定唯一目标后，可以随机获得其一张牌。',
             jlsg_youlong: '游龙',
@@ -20818,20 +20777,79 @@ const b = 1;
               mode: ['identity', 'guozhan', 'boss', 'stone'],
             },
             jlsgsy_wushuang: {
-              inherit: 'wushuang',
               audio: "ext:极略:1",
+              gruop: ['jlsgsy_wushuang1', 'jlsgsy_wushuang2'],
+            },
+            jlsgsy_wushuang1: {
+              inherit: 'wushuang',
+              audio: 'jlsgsy_wushuang',
+            },
+            jlsgsy_wushuang2: {
+              audio: 'jlsgsy_wushuang',
+              trigger: { player: 'useCard' },
+              filter: function (event, player) {
+                return get.tag(event.card, 'damage');
+              },
+              forced: true,
+              direct:true,
+              content: function () {
+                trigger.baseDamage = 3;
+                if (!['sha', 'juedou'].includes(trigger.card.name)) {
+                  player.logSkill(event.name);
+                }
+              },
             },
             jlsgsy_xiuluo: {
               audio: "ext:极略:1",
-              inherit: 'xiuluo',
+              trigger: { target: "useCardToTargeted" },
+              filter: function (event, player) {
+                return event.targets.length == 1;
+              },
+              check: function (event, player) {
+                return get.effect(player, { name: 'juedou' }, event.player, player) + 4 > get.effect(player, event.card, event.player, player);
+              },
+              content: function () {
+                'step 0'
+                player.draw();
+                trigger.card.name = 'juedou';
+                if (trigger.card.isCard && trigger.cards.length) {
+                  trigger.card.isCard = false;
+                }
+              },
+              ai: {
+                expose: 0.2,
+              }
             },
             jlsgsy_shenwei: {
               audio: "ext:极略:1",
-              inherit: 'shenwei',
+              global: 'jlsgsy_shenwei_g',
+            },
+            jlsgsy_shenwei_g: {
+              mod: {
+                maxHandcard: function (player, num) {
+                  return num - game.countPlayer(function (current) {
+                    return current != player && current.hasSkill('jlsgsy_shenwei') && current.inRange(player);
+                  });
+                },
+              },
             },
             jlsgsy_shenji: {
               audio: "ext:极略:1",
-              inherit: 'shenji',
+              forced: true,
+              mod: {
+                selectTarget: function (card, player, range) {
+                  if (card.name != 'sha') return;
+                  range[1] += 2;
+                }
+              },
+              trigger: { player: 'useCard1' },
+              forced: true,
+              firstDo: true,
+              filter: function (event, player) {
+                if (event.card.name != 'sha') return false;
+                return event.targets.length > 1;
+              },
+              content: function () { },
             },
             jlsgsy_guiming: {
               audio: "ext:极略:1", // audio: ['jlsgsy_guiming'],
@@ -21669,47 +21687,36 @@ const b = 1;
               usable: 1,
               unique: true,
               complexCard: true,
-              filter: function (event, player) {
-                return game.players.length >= 3;
+              filter: function(event, player) {
+                let players = game.filterPlayer();
+                for (let i = 0; i < players.length - 1; ++i) {
+                  if (players[i].hp != players[i+1].hp) {
+                    return false;
+                  }
+                }
+                return true;
               },
               filterTarget: function (card, player, target) {
-                if (player == target) return false;
-                if (ui.selected.targets.length == 0) {
-                  for (var i = 0; i < game.players.length; i++) {
-                    if (game.players[i] == player) continue;
-                    if (game.players[i].hp > target.hp) return false;
-                  }
-                  return true;
-                }
+                let min = Math.min(...game.filterPlayer().map(c => c.hp));
+                return target.hp > min;
                 if (ui.selected.targets.length == 1) {
-                  return target != ui.selected.targets[0];
+                  return target.hp < ui.selected.targets[0].hp;
                 }
               },
-              multitarget: true,
+              // multitarget: true,
               targetprompt: ['造成伤害', '受到伤害'],
               selectTarget: 2,
-              prompt: '请选择两个目标（先选择体力最大的目标）',
+              prompt2: '请选择造成伤害与受到伤害的角色',
               content: function () {
                 "step 0"
-                targets[0].line(targets[1], 'green');
+                // targets[0].line(targets[1], 'green');
                 targets[1].damage(targets[0]);
-                event.target = targets[1];
+                if (targets[1].ai.shown > player.ai.shown) {
+                  player.addExpose(0.2);
+                }
                 "step 1"
-                player.chooseControl('选项一', '选项二', '不发动', function () {
-                  if (player.num('h') < 3) return '选项一';
-                  if (!event.target.num('h')) return '选项一';
-                  if (event.target.num('h') && event.target.isAlive()) return '选项二';
-                  return '选项一';
-                }).set('prompt', '诋毁<br><br><div class="text">选项一: 自己摸一张牌</div><br><div class="text">选项二：弃置受到伤害角色的一张牌</div></br>');
-                "step 2"
-                if (result.control == '选项一') {
-                  player.draw();
-                }
-                else if (result.control == '选项二') {
-                  if (event.target.isAlive()) player.discardPlayerCard(event.target, 'he', true);
-                }
-                else {
-                  event.finish();
+                if (player.isDamaged() && targets[0] != player) {
+                  player.recover();
                 }
               },
               ai: {
@@ -21720,7 +21727,7 @@ const b = 1;
                     if (att < 0) return att;
                   }
                 },
-                expose: 0.2
+                // expose: 0.2
               },
             },
             jlsgsy_luansi: {
@@ -22127,10 +22134,17 @@ const b = 1;
             jlsgsy_luanji: '乱击',
             jlsgsy_quanheng: '权衡',
 
+            jlsgsy_baonulvbu: '暴怒',
+            jlsgsy_baonulvbu_info: '锁定技，当你的体力值降至4或更低时，你进入暴怒状态并立即开始你的回合。',
+            jlsgsy_wushuang: '无双',
+            jlsgsy_wushuang_info: '锁定技，当你使用【杀】或【决斗】指定目标后，你令此牌需要依次使用或打出两张【闪】或【杀】响应。你点数为奇数的伤害牌的伤害基数固定为3。',
+            jlsgsy_xiuluo: '修罗',
+            jlsgsy_xiuluo_info: '当你成为【杀】或非延时锦囊的唯一目标后，你可以摸一张牌并将此牌的效果改为【决斗】。',
+            jlsgsy_shenwei: '神威',
+            jlsgsy_shenwei_info: '锁定技，你攻击范围内其他角色的手牌上限-1。',
+            jlsgsy_shenji: '神戟',
+            jlsgsy_shenji_info: '锁定技，你的【杀】的目标上限+2。',
 
-            jlsgsy_xiuluo_info: '回合开始阶段，你可以弃一张手牌来弃置你判定区中的一张相同花色的延时锦囊牌。',
-            jlsgsy_shenwei_info: '锁定技，摸牌阶段，你额外摸两张牌，你的手牌上限+2。',
-            jlsgsy_shenji_info: '若你未装备武器且武器栏未被废除，你的杀可以额外指定至多两名目标。',
             jlsgsy_luanzheng_info: '锁定技，若场上存活的角色不小于三，则其他角色使用的【杀】、【顺手牵羊】、【过河拆桥】、【决斗】指定你为目标时，须额外指定一名角色（不得是此牌的使用者）为目标，否则对你无效',
             jlsgsy_chanxian_info: '出牌阶段限一次，你可以展示一张手牌并将之交给一名其他角色，该名角色选择一项：交给你一张点数大于此牌的手牌。然后弃置一张牌；或对除你以外的一名角色造成1点伤害',
             jlsgsy_canlue_info: '你从其他角色处获得牌时，可对其造成等量的伤害；锁定技，其他角色获得你的牌时，须弃置等量的牌',
@@ -22146,8 +22160,8 @@ const b = 1;
             jlsgsy_sanzhi_info: '出牌阶段限一次，你可以弃置任意类型不同的牌各一张并对等量的其他角色各造成1点伤害',
             jlsgsy_yaohuo_info: '出牌阶段限一次，你可以指定一名有手牌的其他角色弃置与其手牌等量的牌，然后选择1项：1、获得其所有手牌；2、令其失去所有技能你获得之(你不能获得主公技，限定技，觉醒技)直到回合结束',
             jlsgsy_baonuzhangjiao_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒张角并立即开始你的回合',
-            jlsgsy_dihui_info: '出牌阶段限一次，你可令场上(除你外)体力值最多的(或之一)的一名角色对另一名角色造成1点伤害，然后你可以执行下列1项：摸一张牌或者弃置受到伤害角色的一张牌',
-            jlsgsy_luansi_info: '出牌阶段限一次，你可以令两名有手牌的其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
+            jlsgsy_dihui_info: '出牌阶段限一次，你可令一名角色对另一名体力更少角色造成1点伤害，若造成伤害的角色不是你，你回复一点体力。',
+            jlsgsy_luansi_info: '出牌阶段限一次，你可以令两名其他角色拼点，视为拼点赢的角色对没赢的角色使用一张【决斗】，然后你弃置拼点没赢的角色两张牌',
             jlsgsy_huoxin_info: '你对其他角色造成伤害，或受到其他角色造成的伤害后，你可令该角色交给你一张装备区内的装备牌 ，或者失去一点体力。',
             jlsgsy_baonucaifuren_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒蔡夫人并立即开始你的回合',
             jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用一张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的一名其他角色使用一张【杀】',
