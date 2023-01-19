@@ -19494,82 +19494,40 @@ const b = 1;
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
               },
               filter: function (event, player) {
-                if (player.countCards('h') >= 3) return false;
+                if (player.countCards('h') >= 4) return false;
                 var evt = event.getl(player);
                 return evt && evt.hs && evt.hs.length;
               },
               frequent: true,
               content: function () {
                 'step 0'
-                player.drawTo(3);
+                player.drawTo(4);
                 'step 1'
-                var validSuits = lib.suit.filter(s => player.countCards('h', { suit: s }) >= 3)
-                if (!validSuits.length) {
+                let cards = trigger.getl(player).hs;
+                let suit = get.suit(cards, player);
+                if (!suit) {
                   event.finish();
                   return;
                 }
-                var config = {
-                  prompt: get.prompt(event.name),
-                  prompt2: '弃置三张牌，然后对一名角色造成伤害',
-                  filterCard: function (card, player) {
-                    if (ui.selected.cards.length) {
-                      return get.suit(card) == get.suit(ui.selected.cards[0]);
-                    }
-                    return _status.event.validSuits.includes(get.suit(card));
-                  },
-                  selectCard: 3,
-                  complexCard: true,
-                  // filterTarget: lib.filter.notMe,
-                  ai1: function (card) {
-                    return 8 - get.value(card);
-                  },
-                  ai2: function (target) {
-                    var att = get.attitude(_status.event.player, target);
-                    return -att - 4 + Math.random();
-                  },
-                };
-                // not working for some reason
-                // if (validSuits.length == 1 && player.countCards('h', { suit: validSuits[0] }) == 3) {
-                //   config.selectCard = -1;
-                //   config.filterCard = function (card, player) {
-                //     return get.suit(card) == _status.event.validSuits[0];
-                //   };
-                //   config.complexCard = false;
-                // }
-                player.chooseCardTarget(config)
-                  .set("validSuits", validSuits)
-                  .set("custom", {
-                    replace: {},
-                    add: {
-                      card() {
-                        delete this.card;
-                        if (game.online) {
-                          return;
-                        }
-                        if (game.me != _status.event.player) {
-                          return;
-                        }
-                        if (_status.event.validSuits.length == 1) {
-                          let suit = _status.event.validSuits[0];
-                          let cards = _status.event.player.getCards('h', { suit: suit });
-                          if (cards.length == 3) {
-                            ui.selected.cards.addArray(cards);
-                            cards.forEach(c => {
-                              c.classList.add("selected");
-                              c.updateTransform(true);
-                            })
-                          }
-                        }
-                        setTimeout(() => {
-                          game.check();
-                        });
-                      },
-                    },
-                  });
+                let storage = player.storage[event.name];
+                storage.unshift(suit);
+                if (storage.length > 4) {
+                  storage.length = 4;
+                }
+                player.markSkill(event.name);
+
+                storage = new Set(storage);
+                if (storage.size == 4) {
+                  player.chooseTarget(`###${get.prompt(event.name)}###对一名角色造成1点雷电伤害`)
+                    .set('ai', function (target) {
+                      return get.damageEffect(target, _status.event.player, _status.event.player, 'thunder');
+                    });
+                } else {
+                  event.finish();
+                }
                 'step 2'
                 if (result.bool) {
-                  player.discard(result.cards);
-                  result.targets[0].damage(3);
+                  result.targets[0].damage('thunder');
                 }
               },
               ai: {
@@ -20170,7 +20128,7 @@ const b = 1;
             jlsg_juechen: '绝尘',
             jlsg_juechen_info: '当你使用【杀】对其他角色造成伤害时，你可以防止此伤害，改为令其失去X点体力（X为伤害值），或减一点体力上限。',
             jlsg_shenfu: '神赋',
-            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至三张，然后你可以弃置三张花色相同的手牌并对一名角色造成三点伤害。',
+            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至四张。若你本次失去的手牌有花色，你记录之，然后若你最近四次以此法记录的花色各不相同，你可以对一名角色造成1点雷电伤害。',
             jlsg_lvezhen: '掠阵',
             jlsg_lvezhen_info: '出牌阶段限一次，你使用【杀】或锦囊指定唯一目标后，可以随机获得其一张牌。',
             jlsg_youlong: '游龙',
