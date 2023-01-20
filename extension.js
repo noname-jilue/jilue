@@ -680,7 +680,7 @@ const b = 1;
             jlsgsk_xinxianying: ["female", 'wei', 3, ["jlsg_caijian", "jlsg_zhishix"], []],
             jlsgsk_zhuzhi: ["male", 'wu', 4, ["jlsg_anguo"], []],
             jlsgsk_wanglang: ["male", 'wei', 3, ["jlsg_quanxiang", "jlsg_gushe", "jlsg_jici"], []],
-            jlsgsk_wuxian: ["female", 'shu', '2/3', ["jlsg_hechun", "jlsg_daiyan"], []],
+            jlsgsk_wuxian: ["female", 'shu', 3, ["jlsg_hechun", "jlsg_daiyan"], []],
             jlsgsk_jushou: ["male", 'qun', 3, ["jlsg_jianying", "jlsg_shibei"], []],
           },
           characterIntro: {
@@ -16007,7 +16007,7 @@ const b = 1;
             jlsgsoul_guanyu: ['male', 'shen', 5, ['jlsg_wushen', 'jlsg_suohun'], ['shu']],
             jlsgsoul_zhaoyun: ['male', 'shen', 2, ['jlsg_juejing', 'jlsg_longhun'], ['shu']],
             jlsgsoul_zhangliao: ['male', 'shen', 4, ['jlsg_nizhan', 'jlsg_cuifeng', 'jlsg_weizhen'], ['wei']],
-            jlsgsoul_sp_zhangliao: ['male', 'shen', 4, ['jlsg_nizhan', 'jlsg_cuifeng', 'jlsg_weizhen'], ['wei']],
+            jlsgsoul_sp_zhangliao: ['male', 'shen', 4, ['jlsg_fengying', 'jlsg_zhiti'], ['wei']],
             jlsgsoul_huangyueying: ['female', 'shen', 3, ['jlsg_zhiming', 'jlsg_suyin'], ['shu']],
             jlsgsoul_zhangjiao: ['male', 'shen', 3, ['jlsg_dianjie', 'jlsg_shendao', 'jlsg_leihun'], ['qun', 'fan']],
             jlsgsoul_sp_zhangjiao: ['male', 'shen', 3, ['jlsg_yinyang_s', 'jlsg_dingming'], ['qun', 'fan']],
@@ -19969,6 +19969,7 @@ const b = 1;
               init: function (player) {
                 player.storage.jlsg_shenfu = [];
               },
+              derivation: 'jlsg_shenfu_faq',
               trigger: {
                 player: 'loseAfter',
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
@@ -19984,19 +19985,8 @@ const b = 1;
                 player.drawTo(4);
                 'step 1'
                 let cards = trigger.getl(player).hs;
-                // TODO: temparary fix
-                let getSuit = function (cards, player) {
-                  if (cards.length == 0) {
-                    return null;
-                  }
-                  let suit = get.suit(cards[0]);
-                  for (let card of cards) {
-                    if (get.suit(card) != suit) return 'none';
-                  }
-                  return suit;
-                };
-                let suit = getSuit(cards, player);
-                if (!suit || suit == 'none') {
+                let suit = get.suit(cards, player);
+                if (!suit) {
                   event.finish();
                   return;
                 }
@@ -20724,6 +20714,130 @@ const b = 1;
                 }
               },
             },
+            jlsg_fengying: {
+              audio: "ext:极略:2",
+              trigger: { player: 'drawBegin' },
+              direct: true,
+              content: function () {
+                "step 0"
+                if (!trigger.num) {
+                  trigger.cancel();
+                  return;
+                }
+                player.chooseUseTarget(
+                  get.prompt2(event.name),
+                  { name: 'sha', nature: 'thunder', },
+                  false,
+                ).logSkill = event.name;
+                "step 1"
+                if (result.bool) {
+                  event.goto(0);
+                  --trigger.num;
+                }
+              }
+            },
+            jlsg_zhiti: {
+              audio: "ext:极略:2",
+              trigger:{source:'damageBegin2'},
+              filter(event, player) {
+                if (event.player == player) {
+                  return false;
+                }
+                return event.player.getStorage('jlsg_zhiti').length < 5;
+              },
+              direct: true,
+              content() {
+                'step 0'
+                event.options = [
+                  '取其1点体力和体力上限',
+                  '取其摸牌阶段的一摸牌数',
+                  '取其一个技能',
+                  '令其不能使用装备牌',
+                  '令其翻面',
+                ];
+                let options = event.options.filter((_, i) => !trigger.player.getStorage(event.name).includes(i));
+                if (!trigger.player.getStockSkills(false, true).length) {
+                  options.remove(event.options[2]);
+                }
+                player.chooseControl(get.prompt(event.name, trigger.player), options, 'dialogcontrol', function () {
+                  return Math.floor(Math.random() * options.length);
+                })
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                player.logSkill(event.name, trigger.player);
+                game.log(player,'选择' + result.control);
+                switch (result.control) {
+                  case event.options[0]:
+                    trigger.player.loseHp();
+                    trigger.player.loseMaxHp();
+                    break;
+                  case event.options[1]:
+                    trigger.player.addSkill('jlsg_zhiti2');
+                    trigger.player.storage.jlsg_zhiti2 = (trigger.player.storage.jlsg_zhiti2 || 0) - 1;
+                    break;
+                  case event.options[2]:
+                    // todo
+                    break;
+                  case event.options[3]:
+                    trigger.player.addSkill('jlsg_zhiti3');
+                    break;
+                  case event.options[4]:
+                    trigger.player.turnOver();
+                    break;
+                
+                  default:
+                    break;
+                }
+                'step 2'
+                switch (result.control) {
+                  case event.options[0]:
+                    player.gainMaxHp();
+                    player.recover();
+                    break;
+                  case event.options[1]:
+                    player.addSkill('jlsg_zhiti2');
+                    player.storage.jlsg_zhiti2 = (player.storage.jlsg_zhiti2 || 0) + 1;
+                    break;
+                
+                  default:
+                    break;
+                }
+              },
+            },
+            jlsg_zhiti2: {
+              charlotte:true,
+              mark:true,
+              trigger:{player:'phaseDrawBegin'},
+              forced:true,
+              filter:function(event,player){
+                return !event.numFixed;
+              },
+              content:function(){
+                trigger.num+=player.storage.jlsg_zhiti2;
+              },
+              intro:{
+                content:function(storage,player){
+                  if (player.storage.jlsg_zhiti2 > 0) {
+                    return '摸牌阶段的额定摸牌数+'+player.storage.jlsg_zhiti2;
+                  }
+                  return '摸牌阶段的额定摸牌数-'+(-player.storage.jlsg_zhiti2);
+                },
+              },
+            },
+            jlsg_zhiti3: {
+              intro:{
+                content:'不能使用装备牌',
+              },
+              mark:true,
+              mod:{
+                cardEnabled:function(card,player){
+                  if(get.type(card) == 'equip') return false;
+                },
+              },
+            },
           },
           translate: {
             jlsg_soul: "魂烈包",
@@ -20740,6 +20854,7 @@ const b = 1;
             jlsgsoul_guanyu: 'SK神关羽',
             jlsgsoul_zhaoyun: 'SK神赵云',
             jlsgsoul_zhangliao: 'SK神张辽',
+            jlsgsoul_sp_zhangliao: 'SK神张辽',
             jlsgsoul_huangyueying: 'SK神黄月英',
             jlsgsoul_zhangjiao: 'SK神张角',
             jlsgsoul_sp_zhangjiao: 'SP神张角',
@@ -20775,7 +20890,10 @@ const b = 1;
             jlsg_juechen: '绝尘',
             jlsg_juechen_info: '当你使用【杀】对其他角色造成伤害时，你可以防止此伤害，改为令其失去X点体力（X为伤害值），或减一点体力上限。',
             jlsg_shenfu: '神赋',
-            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至四张。若你本次失去的手牌有花色，你记录之，然后若你最近四次以此法记录的花色各不相同，你可以对一名角色造成1点雷电伤害。',
+            jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至四张，并记录本次失去的手牌的花色，然后若你最近四次以此法记录的花色各不相同，你可以对一名角色造成1点雷电伤害。',
+            jlsg_shenfu_append:'<span style="font-family: yuanli">失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。</span>',
+			jlsg_shenfu_faq:'花色的判定',
+			jlsg_shenfu_faq_info:'<br>失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。<br>失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。',
             jlsg_lvezhen: '掠阵',
             jlsg_lvezhen_info: '出牌阶段限一次，你使用【杀】或锦囊指定唯一目标后，可以随机获得其一张牌。',
             jlsg_youlong: '游龙',
@@ -20794,6 +20912,12 @@ const b = 1;
             jlsg_lianti_info: "锁定技，你始终横置，其他角色于你的回合内第一次受到属性伤害后，你令其再受到一次等量同属性伤害。当你受到属性伤害后，你摸牌阶段摸牌数和手牌上限+1，然后减1点体力上限。",
             jlsg_yanlie: "炎烈",
             jlsg_yanlie_info: "出牌阶段限一次，你可以弃置至少一张手牌并选择等量的其他角色，视为你对这些角色使用【铁索连环】，然后对一名横置角色造成1点火焰伤害。",
+            jlsg_fengying: "锋影",
+            jlsg_fengying_info: "当你摸一张牌前，你可以改为使用雷【杀】。每回合限四次。",
+            jlsg_zhiti: "止啼",
+            jlsg_zhiti2: "止啼",
+            jlsg_zhiti3: "止啼",
+            jlsg_zhiti_info: "当你对其他角色造成伤害时，你可以选择一项：1. 取其1点体力和体力上限；2. 取其摸牌阶段的一摸牌数。3.取其一个技能；4.令其不能使用装备牌；5.令其翻面。每项对每名其他角色限一次。",
 
             jlsg_qinyin: '琴音',
             jlsg_qinyin1: '琴音',
