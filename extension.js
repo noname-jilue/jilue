@@ -20756,7 +20756,8 @@ const b = 1;
                   '令其翻面',
                 ];
                 let options = event.options.filter((_, i) => !trigger.player.getStorage(event.name).includes(i));
-                if (!trigger.player.getStockSkills(false, true).length) {
+                event.skills = trigger.player.getStockSkills(false, true);
+                if (!event.skills.length) {
                   options.remove(event.options[2]);
                 }
                 player.chooseControl(get.prompt(event.name, trigger.player), options, 'dialogcontrol', function () {
@@ -20780,6 +20781,7 @@ const b = 1;
                     break;
                   case event.options[2]:
                     // todo
+                    player.chooseControl(event.list).set("ai", () => Math.random());
                     break;
                   case event.options[3]:
                     trigger.player.addSkill('jlsg_zhiti3');
@@ -20801,6 +20803,13 @@ const b = 1;
                     player.addSkill('jlsg_zhiti2');
                     player.storage.jlsg_zhiti2 = (player.storage.jlsg_zhiti2 || 0) + 1;
                     break;
+                  case event.options[2]:
+                    // todo
+                    if (result.bool) {
+                      player.addSkillLog(result.control);
+                      player.removeSkill(result.control);
+                    }
+                    break;
                 
                   default:
                     break;
@@ -20817,6 +20826,9 @@ const b = 1;
               },
               content:function(){
                 trigger.num+=player.storage.jlsg_zhiti2;
+                if (trigger.num < 0) {
+                  trigger.num = 0;
+                }
               },
               intro:{
                 content:function(storage,player){
