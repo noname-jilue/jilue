@@ -19969,7 +19969,6 @@ const b = 1;
               init: function (player) {
                 player.storage.jlsg_shenfu = [];
               },
-              derivation: 'jlsg_shenfu_faq',
               trigger: {
                 player: 'loseAfter',
                 global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
@@ -20717,13 +20716,12 @@ const b = 1;
             jlsg_fengying: {
               audio: "ext:极略:2",
               trigger: { player: 'drawBegin' },
+              filter(event, player) {
+                return player.getHistory('useSkill', e => e.skill == 'jlsg_fengying').length < 4;
+              },
               direct: true,
               content: function () {
                 "step 0"
-                if (!trigger.num) {
-                  trigger.cancel();
-                  return;
-                }
                 player.chooseUseTarget(
                   get.prompt2(event.name),
                   { name: 'sha', nature: 'thunder', },
@@ -20731,14 +20729,16 @@ const b = 1;
                 ).logSkill = event.name;
                 "step 1"
                 if (result.bool) {
-                  event.goto(0);
                   --trigger.num;
+                  if (trigger.num > 0 && player.getHistory('useSkill', e => e.skill == 'jlsg_fengying').length < 4) {
+                    event.goto(0);
+                  }
                 }
               }
             },
             jlsg_zhiti: {
               audio: "ext:极略:2",
-              trigger:{source:'damageBegin2'},
+              trigger: { source: 'damageBegin2' },
               filter(event, player) {
                 if (event.player == player) {
                   return false;
@@ -20748,105 +20748,119 @@ const b = 1;
               direct: true,
               content() {
                 'step 0'
-                event.options = [
+                event._options = [
                   '取其1点体力和体力上限',
                   '取其摸牌阶段的一摸牌数',
                   '取其一个技能',
                   '令其不能使用装备牌',
                   '令其翻面',
                 ];
-                let options = event.options.filter((_, i) => !trigger.player.getStorage(event.name).includes(i));
+                event.options = event._options.filter(c => !trigger.player.getStorage(event.name).includes(c));
                 event.skills = trigger.player.getStockSkills(false, true);
                 if (!event.skills.length) {
-                  options.remove(event.options[2]);
+                  event.options.remove(event._options[2]);
                 }
-                player.chooseControl(get.prompt(event.name, trigger.player), options, 'dialogcontrol', function () {
-                  return Math.floor(Math.random() * options.length);
-                })
+                player.chooseControlList(get.prompt(event.name, trigger.player), event.options, function () {
+                  return Math.floor(Math.random() * event.options.length);
+                });
+                // player.chooseControl(event.options, 'dialogcontrol', function () {
+                //   return Math.floor(Math.random() * event.options.length);
+                // }).set('prompt', get.prompt(event.name, trigger.player));
                 'step 1'
-                if (!result.bool) {
+                debugger;
+                if (result.control == 'cancel2') {
                   event.finish();
                   return;
                 }
                 player.logSkill(event.name, trigger.player);
-                game.log(player,'选择' + result.control);
-                switch (result.control) {
-                  case event.options[0]:
+                event.choice = event.options[result.index];
+                trigger.player.storage[event.name] = trigger.player.getStorage(event.name).concat(event.choice);
+                game.log(player, '选择' + event.choice);
+                switch (event.choice) {
+                  case event._options[0]:
                     trigger.player.loseHp();
                     trigger.player.loseMaxHp();
                     break;
-                  case event.options[1]:
+                  case event._options[1]:
                     trigger.player.addSkill('jlsg_zhiti2');
                     trigger.player.storage.jlsg_zhiti2 = (trigger.player.storage.jlsg_zhiti2 || 0) - 1;
                     break;
-                  case event.options[2]:
+                  case event._options[2]:
                     // todo
-                    player.chooseControl(event.list).set("ai", () => Math.random());
+                    player.chooseControl(event.skills)
+                      .set("ai", () => Math.random())
+                      .set("prompt", `获取${get.translation(trigger.player)}一个技能`);
                     break;
-                  case event.options[3]:
+                  case event._options[3]:
                     trigger.player.addSkill('jlsg_zhiti3');
                     break;
-                  case event.options[4]:
+                  case event._options[4]:
                     trigger.player.turnOver();
                     break;
-                
+
                   default:
                     break;
                 }
                 'step 2'
-                switch (result.control) {
-                  case event.options[0]:
+                switch (event.choice) {
+                  case event._options[0]:
                     player.gainMaxHp();
                     player.recover();
                     break;
-                  case event.options[1]:
+                  case event._options[1]:
                     player.addSkill('jlsg_zhiti2');
                     player.storage.jlsg_zhiti2 = (player.storage.jlsg_zhiti2 || 0) + 1;
                     break;
-                  case event.options[2]:
-                    // todo
-                    if (result.bool) {
-                      player.addSkillLog(result.control);
-                      player.removeSkill(result.control);
-                    }
+                  case event._options[2]:
+                    trigger.player.removeSkill(result.control);
+                    game.log(trigger.player, "失去了技能", result.control);
+                    player.addSkillLog(result.control);
                     break;
-                
+
                   default:
                     break;
                 }
+                'step 3'
+                game.delayx();
               },
             },
             jlsg_zhiti2: {
-              charlotte:true,
-              mark:true,
-              trigger:{player:'phaseDrawBegin'},
-              forced:true,
-              filter:function(event,player){
+              charlotte: true,
+              mark: true,
+              trigger: { player: 'phaseDrawBegin' },
+              forced: true,
+              filter: function (event, player) {
                 return !event.numFixed;
               },
-              content:function(){
-                trigger.num+=player.storage.jlsg_zhiti2;
+              content: function () {
+                trigger.num += player.storage.jlsg_zhiti2;
                 if (trigger.num < 0) {
                   trigger.num = 0;
                 }
               },
-              intro:{
-                content:function(storage,player){
+              intro: {
+                content: function (storage, player) {
                   if (player.storage.jlsg_zhiti2 > 0) {
-                    return '摸牌阶段的额定摸牌数+'+player.storage.jlsg_zhiti2;
+                    return '摸牌阶段的额定摸牌数+' + player.storage.jlsg_zhiti2;
                   }
-                  return '摸牌阶段的额定摸牌数-'+(-player.storage.jlsg_zhiti2);
+                  return '摸牌阶段的额定摸牌数-' + (-player.storage.jlsg_zhiti2);
                 },
+                markcount: function (storage, player) {
+                  return Math.abs(player.storage.jlsg_zhiti2);
+                }
               },
+              ai: {
+                halfneg: true,
+              }
             },
             jlsg_zhiti3: {
-              intro:{
-                content:'不能使用装备牌',
+              intro: {
+                content: '不能使用装备牌',
               },
-              mark:true,
-              mod:{
-                cardEnabled:function(card,player){
-                  if(get.type(card) == 'equip') return false;
+              mark: true,
+              mod: {
+                cardEnabled: function (card, player) {
+                  if (get.type(card) == 'equip') return false;
                 },
               },
             },
@@ -20903,9 +20917,7 @@ const b = 1;
             jlsg_juechen_info: '当你使用【杀】对其他角色造成伤害时，你可以防止此伤害，改为令其失去X点体力（X为伤害值），或减一点体力上限。',
             jlsg_shenfu: '神赋',
             jlsg_shenfu_info: '当你失去手牌后，你可以将手牌补至四张，并记录本次失去的手牌的花色，然后若你最近四次以此法记录的花色各不相同，你可以对一名角色造成1点雷电伤害。',
-            jlsg_shenfu_append:'<span style="font-family: yuanli">失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。</span>',
-			jlsg_shenfu_faq:'花色的判定',
-			jlsg_shenfu_faq_info:'<br>失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。<br>失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。',
+            jlsg_shenfu_append: '<span style="font-family: yuanli">失去多张手牌则记录无花色。结算不同花色时，无花色视为第五种花色。</span>',
             jlsg_lvezhen: '掠阵',
             jlsg_lvezhen_info: '出牌阶段限一次，你使用【杀】或锦囊指定唯一目标后，可以随机获得其一张牌。',
             jlsg_youlong: '游龙',
@@ -21181,17 +21193,13 @@ const b = 1;
             },
             jlsgsy_wushuang: {
               audio: "ext:极略:1",
-              gruop: ['jlsgsy_wushuang1', 'jlsgsy_wushuang2'],
+              group: ['jlsgsy_wushuang1', 'jlsgsy_wushuang2', 'jlsgsy_wushuang3'],
             },
             jlsgsy_wushuang1: {
-              inherit: 'wushuang',
-              audio: 'jlsgsy_wushuang',
-            },
-            jlsgsy_wushuang2: {
               audio: 'jlsgsy_wushuang',
               trigger: { player: 'useCard' },
               filter: function (event, player) {
-                return get.tag(event.card, 'damage');
+                return get.tag(event.card, 'damage') && (get.number(event.card, player) & 1 === 1);
               },
               forced: true,
               direct: true,
@@ -21202,14 +21210,71 @@ const b = 1;
                 }
               },
             },
+            jlsgsy_wushuang2: {
+              audio: 'jlsgsy_wushuang',
+              trigger: { player: 'useCardToPlayered' },
+              forced: true,
+              filter: function (event, player) {
+                return event.card.name == 'sha' && !event.getParent().directHit.contains(event.target);
+              },
+              logTarget: 'target',
+              content: function () {
+                var id = trigger.target.playerid;
+                var map = trigger.getParent().customArgs;
+                if (!map[id]) map[id] = {};
+                if (typeof map[id].shanRequired == 'number') {
+                  map[id].shanRequired++;
+                }
+                else {
+                  map[id].shanRequired = 2;
+                }
+              },
+              ai: {
+                directHit_ai: true,
+                skillTagFilter: function (player, tag, arg) {
+                  if (arg.card.name != 'sha' || arg.target.countCards('h', 'shan') > 1) return false;
+                },
+              },
+            },
+            jlsgsy_wushuang3: {
+              audio: 'jlsgsy_wushuang',
+              trigger: { player: 'useCardToPlayered', target: 'useCardToTargeted' },
+              forced: true,
+              logTarget: function (trigger, player) {
+                return player == trigger.player ? trigger.target : trigger.player
+              },
+              filter: function (event, player) {
+                return event.card.name == 'juedou';
+              },
+              //priority:-1,
+              content: function () {
+                var id = (player == trigger.player ? trigger.target : trigger.player)['playerid'];
+                var idt = trigger.target.playerid;
+                var map = trigger.getParent().customArgs;
+                if (!map[idt]) map[idt] = {};
+                if (!map[idt].shaReq) map[idt].shaReq = {};
+                if (!map[idt].shaReq[id]) map[idt].shaReq[id] = 1;
+                map[idt].shaReq[id]++;
+              },
+              ai: {
+                directHit_ai: true,
+                skillTagFilter: function (player, tag, arg) {
+                  if (arg.card.name != 'juedou' || Math.floor(arg.target.countCards('h', 'sha') / 2) > player.countCards('h', 'sha')) return false;
+                }
+              }
+            },
             jlsgsy_xiuluo: {
               audio: "ext:极略:1",
               trigger: { target: "useCardToTargeted" },
               filter: function (event, player) {
-                return event.targets.length == 1;
+                return event.targets && event.targets.length === 1 
+                  && (event.card.name == 'sha' || get.type(event.card) == 'trick');
               },
               check: function (event, player) {
                 return get.effect(player, { name: 'juedou' }, event.player, player) + 4 > get.effect(player, event.card, event.player, player);
+              },
+              frequent: function (event, player) {
+                return event.card.name != 'juedou';
               },
               content: function () {
                 'step 0'
@@ -22268,17 +22333,16 @@ const b = 1;
             },
             jlsgsy_kuangxi: {
               audio: "ext:极略:2", // audio: ['kuangxi', 2],
-              trigger: { player: 'useCard' },
+              trigger: { player: 'useCardEnd' },
               filter: function (event, player) {
-                if (_status.currentPhase != player) return false;
-                if (!event.targets || !event.card) return false;
+                if (!event.targets || event.targets.length == 0 || !event.card) return false;
                 if (event.card.name == 'wuxie') return false;
-                if (event.targets.length <= 1 && event.targets.contains(player)) return false;
-                var type = get.type(event.card);
-                if (type != 'trick') return false;
-                return true;
+                return get.type(event.card, 'trick') == 'trick';
               },
               check: function (event, player) {
+                if (player.hp == 1) {
+                  return false;
+                }
                 var att = 0;
                 for (var i = 0; i < event.targets.length; i++) {
                   if (event.targets[i] != player) {
@@ -22287,24 +22351,19 @@ const b = 1;
                 }
                 return att > 1;
               },
-              unique: true,
               content: function () {
                 "step 0"
-                trigger.untrigger();
-                trigger.finish();
+                event.evt = player.useCard({ name: 'sha',jlsgsy_kuangxi: true  }, trigger.targets.slice(), false);
                 "step 1"
-                var list = [];
-                for (var i = 0; i < trigger.targets.length; i++) {
-                  if (trigger.targets[i] != player) {
-                    list.push(trigger.targets[i]);
-                  }
+                let evt = player.getHistory('sourceDamage', e => e.getParent(2) === event.evt);
+                if (!evt.length) {
+                  player.loseHp();
                 }
-                player.useCard({ name: 'sha' }, list, false);
               },
               ai: {
                 effect: {
                   player: function (card, player, target) {
-                    if (get.type(card) == 'trick') return [1, 3];
+                    if (get.type(card) == 'trick') return [1, 2];
                   },
                 },
               },
@@ -22540,6 +22599,9 @@ const b = 1;
             jlsgsy_baonulvbu: '暴怒',
             jlsgsy_baonulvbu_info: '锁定技，当你的体力值降至4或更低时，你进入暴怒状态并立即开始你的回合。',
             jlsgsy_wushuang: '无双',
+            jlsgsy_wushuang1: '无双',
+            jlsgsy_wushuang2: '无双',
+            jlsgsy_wushuang3: '无双',
             jlsgsy_wushuang_info: '锁定技，当你使用【杀】或【决斗】指定目标后，你令此牌需要依次使用或打出两张【闪】或【杀】响应。你点数为奇数的伤害牌的伤害基数固定为3。',
             jlsgsy_xiuluo: '修罗',
             jlsgsy_xiuluo_info: '当你成为【杀】或非延时锦囊的唯一目标后，你可以摸一张牌并将此牌的效果改为【决斗】。',
@@ -22568,7 +22630,7 @@ const b = 1;
             jlsgsy_huoxin_info: '你对其他角色造成伤害，或受到其他角色造成的伤害后，你可令该角色交给你一张装备区内的装备牌 ，或者失去一点体力。',
             jlsgsy_baonucaifuren_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒蔡夫人并立即开始你的回合',
             jlsgsy_shiao_info: '回合开始阶段开始时，你可以视为对手牌数少于你的一名其他角色使用一张【杀】；回合结束阶段开始时你可以视为对手牌数大于你的一名其他角色使用一张【杀】',
-            jlsgsy_kuangxi_info: '出牌阶段，当你使用非延时锦囊牌指定其他角色为目标后，你可以终止此牌的结算，改为视为对这些目标依次使用一张【杀】(不计入出牌阶段的使用限制)',
+            jlsgsy_kuangxi_info: '你使用锦囊牌后，可以视为对此牌的目标使用【杀】。若你以此法没有造成伤害，你失去1点体力。',
             jlsgsy_baonuweiyan_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒魏延并立即开始你的回合',
             jlsgsy_fangu_info: '锁定技，每当你受到一次伤害后，当前回合结束，你执行1个额外回合',
 
@@ -24886,6 +24948,7 @@ Visit Repository</a><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK王朗</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK吴苋</div><br>
 &ensp; 修复水淹七军效果优先级<br>
+&ensp; 修改三英武将技能<br>
 &ensp; 根据无名杀新框架修改 拜月 重写 国士 婉柔 救主 突围 伏射<br>
 <span style="font-size: large;">历史：</span><br>
 2022.12.02更新<br>
