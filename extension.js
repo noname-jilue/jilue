@@ -25092,6 +25092,11 @@ const b = 1;
         intro: "锁定技，当你同时装备了七杀宝物、进攻马与防御马时，你选择将你装备区中的一张坐骑或是七杀宝物置入弃牌堆。",
         init: false,
       },
+      // identityZhuSkill: {
+      //   name: "极略主公技",
+      //   intro: "移除主公的主公技，改为开局从主公技能池中挑选。",
+      //   init: false,
+      // },
       jlsg_identity_music_image: {
         name: "身份模式背景＆音乐",
         init: false
@@ -25157,13 +25162,12 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.5.0122",
+      version: "2.5.0225",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-新春快乐!<br>
 新QQ群：392224094<br>
-2023.01.23更新<br>
+2023.02.25更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK孙亮</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神许褚</div><br>
 &ensp; 修改 三英神董卓<br>
