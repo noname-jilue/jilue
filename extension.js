@@ -278,6 +278,7 @@ const b = 1;
             'jlsgsk_jushou',
             'jlsgsk_yanyan',
             'jlsgsoul_daqiao',
+            'jlsgsk_zhugezhan',
           ],
           bp: [
             'jlsgsr_zhouyu',
@@ -393,6 +394,7 @@ const b = 1;
               'jlsgsk_xinxianying',
               'jlsgsk_wuxian',
               'jlsgsk_wanglang',
+              'jlsgsk_zhugezhan',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -576,7 +578,7 @@ const b = 1;
             jlsg_sk: {
               jlsg_tiangang: ['jlsgsk_xuyou', 'jlsgsk_dengzhi', 'jlsgsk_dongyun', 'jlsgsk_kuaiyue', 'jlsgsk_yuji',
                 'jlsgsk_panshu', 'jlsgsk_zhangrang', 'jlsgsk_xinxianying', 'jlsgsk_wuxian', 'jlsgsk_jushou',
-                'jlsgsk_wenyang',],
+                'jlsgsk_wenyang', 'jlsgsk_zhugezhan'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng',
                 'jlsgsk_zhoufei', 'jlsgsk_liuchen', 'jlsgsk_xiahoushi', 'jlsgsk_yanyan'],
@@ -694,6 +696,7 @@ const b = 1;
             jlsgsk_sunliang: ["male", 'wu', 3, ["jlsg_kuizhu", "jlsg_chezheng"], []],
             jlsgsk_wenyang: ["male", 'wei', 7, ["jlsg_jueyong", "jlsg_choujue"], []],
             jlsgsk_yanyan: ["male", 'shu', 4, ["jlsg_juzhan"], []],
+            jlsgsk_zhugezhan: ["male", 'shu', 4, ["jlsg_zuilun", "jlsg_fuzhi"], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -10102,6 +10105,77 @@ const b = 1;
                   .set('avg', avg);
               }
             },
+            jlsg_zuilun: {
+              audio: "ext:极略:2",
+              trigger: { player: 'phaseJieshuBegin' },
+              forced: true,
+              content() {
+                'step 0'
+                var evts = player.getHistory('lose', e => e.type == 'discard');
+                if (!evts.length) {
+                  player.draw(4);
+                  event.goto(2);
+                } else {
+                  player.chooseTarget(lib.filter.notMe, true)
+                    .set('prompt2', '令其摸四张牌')
+                    .set('ai', p => get.attitude(_status.event.player, p) + Math.random());
+                }
+                'step 1'
+                if (result.bool) {
+                  result.targets[0].draw(4, player);
+                }
+                'step 2'
+                var evts = game.getGlobalHistory('changeHp', e => e.player == player && e.getParent().name == 'recover');
+                if (!evts.length) {
+                  player.loseHp();
+                  event.goto(4);
+                } else {
+                  player.chooseTarget(lib.filter.notMe, true)
+                    .set('prompt2', '令其失去1点体力')
+                    .set('ai', p => get.attitude(_status.event.player, p) * jlsg.getLoseHpEffect(p));
+                }
+                'step 3'
+                if (result.bool) {
+                  result.targets[0].loseHp();
+                }
+                'step 4'
+                var evts = player.getHistory('sourceDamage');
+                if (!evts.length) {
+                  player.loseMaxHp();
+                  event.finish();
+                } else {
+                  player.chooseTarget(lib.filter.notMe, true)
+                    .set('prompt2', '令其减1点体力上限')
+                    .set('ai', p => get.attitude(_status.event.player, p) * (p.isHealthy() ? 1 : 0.4) + Math.random() * 2);
+                }
+                'step 5'
+                if (result.bool) {
+                  result.targets[0].loseMaxHp();
+                }
+              }
+            },
+            jlsg_fuzhi: {
+              audio: "ext:极略:2",
+              animationColor: 'thunder',
+              skillAnimation: true,
+              juexingji: true,
+              trigger: { player: 'phaseZhunbeiBegin' },
+              forced: true,
+              filter(event, player) {
+                return player.hp == 1;
+              },
+              derivation:['jlsg_yaozhi', 'jlsg_xingyun'],
+              content() {
+                'step 0'
+                player.awakenSkill('jlsg_fuzhi');
+                player.gainMaxHp();
+                player.recover();
+                'step 1'
+                player.removeSkill('jlsg_zuilun');
+                player.addSkillLog('jlsg_yaozhi');
+                player.addSkillLog('jlsg_xingyun');
+              }
+            },
           },
           translate: {
             jlsg_sk: "SK武将",
@@ -10194,6 +10268,7 @@ const b = 1;
             jlsgsk_sunliang: 'SK孙亮',
             jlsgsk_wenyang: 'SK文鸯',
             jlsgsk_yanyan: 'SK严颜',
+            jlsgsk_zhugezhan: 'SK诸葛瞻',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -10423,7 +10498,10 @@ const b = 1;
             jlsg_choujue_info: '出牌阶段限一次，你可以减一半（向下取整，至少为1）体力上限并视为使用【杀】（无次数限制），当你以此法造成伤害时，令你所有出牌阶段限一次的技能视为未发动过。',
             jlsg_juzhan: '拒战',
             jlsg_juzhan_info: '其他角色的出牌阶段开始时，你可以摸X张牌，然后令其视为对你使用【杀】，若此【杀】对你造成了伤害，除非其弃置X张牌(X为你已损失体力且至多为5)，否则结束此出牌阶段。 ',
-
+            jlsg_zuilun: "罪论",
+            jlsg_zuilun_info: "锁定技，回合结束阶段，若你本回合内没有弃置牌/回复体力/造成伤害，你摸四张牌/失去1点体力/减一点体力上限，否则将此效果改为令另一名角色执行。",
+            jlsg_fuzhi: "父志",
+            jlsg_fuzhi_info: "觉醒技，回合开始阶段，若你的体力为1，你加1点体力上限并回复1点体力，失去〖罪论〗并获得〖妖智〗和〖星陨〗。",
             jlsg_jiaomei_info: '出牌阶段限一次，当你使用【杀】或非延时锦囊牌指定目标后，你可以令其横置。若其已横置，改为令其重置并翻面。',
             jlsg_huoshui_info: '回合结束阶段，你可以依次获得已横置角色的一张牌，然后对所有武将牌背面向上的角色造成1点伤害。',
             jlsg_fenji_info: '当一名角色成为【杀】的目标后，你可以失去1点体力，然后令该角色摸两张牌。',
