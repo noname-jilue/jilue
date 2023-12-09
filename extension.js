@@ -9914,7 +9914,7 @@ const b = 1;
                         lib.skill.mozhix.viewAs = card;
                       }, card)
                     }
-                    next.logSkill = 'mozhi';
+                    next.logSkill = 'jlsg_shibei';
                     next.set('openskilldialog', '矢北：将一张手牌当' + get.translation(card) + '使用');
                     next.set('norestore', true);
                     next.set('_backupevent', 'mozhix');
@@ -28140,6 +28140,7 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">水淹七军 关羽</div><br>
 &ensp; 修复三英神袁绍无法暴怒的问题<br>
 &ensp; 允许SP神貂蝉控制的角色赠予装备<br>
+&ensp; 修复 SK沮授 矢北 语音<br>
 &ensp; 重写 SR甘宁 劫袭<br>
 <span style="font-size: large;">历史：</span><br>
 2023.11.05更新<br>
