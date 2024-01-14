@@ -192,6 +192,7 @@ const b = 1;
             'jlsgsk_hetaihou',
             'jlsgsoul_sp_diaochan',
             'jlsgsk_shamoke',
+            'jlsgsk_zhaoyan',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -281,6 +282,7 @@ const b = 1;
             'jlsgsk_zhangyi',
             'jlsgsk_caochun',
             'jlsgsk_syqj_guanyu',
+            'jlsgsk_beimihu',
           ],
           bp: [
             'jlsgsr_zhouyu',
@@ -406,6 +408,8 @@ const b = 1;
               'jlsgsk_zhaoxiang',
               'jlsgsk_lvfan',
               'jlsgsk_hetaihou',
+              'jlsgsk_zhaoyan',
+              'jlsgsk_beimihu',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -666,7 +670,7 @@ const b = 1;
                 'jlsgsk_panshu', 'jlsgsk_zhangrang', 'jlsgsk_xinxianying', 'jlsgsk_wuxian', 'jlsgsk_jushou',
                 'jlsgsk_wenyang', 'jlsgsk_zhugezhan', 'jlsgsk_sunru', 'jlsgsk_liuyan', 'jlsgsk_guohuanghou',
                 'jlsgsk_zhaoxiang', 'jlsgsk_lvfan', 'jlsgsk_hetaihou', 'jlsgsk_zhangyi', 'jlsgsk_caochun',
-                'jlsgsk_shamoke', 'jlsgsk_lingcao',],
+                'jlsgsk_shamoke', 'jlsgsk_lingcao', 'jlsgsk_zhaoyan', 'jlsgsk_beimihu'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng',
                 'jlsgsk_zhoufei', 'jlsgsk_liuchen', 'jlsgsk_xiahoushi', 'jlsgsk_yanyan', 'jlsgsk_panzhang',
@@ -799,6 +803,8 @@ const b = 1;
             jlsgsk_caochun: ["male", 'wei', 4, ["jlsg_shanjia"], []],
             jlsgsk_shamoke: ["male", 'shu', 4, ["jlsg_jili"], []],
             jlsgsk_lingcao: ["male", 'wu', 4, ["jlsg_dujin"], []],
+            jlsgsk_zhaoyan: ["female", 'wu', 3, ["jlsg_sanjue"], []],
+            jlsgsk_beimihu: ["female", 'qun', 3, ["jlsg_canshi", "jlsg_xianji"], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -8284,7 +8290,7 @@ const b = 1;
                 var player = _status.event.player;
                 var cards = _status.event.player.getExpansions('jlsg_jijun').filter(c => c.suit == get.suit(card, player));
                 if (cards.length != 0 && cards[0].number > get.number(card, player)) return -1;
-                return get.number(card, player) - get.value(card);
+                return get.number(card, player) - get.value(card) + 1;
               },
               filterCard: function (card) {
                 var suit = get.suit(card);
@@ -8344,8 +8350,11 @@ const b = 1;
                   return true;
                 }
                 next.ai = function (button) {
-                  return button.link[2] === _status.event.choice[0] &&
-                    (button.link[3] || true) === (_status.event.choice[1] || true);
+                  if (!_status.event.choice) {
+                    return -1;
+                  }
+                  return (button.link[2] === _status.event.choice[0] &&
+                    (button.link[3] || true) === (_status.event.choice[1] || true)) ? 1 : 0;
                 }
                 next.choice = choice;
                 'step 3'
@@ -8357,6 +8366,7 @@ const b = 1;
                 player.chooseUseTarget(event.card, true, 'nodistance');
               },
               ai: {
+                order: 8,
                 result: {
                   player: 1,
                 },
@@ -11494,6 +11504,167 @@ const b = 1;
                 neg: true,
               }
             },
+            jlsg_sanjue: {
+              audio: "ext:极略:3",
+              trigger: { player: 'useCard' },
+              filter: function (event, player) {
+                let s = player.storage.jlsg_sanjue || {};
+                return !s[event.card.name] || s[event.card.name] == 2;
+              },
+              forced: true,
+              content: function () {
+                player.draw();
+                player.storage.jlsg_sanjue = player.storage.jlsg_sanjue || {};
+                player.storage.jlsg_sanjue[trigger.card.name] = (player.storage.jlsg_sanjue[trigger.card.name] || 0) + 1;
+                var skills = new Set(
+                  jlsg.characterList
+                    .filter(c => lib.character[c][1] == 'wu')
+                    .map(c => lib.character[c][3])
+                    .flat()
+                    .filter(s => !get.info(s).charlotte)
+                );
+                for (let s of player.getSkills()) {
+                  skills.delete(s);
+                }
+                let skill = [...skills].randomGet();
+                if (skill) {
+                  player.addSkillLog(skill);
+                }
+              },
+              group: 'jlsg_sanjue2',
+            },
+            jlsg_sanjue2: {
+              audio: 'jlsg_sanjue',
+              trigger: { player: 'phaseUseBegin' },
+              direct: true,
+              content() {
+                'step 0'
+                player.chooseTarget(get.prompt2(event.name))
+                  .set('ai', p => get.attitude(player, p) - Math.random() * 2)
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                player.logSkill(event.name, result.targets);
+                var skills = new Set(
+                  jlsg.characterList
+                    .map(c => lib.character[c][3])
+                    .flat()
+                    .filter(s => !get.info(s).charlotte)
+                );
+                for (let s of result.targets[0].getSkills()) {
+                  skills.delete(s);
+                }
+                let skill = [...skills].randomGet();
+                if (skill) {
+                  result.targets[0].addSkillLog(skill);
+                }
+              },
+            },
+            jlsg_canshi: {
+              audio: "ext:极略:2",
+              trigger: {
+                global: ["recoverAfter", "gainMaxHpAfter"],
+                player: "damageEnd",
+              },
+              filter(event, player) {
+                if (event.name == "damage") {
+                  return event.source && event.source != player;
+                }
+                return event.player != player;
+              },
+              check:() => true,
+              marktext: '蚕',
+              intro: {
+                name: '蚕食',
+                name2: '蚕',
+                content: 'mark',
+              },
+              content() {
+                'step 0'
+                var target = trigger.player;
+                if (trigger.name == "damage") {
+                  target = trigger.source;
+                }
+                target.addMark('jlsg_canshi');
+                'step 1'
+                player.draw(2);
+              },
+              global: "jlsg_canshi_debuff",
+              subSkill: {
+                debuff: {
+                  mod: {
+                    maxHandcard: function (player, num) {
+                      return num - player.countMark('jlsg_canshi');
+                    }
+                  }
+                }
+              },
+              ai:{
+                maixie:true,
+                maixie_hp:true,
+                maixie_defend:true,
+              }
+            },
+            jlsg_xianji: {
+              audio: "ext:极略:2",
+              trigger: {
+                player: 'phaseZhunbeiBegin',
+              },
+              filter(event, player) {
+                return game.hasPlayer(p => p != player 
+                  && p.countMark('jlsg_canshi') > p.maxHp
+                  && !p.storage.jlsg_xianji
+                  )
+              },
+              direct: true,
+              skillAnimation:true,
+              animationColor:'metal',
+              intro: {
+                content: "无法作为〖献祭〗的目标",
+              },
+              content() {
+                'step 0'
+                player.chooseTarget(get.prompt2(event.name), (_, player, target) => target != player 
+                && target.countMark('jlsg_canshi') > target.maxHp
+                && !target.storage.jlsg_xianji).set('ai',() =>Math.random());
+                'step 1'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                player.storage.jlsg_xianji = true;
+                player.markSkill('jlsg_xianji');
+                var target = result.targets[0];
+                event.target = target;
+                player.logSkill(event.name, target);
+                target.removeMark('jlsg_canshi');
+
+                var targetSkills=target.getSkills(null,false,false).filter(function(i){
+                  var info=get.info(i);
+                  return info&&!info.charlotte;
+                });
+                if (targetSkills.length) {
+                  player.gainMaxHp(targetSkills.length);
+                  player.recover(targetSkills.length);
+                }
+                'step 2'
+                var target = event.target;
+                var skills=player.getSkills(null,false,false).filter(function(i){
+                  var info=get.info(i);
+                  return info&&!info.charlotte;
+                });
+                var targetSkills=target.getSkills(null,false,false).filter(function(i){
+                  var info=get.info(i);
+                  return info&&!info.charlotte;
+                });
+                player.removeSkill(skills);
+                target.removeSkill(targetSkills);
+                player.addSkill(targetSkills);
+                target.addSkill(skills);
+              }
+            },
           },
           translate: {
             jlsg_sk: "SK武将",
@@ -11602,6 +11773,8 @@ const b = 1;
             jlsgsk_caochun: 'SK曹纯',
             jlsgsk_shamoke: 'SK沙摩柯',
             jlsgsk_lingcao: 'SK凌操',
+            jlsgsk_zhaoyan: 'SK赵嫣',
+            jlsgsk_beimihu: 'SK卑弥呼',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -11882,6 +12055,15 @@ const b = 1;
             jlsg_dujin: "独进",
             jlsg_dujin2: "独进",
             jlsg_dujin_info: "锁定技，你使用【杀】无次数限制。你于出牌阶段内使用的第一张【杀】的伤害+1且不能被【闪】响应，其余的【杀】被其他角色的【闪】响应后，其对你造成1点伤害。",
+            jlsg_sanjue: "三绝",
+            jlsg_sanjue2: "三绝",
+            jlsg_sanjue_info: "锁定技，当你第一次或第三次使用同名牌时，你摸一张牌，然后获得一个随机吴势力技能。出牌阶段开始时，你可以令一名角色获得一个随机技能。",
+            jlsg_sanjue2_info: "出牌阶段开始时，你可以令一名角色获得一个随机技能。",
+            jlsg_canshi: "蚕食",
+            jlsg_canshi_info: "当其他角色回复体力/加体力上限/对你造成伤害后，你可以令其获得1枚「蚕食」标记，然后你摸两张牌。拥有此标记的角色手牌上限-X(X为标记数)。",
+            jlsg_xianji: "献祭",
+            jlsg_xianji_info: "回合开始阶段，你可以选择一名拥有「蚕食」标记数大于其体力上限的其他角色并移除其所有「蚕食」标记。若如此做，你加X点体力上限并回复X点体力(X为目标角色拥有的技能数)，然后与其交换所有技能且你于本局游戏中不能成为〖献祭〗的目标。",
+
 
             jlsg_limu: "立牧",
             jlsg_limu_info: "出牌阶段限一次，你可以将方片牌当【乐不思蜀】对自己使用，然后回复1点体力并摸X张牌(X为 此牌的点数)；若你的判定区里有牌，你使用牌无次数限制。",
@@ -12272,7 +12454,7 @@ const b = 1;
             },
             jlsg_syqj_wusheng2: {
               audio: false,
-              trigger: {player: 'useCardToPlayered'},
+              trigger: { player: 'useCardToPlayered' },
               filter(event, player) {
                 return event.skill === 'jlsg_syqj_wusheng' && event.isFirstTarget;
               },
@@ -12282,7 +12464,7 @@ const b = 1;
                 'step 0'
                 player.draw();
                 'step 1'
-                player.chooseToDiscard(`###${get.prompt(event.name, trigger.targets)}###弃置一~三张手牌，然后目标弃置等量的牌`, [1,3])
+                player.chooseToDiscard(`###${get.prompt(event.name, trigger.targets)}###弃置一~三张手牌，然后目标弃置等量的牌`, [1, 3])
                   .set('ai', c => 9 - get.value(card) - (get.color(card) == 'red' ? 1 : 0) - 2 * ui.selected.cards.length + Math.random());
                 'step 2'
                 if (!result.bool) {
@@ -12300,9 +12482,9 @@ const b = 1;
               onremove(player) {
                 player.removeMark('jlsg_syqj_wusheng_buff', Infinity);
               },
-              mod:{
-                cardUsable:function(card,player,num){
-                  if(card.name=='sha') return num+player.countMark('jlsg_syqj_wusheng_buff');
+              mod: {
+                cardUsable: function (card, player, num) {
+                  if (card.name == 'sha') return num + player.countMark('jlsg_syqj_wusheng_buff');
                 },
               },
             }
@@ -15424,8 +15606,8 @@ const b = 1;
                   event.finish();
                   return;
                 }
-                if (lib.filter.targetEnabled2({name: 'guohe'}, player,target)) {
-                  player.useCard({name: 'guohe'}, target);
+                if (lib.filter.targetEnabled2({ name: 'guohe' }, player, target)) {
+                  player.useCard({ name: 'guohe' }, target);
                 }
                 'step 2'
                 if (!player.canCompare(target)) {
@@ -21176,17 +21358,17 @@ const b = 1;
                   marktext: '离',
                   intro: {
                     name: '离魂',
-                    content: '使用牌无次数距离限制，且可以指定任意角色为目标',
+                    content: '使用牌无次数距离限制，且可以指定任意角色为目标，且可指定任意名目标',
                   },
                   mod: {
                     cardUsable: function (card, player, num) {
                       return Infinity;
                     },
-                    cardGiftable: function (card, player) {
-                      if (get.position(card) == 'h' && get.type(card) == 'equip') {
-                        return true;
-                      }
-                    },
+                    // cardGiftable: function (card, player) {
+                    //   if (get.position(card) == 'h' && get.type(card) == 'equip') {
+                    //     return true;
+                    //   }
+                    // },
                     targetInRange: function (card) {
                       return true;
                     },
@@ -21194,6 +21376,30 @@ const b = 1;
                       let info = get.info(card);
                       if (info.selectTarget && info.selectTarget !== -1) {
                         return true;
+                      }
+                      if (info.modTarget) {
+                        if(typeof info.modTarget=='boolean') return info.modTarget;
+                        if(typeof info.modTarget=='function') return Boolean(info.modTarget(card,player,target));
+                      }
+                    },
+                    selectTarget(card, player, num) {
+                      if(get.info(card).allowMultiple === false) {
+                        if (num[1] < 0) {
+                          if (num[0] === num[1]) {
+                            num[0] = 1;
+                          }
+                          num[1] = 1;
+                        }
+                        return;
+                      }
+                      if (num[1] > 0) {
+                        num[1] = Infinity;
+                        return;
+                      }
+                      if (get.info(card, player).filterTarget) {
+                        num[0] = 0;
+                        num[1] = Infinity;
+                        return;
                       }
                     }
                   }
@@ -24118,7 +24324,7 @@ const b = 1;
             jlsg_guiqu_backup: '鬼躯',
             jlsg_guiqu_info: '锁定技，你的手牌上限为你的技能数，当你处于濒死状态时，你可以失去一个技能，视为使用【桃】',
             jlsg_lihun: '离魂',
-            jlsg_lihun_info: '回合结束时，你可以选择一名其他角色， 该角色进行一个由你操控的额外回合，且于此额外回合内可以使用任意装备牌发动赠予，使用牌可以选择任意角色为目标，无距离和次数限制。',
+            jlsg_lihun_info: '回合结束时，你可以选择一名其他角色， 该角色进行一个由你操控的额外回合，且于此额外回合内使用牌可以选择任意名角色，可以选择任意角色为目标，无距离和次数限制。', // 可以使用任意装备牌发动赠予
             jlsg_jueshi: '绝世',
             jlsg_jueshi2: '绝世',
             jlsg_jueshi_info: '锁定技，你的体力上限始终为1点。当你进入濒死状态时，你随机使用所有角色手牌和牌堆里的【桃】/【酒】/【梅】，直到你脱离濒死状态。',
@@ -28126,7 +28332,7 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.5.1105",
+      version: "2.6.0109",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
@@ -28134,30 +28340,21 @@ Visit Repository</a><br>
 <span onclick="if (jlsg) jlsg.openLink('https://keu1vrp2sz.feishu.cn/docx/CpsrdV4sDoazzUxzChMcqGjIneh')" 
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 汇报bug点我</span><br>
-2023.12.02更新<br>
+2024.12.09更新<br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK赵嫣</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK卑弥呼</div><br>
+&ensp; 修复SK张梁 集军 AI<br>
+&ensp; 修改SP神貂蝉 离魂。现在目标可以多指。修改相关描述<br>
+<span style="font-size: large;">历史：</span><br>
+2023.12.09更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="orangemm">SK神小乔</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK凌操</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">水淹七军 关羽</div><br>
 &ensp; 修复三英神袁绍无法暴怒的问题<br>
 &ensp; 允许SP神貂蝉控制的角色赠予装备<br>
+&ensp; 修复 多位武将的语音<br>
 &ensp; 修复 SK沮授 矢北 语音<br>
 &ensp; 重写 SR甘宁 劫袭<br>
-<span style="font-size: large;">历史：</span><br>
-2023.11.05更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK曹纯</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK沙摩柯</div><br>
-&ensp; 接入无名杀 武将前缀接口<br>
-&ensp; 增加与无名杀新版本语音的兼容性，修复三英神司马懿等武将的配音<br>
-&ensp; 修复 SR貂蝉 拜月获得牌范围<br>
-&ensp; 修改 SK刘谌 战绝 顶装备时的结算<br>
-&ensp; 修复 SK曹节 掷玺 AI报错<br>
-&ensp; 修改左慈化身SK吴苋 怠宴时的互动。现在再次获得怠宴后发动技能次数仍然保留<br>
-&ensp; 允许SP神吕布 鬼躯发动时失去鬼躯<br>
-&ensp; 优化SP神貂蝉 离魂 UX<br>
-&ensp; 优化SK何太后 戚乱 AI 修复描述<br>
-&ensp; 修复SK陈群 品第 AI<br>
-&ensp; 修改三英神司马懿 变天 结算机制<br>
-&ensp; 修复SK严颜 拒战<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
