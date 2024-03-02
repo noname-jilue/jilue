@@ -25047,9 +25047,16 @@ const b = 1;
                   return;
                 }
                 player.logSkill(event.name, target);
+                if (skills.length == 1) {
+                  event._result = {
+                    bool: true,
+                    links: skills,
+                  };
+                  return;
+                }
                 var next=player.chooseButton([
                   `玲珑：请选择${get.translation(target)}失去的技能`,
-                  [skills.map(get.translation),'tdnodes'],
+                  [skills.map(s=>[s, get.translation(s)]),'tdnodes'],
                 ]);
                 next.set('forced',true);
                 'step 2'
