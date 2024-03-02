@@ -18999,6 +18999,26 @@ const b = 1;
                 }
                 player.addTempSkill(result.control, removeT);
               },
+              ai:{
+                maixie:true,
+                maixie_hp:true,
+                effect:{
+                  target(card,player,target){
+                    if(get.tag(card,'damage')){
+                      if(player.hasSkillTag('jueqing',false,target)) return [1,-2];
+                      if(!target.hasFriend()) return;
+                      let num=1;
+                      if(get.attitude(player,target)>0){
+                        if(player.needsToDiscard()) num=0.7;
+                        else num=0.5;
+                      }
+                      if(target.hp>=4) return [1,num*2];
+                      if(target.hp==3) return [1,num*1.5];
+                      if(target.hp==2) return [1,num*0.5];
+                    }
+                  }
+                }
+              },
               group: 'jlsg_yaozhi_use',
             },
             jlsg_yaozhi_use: {
@@ -29585,6 +29605,7 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK兀突骨</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">三英神孙鲁班</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SP神黄月英</div><br>
+&ensp; 为SP神诸葛亮 妖智 添加卖血AI<br>
 &ensp; 修复SK赵襄 报错<br>
 &ensp; 修复SK神小乔 星舞 弃牌<br>
 &ensp; 修复SK神小乔 沉鱼 为锁定技<br>
