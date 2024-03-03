@@ -9989,7 +9989,7 @@ const b = 1;
                   return false;
                 }
                 let evt = event.getParent();
-                return evt.name == 'phase' && evt.player == player && evt.step == 4;
+                return evt.name == 'phase' && evt.player == player && evt.phaseList[evt.num] == 'phaseUse';
               },
               direct: true,
               content() {
@@ -10267,6 +10267,10 @@ const b = 1;
                   result.targets[0].loseHp();
                 }
                 'step 4'
+                if (!player.isIn()) {
+                  event.finish();
+                  return;
+                }
                 var evts = player.getHistory('sourceDamage');
                 if (!evts.length) {
                   player.loseMaxHp();
@@ -10274,7 +10278,7 @@ const b = 1;
                 } else {
                   player.chooseTarget(lib.filter.notMe, true)
                     .set('prompt2', '令其减1点体力上限')
-                    .set('ai', p => get.attitude(_status.event.player, p) * (p.isHealthy() ? 1 : 0.4) + Math.random() * 2);
+                    .set('ai', p => get.attitude(_status.event.player, p) * (p.isHealthy() ? -1 : -0.4) + Math.random() * 2);
                 }
                 'step 5'
                 if (result.bool) {
@@ -11118,7 +11122,7 @@ const b = 1;
                   configurable: true,
                   get() {
                     return function () {
-                      console.log(this);
+                      // console.log(this);
                       for (let f of this._target) {
                         f.call(this);
                       }
@@ -20238,6 +20242,10 @@ const b = 1;
                   targets.forEach(p => p.loseHp());
                 }
                 "step 2"
+                if (!player.isIn()) {
+                  event.finish();
+                  return;
+                }
                 if (player.storage['jlsg_zhiming2']) {
                   player.storage['jlsg_zhiming2'] = false;
                   event.goto(4);
@@ -20251,6 +20259,10 @@ const b = 1;
                   targets.filter(p => p.isIn()).forEach(p => p.turnOver());
                 }
                 "step 4"
+                if (!player.isIn()) {
+                  event.finish();
+                  return;
+                }
                 if (player.storage['jlsg_zhiming3']) {
                   player.storage['jlsg_zhiming3'] = false;
                   event.finish();
@@ -29659,6 +29671,9 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 &ensp; SP神甘宁 劫营可以被获得技能触发了，SP神黄月英 玲珑可以被失去技能触发了<br> 
 &ensp; 为SP神诸葛亮 妖智 添加卖血AI<br> 
 &ensp; 修复SK赵襄 报错<br>
+&ensp; 修复SK神黄月英 死亡后仍继续结算的问题<br>
+&ensp; 修复SK诸葛瞻 罪论 AI<br>
+&ensp; 修复SK孙亮 掣政 触发<br>
 &ensp; 加强三英神司马懿 博略<br>
 &ensp; 修复SK神小乔 星舞 弃牌<br>
 &ensp; 修复SK神小乔 沉鱼 为锁定技<br>
