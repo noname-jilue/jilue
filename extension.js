@@ -2294,7 +2294,7 @@ const b = 1;
                 player.storage.jlsg_danqi = true;
                 player.loseMaxHp();
                 player.recover(2);
-                player.addSkill('jlsg_tuodao');
+                player.addSkills('jlsg_tuodao');
               },
               ai: {
                 maixie: true,
@@ -5930,16 +5930,10 @@ const b = 1;
                 'step 1'
                 var map = event.result || result;
                 if (map && map.skills && map.skills.length) {
-                  for (var i of player.storage.jlsg_qianhuan_fenpei) {
-                    if (!map.skills.includes(i) && player.hasSkill(i)) {
-                      player.removeSkill(i);
-                    }
-                  }
-                  for (var i of map.skills) {
-                    if (!player.hasSkill(i)) {
-                      player.addSkillLog(i);
-                    }
-                  }
+                  let remove = player.storage.jlsg_qianhuan_fenpei
+                    .filter(s => player.hasSkill(s) && !map.skills.includes(s));
+                  let add = map.skills.filter(s => !player.hasSkill(s));
+                  player.changeSkills(add, remove);
                   player.storage.jlsg_qianhuan_fenpei = map.skills;
                 }
               },
@@ -6305,7 +6299,7 @@ const b = 1;
                 event.target = result.targets[0];
                 var target = result.targets[0];
                 player.logSkill(event.name, target);
-                target.addSkill('jlsg_yongjue');
+                target.addSkills('jlsg_yongjue');
                 'step 2'
                 var target = result.targets[0];
                 if (player.countCards('hej')) {
@@ -8732,7 +8726,7 @@ const b = 1;
                     target.drawTo(top + 1);
                     break;
                   case 3:
-                    target.addSkill(event.name);
+                    target.addSkills(event.name);
                     break;
                   default:
                     break;
@@ -9549,9 +9543,7 @@ const b = 1;
                       player.flashAvatar("jlsg_zhishix", character);
                       event.character = character;
                       'step 2'
-                      for (let s of lib.character[event.character][3]) {
-                        player.addSkillLog(s);
-                      }
+                      player.addSkills(lib.character[event.character][3]);
                     },
                     ai: {
                       order: 10,
@@ -10307,9 +10299,7 @@ const b = 1;
                 player.gainMaxHp();
                 player.recover();
                 'step 1'
-                player.removeSkill('jlsg_zuilun');
-                player.addSkillLog('jlsg_yaozhi');
-                player.addSkillLog('jlsg_xingyun');
+                player.changeSkills(['jlsg_yaozhi', 'jlsg_xingyun'], ['jlsg_zuilun']);
               }
             },
             jlsg_jiejun: {
@@ -10878,7 +10868,7 @@ const b = 1;
               content() {
                 var skill = lib.skill.jlsg_fuhan.list.randomGet();
                 lib.skill.jlsg_fuhan.list.remove(skill);
-                player.addSkillLog(skill);
+                player.addSkills(skill);
               },
             },
             jlsg_pindi: {
@@ -11533,7 +11523,7 @@ const b = 1;
                 }
                 let skill = [...skills].randomGet();
                 if (skill) {
-                  player.addSkillLog(skill);
+                  player.addSkills(skill);
                 }
               },
               group: 'jlsg_sanjue2',
@@ -11563,7 +11553,7 @@ const b = 1;
                 }
                 let skill = [...skills].randomGet();
                 if (skill) {
-                  result.targets[0].addSkillLog(skill);
+                  result.targets[0].addSkills(skill);
                 }
               },
             },
@@ -11664,10 +11654,8 @@ const b = 1;
                   var info = get.info(i);
                   return info && !info.charlotte;
                 });
-                player.removeSkill(skills);
-                target.removeSkill(targetSkills);
-                player.addSkill(targetSkills);
-                target.addSkill(skills);
+                player.changeSkills(targetSkills, skills);
+                target.changeSkills(skills, targetSkills);
               }
             },
             jlsg_hanyong: {
@@ -13809,15 +13797,9 @@ const b = 1;
                 player.line(target, 'green');
                 event.target = result.targets[0];
                 player.logSkill('jlsg_tianshang', event.target);
-                if (player.hasSkill('jlsg_huiqu')) {
-                  event.target.addSkill('jlsg_huiqu');
-                }
-                if (player.hasSkill('jlsg_old_yiji')) {
-                  event.target.addSkill('jlsg_old_yiji');
-                }
-                if (player.hasSkill('jlsg_yiji')) {
-                  event.target.addSkill('jlsg_yiji');
-                }
+                let skills = ['jlsg_huiqu', 'jlsg_old_yiji', 'jlsg_yiji']
+                  .filter(s => player.hasSkill(s));
+                event.target.addSkills(skills);
                 "step 2"
                 event.target.gainMaxHp();
                 event.target.recover();
@@ -18456,9 +18438,7 @@ const b = 1;
                 } else {
                   player.logSkill('jlsg_hujuWake');
                   player.loseMaxHp();
-                  player.removeSkill('jlsg_huju');
-                  player.addSkill('zhiheng');
-                  player.addSkill('jlsg_hufu');
+                  player.changeSkills(['zhiheng', 'jlsg_hufu'], ['jlsg_huju']);
                 }
               },
             },
@@ -18999,22 +18979,22 @@ const b = 1;
                 }
                 player.addTempSkill(result.control, removeT);
               },
-              ai:{
-                maixie:true,
-                maixie_hp:true,
-                effect:{
-                  target(card,player,target){
-                    if(get.tag(card,'damage')){
-                      if(player.hasSkillTag('jueqing',false,target)) return [1,-2];
-                      if(!target.hasFriend()) return;
-                      let num=1;
-                      if(get.attitude(player,target)>0){
-                        if(player.needsToDiscard()) num=0.7;
-                        else num=0.5;
+              ai: {
+                maixie: true,
+                maixie_hp: true,
+                effect: {
+                  target(card, player, target) {
+                    if (get.tag(card, 'damage')) {
+                      if (player.hasSkillTag('jueqing', false, target)) return [1, -2];
+                      if (!target.hasFriend()) return;
+                      let num = 1;
+                      if (get.attitude(player, target) > 0) {
+                        if (player.needsToDiscard()) num = 0.7;
+                        else num = 0.5;
                       }
-                      if(target.hp>=4) return [1,num*2];
-                      if(target.hp==3) return [1,num*1.5];
-                      if(target.hp==2) return [1,num*0.5];
+                      if (target.hp >= 4) return [1, num * 2];
+                      if (target.hp == 3) return [1, num * 1.5];
+                      if (target.hp == 2) return [1, num * 0.5];
                     }
                   }
                 }
@@ -19215,10 +19195,8 @@ const b = 1;
                 'step 2'
                 var map = event.result || result;
                 if (map && map.skills && map.skills.length) {
-                  for (var s of map.skills) {
-                    player.addSkillLog(s);
-                    player.storage.jlsg_yaozhi.remove(s);
-                  }
+                  player.addSkills(map.skills);
+                  player.storage.jlsg_yaozhi.removeArray(map.skills);
                 }
                 game.broadcastAll(function (list) {
                   game.expandSkills(list);
@@ -19296,18 +19274,20 @@ const b = 1;
               content: function () {
                 "step 0"
                 var suits = cards.map(card => get.suit(card));
+                let skills = [];
                 if (suits.includes('spade')) {
-                  player.addSkill('jlsg_tongtian_wei');
+                  skills.push('jlsg_tongtian_wei');
                 }
                 if (suits.includes('heart')) {
-                  player.addSkill('jlsg_tongtian_shu');
+                  skills.push('jlsg_tongtian_shu');
                 }
                 if (suits.includes('diamond')) {
-                  player.addSkill('jlsg_tongtian_wu');
+                  skills.push('jlsg_tongtian_wu');
                 }
                 if (suits.includes('club')) {
-                  player.addSkill('jlsg_tongtian_qun');
+                  skills.push('jlsg_tongtian_qun');
                 }
+                player.addSkills(skills);
                 "step 1"
                 player.awakenSkill('jlsg_tongtian');
 
@@ -21834,7 +21814,7 @@ const b = 1;
                 var cards = player.getCards('h');
                 result.targets[0].gain(cards, player, 'giveAuto');
                 "step 3"
-                result.targets[0].addSkillLog(event.skill);
+                result.targets[0].addSkills(event.skill);
                 player.loseHp();
               },
 
@@ -22170,9 +22150,7 @@ const b = 1;
                     var info = get.info(i);
                     return info && !info.charlotte;
                   });
-                  for (var i = 0; i < skills; i++) {
-                    result.targets[0].addSkillLog(player.skills[i]);
-                  }
+                  result.targets[0].addSkills(skills);
                 }
               }
             },
@@ -22552,7 +22530,7 @@ const b = 1;
                   skills.push(_status.jlsg_luocha_list_hidden.filter(s => !player.hasSkill(s)).randomGet());
                   skills = skills.randomSort();
                 }
-                for (var i of skills) player.addSkillLog(i);
+                player.addSkills(skills);
               },
               group: 'jlsg_luocha2',
             },
@@ -22576,9 +22554,7 @@ const b = 1;
                 if (Math.random() < 0.05) {
                   skill = _status.jlsg_luocha_list_hidden.filter(s => !player.hasSkill(s)).randomGet();
                 }
-                if (skill) {
-                  player.addSkillLog(skill);
-                }
+                player.addSkills(skill);
               },
             },
             jlsg_shajue: {
@@ -22676,7 +22652,7 @@ const b = 1;
                     filterCard: () => false,
                     skill: links[0],
                     onuse: function (links, player) {
-                      player.removeSkill(this.skill);
+                      player.removeSkills(this.skill);
                       player.popup(this.skill);
                     },
                   };
@@ -22987,9 +22963,7 @@ const b = 1;
                     return info && !info.charlotte;
                   });
                   var target = player.storage.jlsg_zhonghun2;
-                  for (var s of skills) {
-                    target.addSkillLog(s);
-                  }
+                  target.addSkills(skills);
                 }
               },
             },
@@ -23553,9 +23527,8 @@ const b = 1;
                     player.storage.jlsg_zhiti2 = (player.storage.jlsg_zhiti2 || 0) + 1;
                     break;
                   case event._options[2]:
-                    trigger.player.removeSkill(result.control);
-                    game.log(trigger.player, "失去了技能", result.control);
-                    player.addSkillLog(result.control);
+                    trigger.player.removeSkills(result.control);
+                    player.addSkills(result.control);
                     break;
 
                   default:
@@ -23877,20 +23850,37 @@ const b = 1;
               forced: true,
               locked: false,
               firstDo: true,
-              trigger: { global: ['drawBefore', 'recoverBefore', 'gainMaxHpBefore', 'phaseBefore'] },
+              trigger: { global: ['drawBefore', 'recoverBefore', 'gainMaxHpBefore', 'phaseBefore', 'changeSkillsBefore'] },
               filter(event, player) {
                 if (!event.player.countMark('jlsg_jieying')) {
+                  return false;
+                }
+                if (event.player == player) {
                   return false;
                 }
                 if (event.name == 'phase') {
                   return event.skill;
                 }
+                if (event.name == 'changeSkills') {
+                  return event.addSkill.length
+                    && !(
+                      player.countMark('jlsg_jieying')
+                      && game.hasPlayer(p => p != player && p.hasSkill('jlsg_jieying'))
+                    );
+                }
                 return true;
               },
               logTarget: 'player',
               content() {
-                trigger.player.removeMark('jlsg_jieying');
-                trigger.player = player;
+                if (trigger.name != 'changeSkills') {
+                  trigger.player.removeMark('jlsg_jieying');
+                  trigger.player = player;
+                  event.finish();
+                  return;
+                }
+                var changed = trigger.addSkill.splice(0, trigger.player.countMark('jlsg_jieying'));
+                trigger.player.removeMark('jlsg_jieying', changed.length);
+                player.addSkills(changed);
               },
             },
             jlsg_jinlong: {
@@ -24035,9 +24025,9 @@ const b = 1;
                   if (!info || get.is.empty(info) || info.charlotte) return false;
                   return true;
                 }).randomGet();
-                trigger.player.removeSkill(skill);
+                // TODO: make popup synced
                 trigger.player.popup(skill, 'gray');
-                game.log(trigger.player, '失去了技能', '#g【' + get.translation(skill) + '】');
+                trigger.player.removeSkills(skill);
               },
             },
             jlsg_xingwu: {
@@ -24080,7 +24070,7 @@ const b = 1;
                 this.skills = skills;
                 return skills;
               },
-              gainSkill(player, norecover) {
+              gainSkill(player, norecover, cnt = 1) {
                 if (player.isDamaged() && !norecover) {
                   player.recover();
                 }
@@ -24093,12 +24083,12 @@ const b = 1;
                   skills.addArray(lib.skill.jlsg_xingwu.skills[sex].filter(s => !playerSkills.includes(s)));
                 }
                 player.storage.jlsg_xingwu = player.storage.jlsg_xingwu || [];
-                let skill = skills.randomGet();
-                if (!skill) {
+                skills = skills.randomGets(cnt);
+                if (!skills.length) {
                   return;
                 }
-                player.storage.jlsg_xingwu.push(skill);
-                player.addSkillLog(skill);
+                player.storage.jlsg_xingwu.push(...skills);
+                player.addSkills(skills);
               },
               loseSkill(player) {
                 player.loseHp();
@@ -24117,9 +24107,9 @@ const b = 1;
                     if (!player.isIn()) {
                       return;
                     }
-                    game.log(player, "失去了技能", '#g【' + get.translation(event.skill) + '】');
+                    // TODO: make popup synced
                     player.popup(event.skill, 'grey');
-                    player.removeSkill(event.skill);
+                    player.removeSkills(event.skill);
                   });
                 }
               },
@@ -24210,11 +24200,9 @@ const b = 1;
                   return;
                 }
                 let cnt = event.target.getStorage('jlsg_xingwu').length;
-                event.target.removeSkill(event.target.getStorage('jlsg_xingwu'));
+                event.target.removeSkills(event.target.getStorage('jlsg_xingwu'));
                 event.target.storage.jlsg_xingwu = [];
-                for (let i = 0; i != cnt; ++i) {
-                  lib.skill.jlsg_xingwu.gainSkill(event.target, true);
-                }
+                lib.skill.jlsg_xingwu.gainSkill(event.target, true, cnt);
               },
             },
             jlsg_chenyu: {
@@ -24596,7 +24584,7 @@ const b = 1;
                   event.finish();
                   return;
                 }
-                result.targets[0].addSkillLog(event.skill.name);
+                result.targets[0].addSkills(event.skill.name);
                 event.cnt--;
                 event.goto(1);
               },
@@ -24673,7 +24661,7 @@ const b = 1;
                     positive: (player) => true,
                   },
                   '随机失去一个技能': {
-                    content: (player) => player.removeSkill(player.getSkills().randomGet()),
+                    content: (player) => player.removeSkills(player.getSkills().randomGet()),
                     positive: (player) => false,
                   },
                   // '视为使用【草船借箭】': {
@@ -24944,7 +24932,7 @@ const b = 1;
                       let skills = player.getSkills();
                       let skill = _status.jlsgsy_bolue_list[g]
                         .filter(s => !skills.includes(s)).randomGet();
-                      player.addSkillLog(skill);
+                      player.addSkills(skill);
                     },
                     positive: (player) => true,
                   };
@@ -25036,19 +25024,28 @@ const b = 1;
             },
             jlsg_linglong: {
               audio: "ext:极略:2",
-              trigger: { player: ['damageBegin3', 'loseHpBefore', 'loseMaxHpBefore'] },
+              trigger: { player: ['damageBegin3', 'loseHpBefore', 'loseMaxHpBefore', 'changeSkillsBefore'] },
               filter(event, player) {
-                return lib.skill.jlsg_linglong.validTargets(player).length;
+                if (event.name == 'changeSkills') {
+                  if (!event.removeSkill.length) {
+                    return false;
+                  }
+                  if (event.getParent().name == 'jlsg_linglong') {
+                    return false;
+                  }
+                }
+                return lib.skill.jlsg_linglong.validTargets(player, event.removeSkill).length;
               },
               direct: true,
               content() {
                 'step 0'
-                let targets =lib.skill.jlsg_linglong.validTargets(player);
+                var targets = lib.skill.jlsg_linglong.validTargets(player, trigger.removeSkill);
 
-                  player.chooseTarget(`###${get.prompt(event.name)}###选择一名角色失去技能并抵消或转移该效果`, (_, player, target) => {
-                    return lib.skill.jlsg_linglong.validTargets(player).includes(target);
-                  })
-                  .set('ai', (target, targets) => Math.random());
+                player.chooseTarget(`###${get.prompt(event.name)}###选择一名角色失去技能并抵消或转移该效果`, (_, player, target) => {
+                  return _status.event.targets.includes(target);
+                })
+                  .set('ai', (target, targets) => Math.random())
+                  .set('targets', targets);
                 'step 1'
                 if (!result.bool) {
                   event.finish();
@@ -25058,7 +25055,7 @@ const b = 1;
                 event.target = target;
                 var skills;
                 if (target == player) {
-                  skills = lib.skill.jlsg_linglong.validSkillsSelf(target);
+                  skills = lib.skill.jlsg_linglong.validSkillsSelf(target, trigger.removeSkill);
                 } else {
                   skills = lib.skill.jlsg_linglong.validSkillsOthers(target);
                 }
@@ -25074,37 +25071,74 @@ const b = 1;
                   };
                   return;
                 }
-                var next=player.chooseButton([
+                var next = player.chooseButton([
                   `玲珑：请选择${get.translation(target)}失去的技能`,
-                  [skills.map(s=>[s, get.translation(s)]),'tdnodes'],
+                  [skills.map(s => [s, get.translation(s)]), 'tdnodes'],
                 ]);
-                next.set('forced',true);
+                next.set('forced', true);
+                if (trigger.name == 'changeSkills' && trigger.removeSkill.length > 1) {
+                  next.set('selectButton', [1, trigger.removeSkill.length]);
+                }
                 'step 2'
                 if (!result.bool) {
                   event.finish();
                   return;
                 }
                 var target = event.target;
-                target.removeSkillLog(result.links[0]); 
-                if (target == player){
+                target.removeSkills(result.links);
+                if (trigger.name != 'changeSkills') {
+                  if (target == player) {
+                    trigger.neutralize();
+                  } else {
+                    trigger.player = target;
+                  }
+                  event.finish();
+                  return;
+                }
+                if (result.links.length >= trigger.removeSkill.length) {
+                  event._result = {
+                    bool: true,
+                    links: trigger.removeSkill.slice(),
+                  };
+                  return;
+                }
+                // TODO
+                var next = player.chooseButton([
+                  `玲珑：请选择${get.translation(result.links.length)}个技能不被失去`,
+                  [trigger.removeSkill.map(s => [s, get.translation(s)]), 'tdnodes'],
+                ]);
+                next.set('forced', true);
+                next.set('selectButton', result.links.length);
+                'step 3'
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                trigger.removeSkill.removeArray(result.links);
+                game.log(player, '失去', ...result.links.map(i => {
+                  return '#g【' + get.translation(i) + '】';
+                }), '技能的效果被抵消了');
+                if (!trigger.addSkill.length && !trigger.removeSkill.length) {
                   trigger.neutralize();
-                } else {
-                  trigger.player = target;
                 }
               },
-              validSkillsSelf(player) {
-                return player.getSkills()
-                .removeArray(player.getStockSkills())
-                .filter(s => lib.translate[s] && lib.translate[s + '_info'] && !lib.skill[s].charlotte);
+              validSkillsSelf(player, ignoreSkills) {
+                let skills = player.getSkills()
+                  .removeArray(player.getStockSkills())
+                  .filter(s => lib.translate[s] && lib.translate[s + '_info'] && !lib.skill[s].charlotte);
+                if (ignoreSkills) {
+                  skills.removeArray(ignoreSkills);
+                }
+                return skills;
               },
               validSkillsOthers(player) {
                 return player.getSkills().filter(s => s.startsWith('jlsg_tiangong_jiguan_'));
               },
-              validTargets(player) {
+              validTargets(player, ignoreSkills) {
                 let result = game.filterPlayer(p => p != player
                   && this.validSkillsOthers(p).length
                 );
-                let skills = this.validSkillsSelf(player);
+                let skills = this.validSkillsSelf(player, ignoreSkills);
                 if (skills.length) {
                   result.push(player);
                 }
@@ -25208,7 +25242,7 @@ const b = 1;
             jlsg_luoyan_info: "回合结束阶段，你可以选择一名角色。当其于出牌阶段内使用第一/二/三张牌后，其随机弃置一张牌/失去1点体力/减1点体力上限，直到你再次发动此技能。",
             jlsg_jieying: "劫营",
             jlsg_jieying2: "劫营",
-            jlsg_jieying_info: "摸牌阶段，你可以放弃摸牌，然后令一名未拥有「劫营」标记的其他角色获得3枚「劫营」。拥有「劫营」标记的角色摸牌/回复体力/加体力上限/执行额外回合前，你弃置其1枚「劫营」标记并改为由你执行此效果。",
+            jlsg_jieying_info: "摸牌阶段，你可以放弃摸牌，然后令一名未拥有「劫营」标记的其他角色获得3枚「劫营」。拥有「劫营」标记的角色摸牌/回复体力/加体力上限/执行额外回合/获得技能前，你弃置其1枚「劫营」标记并改为由你执行此效果。",
             jlsg_jinlong: "锦龙",
             jlsg_jinlong_info: "锁定技，当装备牌被你获得或进入弃牌堆后，将之置于你的武将牌上，然后你摸一张牌。你视为拥有这些装备牌的技能。",
             jlsg_jinlong_append: '<span style="font-family:yuanli">无法获得武器的攻击范围。坐骑的距离结算效果相加后结算。</span>',
@@ -25333,7 +25367,7 @@ const b = 1;
             jlsg_tiangong: '天工',
             jlsg_tiangong_info: '游戏开始/回合开始/回合结束时，你可以创造2/1/1个机关技能并令一名角色获得之。一名角色至多拥有七个机关技能。',
             jlsg_linglong: '玲珑',
-            jlsg_linglong_info: '当其他角色令你受到伤害时/失去体力时/减体力上限前，你可以令你失去一个非初始技能，然后抵消此效果;或令一名其他角色失去一个机关技能，然后将此效果转移给该角色。', // /失去技能前
+            jlsg_linglong_info: '当其他角色令你受到伤害时/失去体力时/减体力上限前/失去技能前，你可以令你失去一个非初始技能，然后抵消此效果;或令一名其他角色失去一个机关技能，然后将此效果转移给该角色。',
 
             jlsg_feiying_info: '锁定技，若你的武将牌正面朝上，你使用【杀】无距离限制；若你的武将牌正面朝下，你不能成为【杀】的目标。',
             jlsg_guixin_info: '当你受到一次伤害后，你可以获得每名其他角色区域里的一张牌，再摸X张牌（X为阵亡/败退的角色数），然后翻面。',
@@ -25713,8 +25747,7 @@ const b = 1;
               trigger: { player: 'damageEnd' },
               forced: true,
               content: function () {
-                player.removeSkill('jlsgsy_mingzheng');
-                player.addSkill('jlsgsy_shisha');
+                player, changeSkills(['jlsgsy_shisha'], ['jlsgsy_mingzheng']);
                 player.draw(game.phaseNumber);
               }
             },
@@ -25796,29 +25829,28 @@ const b = 1;
                 _status.jlsgsy_bolue_list = result;
               },
               init(player) {
-                player.storage.jlsgsy_bolue = {};
+                player.storage.jlsgsy_bolue = {
+                  'wei': 1,
+                  'shu': 1,
+                  'wu': 1,
+                };
               },
               content: function () {
                 'step 0'
                 if (!_status.jlsgsy_bolue_list) {
                   lib.skill.jlsgsy_bolue.initList();
                 }
-                let group = ['wei', 'shu', 'wu'].randomGet();
+                // let group = ['wei', 'shu', 'wu'].randomGet();
                 let obj = Object.assign({}, player.storage.jlsgsy_bolue);
-                obj[group] = obj[group] || 0;
-                obj[group] += 1;
+                let list = [];
                 for (let g in obj) {
                   if (!_status.jlsgsy_bolue_list[g]) {
                     continue;
                   }
-                  let list = _status.jlsgsy_bolue_list[g].randomGets(obj[g]);
+                  list.addArray(_status.jlsgsy_bolue_list[g].randomGets(obj[g]));
 
-                  for (let s of list) {
-                    player.addTempSkill(s, { player: 'phaseBefore' });
-                    player.popup(s, lib.groupnature[g]);
-                    game.log(player, '获得了技能', '#g【' + get.translation(s) + '】');
-                  }
                 }
+                player.addTempSkills(list, { player: 'phaseBefore' });
               },
             },
             jlsgsy_baonusimayi: {
@@ -26115,6 +26147,9 @@ const b = 1;
                   || skills.length && quota > skills.length;
               },
               delay: false,
+              init(player) {
+                player.storage.jlsg_yaohuo_retrieve = new Map();
+              },
               content: function () {
                 'step 0'
                 let quota = player.countDiscardableCards(player, 'he');
@@ -26146,10 +26181,21 @@ const b = 1;
                   event.finish();
                   return;
                 }
-                for (let s of event.skills) {
-                  player.addTempSkill(s, { player: 'dieAfter' });
-                  player.popup(s);
-                }
+                let addSkills = player.addTempSkills(event.skills, { player: 'dieAfter' });
+                addSkills.$handleInner = addSkills.$handle;
+                addSkills.jlsg_yaohuo_target = target;
+                addSkills.$handle = function () {
+                  // additionalSkills hook
+                  let currentAdditional = Object.keys(this.player.additionalSkills);
+                  this.$handleInner.apply(this, arguments);
+                  let addtionalSkill = Object.keys(this.player.additionalSkills).removeArray(currentAdditional);
+                  console.assert(addtionalSkill.length == 1, 'jlsg_yaohuo hook not working properly');
+                  // record the name of the first additional skill
+                  if (!this.player.storage.jlsg_yaohuo_retrieve.has(this.jlsg_yaohuo_target)) {
+                    this.player.storage.jlsg_yaohuo_retrieve.set(this.jlsg_yaohuo_target, addtionalSkill[0]);
+                  }
+                };
+
                 target.storage.jlsgsy_yaohuo2 = target.storage.jlsgsy_yaohuo2 || [];
                 target.storage.jlsgsy_yaohuo2.addArray(event.skills);
                 target.storage.jlsgsy_yaohuo2_player = player;
@@ -26175,9 +26221,11 @@ const b = 1;
                 player.enableSkill(skill);
                 if (player.storage.jlsgsy_yaohuo2_player) {
                   let zj = player.storage.jlsgsy_yaohuo2_player;
-                  for (let s of player.storage.jlsgsy_yaohuo2) {
-                    if (zj.tempSkills && zj.tempSkills[s]) {
-                      zj.removeSkill(s);
+                  if (zj.storage.jlsg_yaohuo_retrieve) {
+                    let retrieve = zj.storage.jlsg_yaohuo_retrieve;
+                    if (retrieve.get(player)) {
+                      zj.removeAdditionalSkills(retrieve.get(player));
+                      retrieve.delete(player);
                     }
                   }
                 }
@@ -26208,13 +26256,15 @@ const b = 1;
               silent: true,
               charlotte: true,
               filter(event, player) {
-                return event.player.storage.jlsgsy_yaohuo2_player === player && event.player.storage.jlsgsy_yaohuo2;
+                return event.player.storage.jlsgsy_yaohuo2_player === player
+                  && event.player.storage.jlsgsy_yaohuo2
+                  && player.storage.jlsg_yaohuo_retrieve;
               },
               content() {
-                for (let s of trigger.player.storage.jlsgsy_yaohuo2) {
-                  if (player.tempSkills && player.tempSkills[s]) {
-                    player.removeSkill(s);
-                  }
+                let retrieve = player.storage.jlsg_yaohuo_retrieve;
+                if (retrieve.get(trigger.player)) {
+                  zj.removeAdditionalSkills(retrieve.get(trigger.player));
+                  retrieve.delete(trigger.player);
                 }
               }
             },
@@ -26906,7 +26956,7 @@ const b = 1;
                   return info && !info.charlotte;
                 });
                 if (skills.length) {
-                  for (var i of skills) player.addSkillLog(i);
+                  player.addSkills(skills);
                 }
               }
             },
@@ -27178,6 +27228,7 @@ const b = 1;
             jlsgsy_dihui: '诋毁',
             jlsgsy_luansi: '乱嗣',
             jlsgsy_huoxin: '祸心',
+            jlsgsy_huoxin2: '祸心',
             jlsgsy_canlue: '残掠',
             jlsgsy_canlue2: '残掠',
             jlsgsy_baonucaifuren: '暴怒',
@@ -27231,7 +27282,7 @@ const b = 1;
             jlsgsy_baonuweiyan_info: '锁定技，当你体力降至4或者更少时，你变身为暴怒魏延并立即开始你的回合',
             jlsgsy_fangu_info: '锁定技，每当你受到一次伤害后，当前回合结束，你执行1个额外回合',
 
-            jlsgsy_bolue_info: '锁定技，回合开始前，你随机获得一个魏/蜀/吴势力的技能，直到下个回合开始。',
+            jlsgsy_bolue_info: '锁定技，回合开始前，你随机获得一个魏/一个蜀/一个吴势力的技能，直到下个回合开始。',
             jlsgsy_baonusimayi: '暴怒',
             jlsgsy_baonusimayi_info: '锁定技，当你的体力值降至4或更低时，你进入暴怒状态并立即开始你的回合。',
             jlsgsy_renji: '忍忌',
@@ -27252,7 +27303,6 @@ const b = 1;
             jlsgsy_zuijiu_info: '出牌阶段，你可以随机弃置X张手牌(X为你于本阶段内再次发动此技能的次数)，然后随机视为使用【酒】或【杀】，以此法使用的牌不计入次数限制。',
             jlsgsy_guiming: '归命',
             jlsgsy_guiming_info: '限定技，当你进入濒死状态时，你可以将回复体力至X,然后令其他角色各随机弃置X张牌（X为存活角色数）。',
-            jlsgsy_huoxin2: '祸心',
             jlsgsy_taiping4: '太平',
             jlsgsy_baonudiaochan: '暴怒',
             jlsgsy_baonudiaochan_info: '锁定技，当你的体力值降至4或更低时，你进入暴怒状态并立即开始你的回合。',
@@ -27291,7 +27341,7 @@ const b = 1;
                   extra = `<span class="bluetext">及额外${skills.join('、')}势力技能</span>`;
                 }
               }
-              return `锁定技，回合开始前，你随机获得一个魏/蜀/吴势力的技能${extra}，直到下个回合开始。`;
+              return `锁定技，回合开始前，你随机获得一个魏/一个蜀/一个吴势力的技能${extra}，直到下个回合开始。`;
             },
           }
         };
@@ -29590,7 +29640,7 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.6.0109",
+      version: "2.6.0303",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
@@ -29601,12 +29651,15 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 <span onclick="if (jlsg) jlsg.openLink('https://keu1vrp2sz.feishu.cn/docx/CpsrdV4sDoazzUxzChMcqGjIneh')" 
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 汇报bug点我</span><br>
-2024.01.16更新<br>
+2024.03.03更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK兀突骨</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">三英神孙鲁班</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SP神黄月英</div><br>
-&ensp; 为SP神诸葛亮 妖智 添加卖血AI<br>
+&ensp; 接入无名杀最新获得/失去技能时机API，请更新无名杀版本至v1.10.8或以上体验<br>
+&ensp; SP神甘宁 劫营可以被获得技能触发了，SP神黄月英 玲珑可以被失去技能触发了<br> 
+&ensp; 为SP神诸葛亮 妖智 添加卖血AI<br> 
 &ensp; 修复SK赵襄 报错<br>
+&ensp; 加强三英神司马懿 博略<br>
 &ensp; 修复SK神小乔 星舞 弃牌<br>
 &ensp; 修复SK神小乔 沉鱼 为锁定技<br>
 <span style="font-size: large;">历史：</span><br>
