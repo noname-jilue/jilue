@@ -11247,7 +11247,6 @@ const b = 1;
                 let prompt2 = `弃置非${get.translation(type)}牌对其造成一点伤害，或弃置${get.translation(type)}并获得${get.translation(result.cards[0])}`;
                 player.chooseToDiscard()
                   .set('ai', (card) => {
-                    debugger;
                     if (get.attitude(_status.event.player, _status.event.target) > 0) {
                       return -1;
                     }
@@ -12565,7 +12564,7 @@ const b = 1;
                 player.draw();
                 'step 1'
                 player.chooseToDiscard(`###${get.prompt(event.name, trigger.targets)}###弃置一~三张手牌，然后目标弃置等量的牌`, [1, 3])
-                  .set('ai', c => 9 - get.value(card) - (get.color(card) == 'red' ? 1 : 0) - 2 * ui.selected.cards.length + Math.random());
+                  .set('ai', card => 9 - get.value(card) - (get.color(card) == 'red' ? 1 : 0) - 2 * ui.selected.cards.length + Math.random());
                 'step 2'
                 if (!result.bool) {
                   event.finish();
@@ -22613,7 +22612,7 @@ const b = 1;
               unique: true,
               enable: 'chooseToUse',
               getSkills(player) {
-                return player.skills.filter(
+                return player.getSkills(null, false, false).filter(
                   s => lib.translate[s] && lib.translate[s + '_info']
                     && lib.skill[s] && !lib.skill[s].nopopup && !lib.skill[s].equipSkill
                 );
@@ -24054,7 +24053,7 @@ const b = 1;
               check: () => true,
               content() {
                 'step 0'
-                game.filterPlayer().sortBySeat().forEach(lib.skill.jlsg_xingwu.gainSkill);
+                game.filterPlayer().sortBySeat().forEach(p => { lib.skill.jlsg_xingwu.gainSkill(p, true) });
                 if ((event.cnt || 0) > player.hp) {
                   event.finish();
                   return;
@@ -24086,7 +24085,7 @@ const b = 1;
                 if (player.isDamaged() && !norecover) {
                   player.recover();
                 }
-                let playerSkills = player.getSkills();
+                let playerSkills = player.getSkills(null, false, false);
                 let skills = [];
                 for (let sex in lib.skill.jlsg_xingwu.skills) {
                   if (sex === player.sex) {
@@ -24100,12 +24099,13 @@ const b = 1;
                   return;
                 }
                 player.storage.jlsg_xingwu.push(...skills);
+                skills.forEach(s => player.popup(s));
                 player.addSkills(skills);
               },
               loseSkill(player) {
                 player.loseHp();
                 let skills = [];
-                let playerSkills = player.getSkills();
+                let playerSkills = player.getSkills(null, false, false);
                 for (let c in lib.character) {
                   if (lib.character[c][0] != player.sex) continue;
                   skills.addArray(lib.character[c][3].filter(s => playerSkills.includes(s)));
@@ -24143,7 +24143,7 @@ const b = 1;
                   if (get.attitude(player, p) >= 0) {
                     return false;
                   }
-                  let skills = p.getSkills();
+                  let skills = p.getSkills(null, false, false);
                   return lib.skill.jlsg_xingwu.skills[p.sex].some(s => skills.includes(s))
                 }).randomGet();
                 if (target2) {
@@ -24249,7 +24249,7 @@ const b = 1;
               },
               filter(event, player, triggerName) {
                 return (triggerName != 'phaseBefore' || game.phaseNumber == 0)
-                  && game.hasPlayer(p => p.getSkills().filter(s => s.startsWith('jlsg_tiangong_jiguan_').length < 7));
+                  && game.hasPlayer(p => p.getSkills(null, false, false).filter(s => s.startsWith('jlsg_tiangong_jiguan_').length < 7));
               },
               direct: true,
               frequent: true,
@@ -24279,8 +24279,15 @@ const b = 1;
                   _status.jlsg_tiangong_jiguanCount = cnt;
                 }, _status.jlsg_tiangong_jiguanCount);
                 event.skill = {
+                  audio: 'jlsg_tiangong',
                   forced: true,
                   name: `jlsg_tiangong_jiguan_${skillCnt}`,
+                  filter(event, player) {
+                    if (this.extraFilter && !this.extraFilter(event, player)) {
+                      return false;
+                    }
+                    return this.targetFilter(player).length;
+                  },
                   content() {
                     'step 0'
                     event.targets = lib.skill[event.name].targetFilter(player).sortBySeat();
@@ -24333,12 +24340,12 @@ const b = 1;
                   '每回合限X次(X: 1-3)，当你失去体力或减体力上限后，',
                   '每回合限X次(X: 1-3)，当你进入濒死状态时，',
                   '每回合限X次(X: 1-3)，当你脱离濒死状态后，',
-                  // '每回合限X次(X: 1-3)，当你获得技能后，',
-                  // '每回合限X次(X: 1-3)，当你失去技能后，',
+                  '每回合限X次(X: 1-3)，当你获得技能后，',
+                  '每回合限X次(X: 1-3)，当你失去技能后，',
                   '每回合限X次(X: 1-3)，当你横置/重置/翻面后，',
                 ];
                 event.choices = choices.randomGets(3).map(s => s.replace(`每回合限X次(X: 1-3)`, `每回合限${Math.floor(Math.random() * 3) + 1}次`));
-                player.chooseControlList('请选择机关技能的发动时机', event.choices, true)
+                player.chooseControlList('请选择机关技能的发动时机', event.choices, /* true */)
                   .set('ai', () => Math.floor(Math.random() * _status.event.choiceList.length));
                 'step 3'
                 if (result.control == 'cancel2') {
@@ -24382,120 +24389,168 @@ const b = 1;
                     break;
                   case '当你的判定牌生效后，':
                     skill.trigger = { player: 'judgeEnd' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    };
                     break;
                   case '当你获得牌后，':
                     skill.trigger = {
                       player: 'gainAfter',
                       global: 'loseAsyncAfter',
                     };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && event.getg(player).length > 0;
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && event.getg(player).length > 0;
+                    };
                     break;
                   case '当你使用基本牌后，':
                     skill.trigger = { player: 'useCardAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.type(event.card) == 'basic';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.type(event.card) == 'basic';
+                    };
                     break;
                   case '当你使用锦囊牌后，':
                     skill.trigger = { player: 'useCardAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.type2(event.card) == 'trick';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.type2(event.card) == 'trick';
+                    };
                     break;
                   case '当你使用装备牌后，':
                     skill.trigger = { player: 'useCardAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.type(event.card) == 'equip';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.type(event.card) == 'equip';
+                    };
                     break;
                   case '当你使用红色牌后，':
                     skill.trigger = { player: 'useCardAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.color(event.card) == 'red';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.color(event.card) == 'red';
+                    };
                     break;
                   case '当你使用黑色牌后，':
                     skill.trigger = { player: 'useCardAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.color(event.card) == 'black';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.color(event.card) == 'black';
+                    };
                     break;
                   case '当你成为非延时锦囊牌的目标后，':
                     skill.trigger = { target: 'useCardToTargeted' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
-                      && get.type(event.card) == 'trick';
+                    skill.extraFilter = function (event, player) {
+                      return player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt
+                        && get.type(event.card) == 'trick';
+                    };
                     break;
                   case '当你失去装备区里的牌后，':
                     skill.trigger = {
                       player: 'loseAfter',
                       global: ['equipAfter', 'addJudgeAfter', 'gainAfter', 'loseAsyncAfter', 'addToExpansionAfter'],
                     };
-                    skill.filter = (event, player) => {
+                    skill.extraFilter = function (event, player) {
                       if (player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt) {
                         return false;
                       }
                       const evt = event.getl(player);
                       return evt && evt.player == player && evt.es && evt.es.length > 0;
-                    }
+                    };
                     break;
                   case '当你成为【杀】的目标时，':
                     skill.trigger = { target: 'useCardToTarget' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
-                      && event.card.name == 'sha';
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.card.name == 'sha';
+                    };
                     break;
                   case '当你成为【杀】的目标后，':
                     skill.trigger = { target: 'useCardToTargeted' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
-                      && event.card.name == 'sha';
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.card.name == 'sha';
+                    };
                     break;
                   case '当你使用或打出【杀】时，':
                     skill.trigger = { player: ['useCard', 'respond'] };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
-                      && event.card.name == 'sha';
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.card.name == 'sha';
+                    };
                     break;
                   case '当你使用或打出【闪】时，':
                     skill.trigger = { player: ['useCard', 'respond'] };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
-                      && event.card.name == 'shan';
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.card.name == 'shan';
+                    };
                     break;
                   case '当你造成伤害时，':
                     skill.trigger = { source: 'damageBegin2' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   case '当你造成伤害后，':
                     skill.trigger = { source: 'damageSource' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
-                    break;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    }; break;
                   case '当你受到伤害时，':
                     skill.trigger = { player: 'damageBegin3' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
-                    break;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    }; break;
                   case '当你受到伤害后，':
                     skill.trigger = { player: 'damageEnd' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   case '当你回复体力或加体力上限后，':
                     skill.trigger = { player: ['recoverAfter', 'gainMaxHpAfter'] };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   case '当你失去体力或减体力上限后，':
                     skill.trigger = { player: ['loseHpEnd', 'loseMaxHpAfter'] };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   case '当你进入濒死状态时，':
                     skill.trigger = { player: 'dying' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   case '当你脱离濒死状态后，':
                     skill.trigger = { player: 'dyingAfter' };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
-                  // case '当你获得技能后，':
-                  //   skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
-                  //   break;
-                  // case '当你失去技能后，':
-                  //   skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
-                  //   break;
+                  case '当你获得技能后，':
+                    skill.trigger = { player: 'changeSkillsAfter' };
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.addSkill.length;
+                    };
+                    break;
+                  case '当你失去技能后，':
+                    skill.trigger = { player: 'changeSkillsAfter' };
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                        && event.removeSkill.length;
+                    };
+                    break;
                   case '当你横置/重置/翻面后，':
                     skill.trigger = { player: ['turnOverAfter', 'linkAfter'] };
-                    skill.filter = (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length < this.cnt;
+                    skill.extraFilter = function (event, player) {
+                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                    };
                     break;
                   default:
                     console.error('jlsg_tiangong description not found', choice);
@@ -24544,7 +24599,11 @@ const b = 1;
                   return;
                 }
                 'step 6'
-                var choices = Object.keys(lib.skill.jlsg_tiangong.effects).randomGets(3);
+                var choices = Object.keys(lib.skill.jlsg_tiangong.effects);
+                if (event.skillInfo.includes('所有')) {
+                  choices = choices.filter(c => !lib.skill.jlsg_tiangong.effects[c].multi);
+                }
+                choices = choices.randomGets(3);
                 event.choices = choices;
                 player.chooseControlList(`###请选择机关技能的作用效果###${event.skillInfo}...`, choices, true)
                   .set('prompt2', event.skillInfo + "...")
@@ -24580,7 +24639,7 @@ const b = 1;
                 );
                 player.chooseTarget(
                   `###请选择获得机关${lib.translate[skill.name]}技能的角色###${event.skillInfo}`,
-                  (_, player, target) => target.getSkills().filter(s => s.startsWith('jlsg_tiangong_jiguan_')).length < 7,
+                  (_, player, target) => target.getSkills(null, false, false).filter(s => s.startsWith('jlsg_tiangong_jiguan_')).length < 7,
                   true,
                 )
                   .set('ai', target => {
@@ -24673,7 +24732,7 @@ const b = 1;
                     positive: (player) => true,
                   },
                   '随机失去一个技能': {
-                    content: (player) => player.removeSkills(player.getSkills().randomGet()),
+                    content: (player) => player.removeSkills(player.getSkills(null, false, false).randomGet()),
                     positive: (player) => false,
                   },
                   // '视为使用【草船借箭】': {
@@ -24683,6 +24742,7 @@ const b = 1;
                   '视为使用【南蛮入侵】': {
                     content: (player) => player.chooseUseTarget({ name: 'nanman' }, true),
                     positive: (player) => true,
+                    multi: true,
                   },
                   // '视为使用【桃园结义】': {
                   //   content: (player) => player,
@@ -24691,6 +24751,7 @@ const b = 1;
                   '视为使用【五谷丰登】': {
                     content: (player) => player.chooseUseTarget({ name: 'wugu' }, true),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '视为使用【无中生有】': {
                     content: (player) => player.chooseUseTarget({ name: 'wuzhong' }, true),
@@ -24699,6 +24760,7 @@ const b = 1;
                   '视为使用【万箭齐发】': {
                     content: (player) => player.chooseUseTarget({ name: 'wanjian' }, true),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '视为使用【桃】': {
                     content: (player) => player.isDamaged() && player.chooseUseTarget({ name: 'tao' }, true),
@@ -24707,27 +24769,32 @@ const b = 1;
                   '对所有其他角色使用【杀】': {
                     content: (player) => player.useCard({ name: 'sha' }, game.filterPlayer(p => p != player)),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '对所有其他角色使用火【杀】': {
                     content: (player) => player.useCard({ name: 'sha', nature: 'fire' }, game.filterPlayer(p => p != player)),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '对所有其他角色使用雷【杀】': {
                     content: (player) => player.useCard({ name: 'sha', nature: 'thunder' }, game.filterPlayer(p => p != player)),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '对所有其他角色使用【决斗】': {
                     content: (player) => player.useCard({ name: 'juedou' }, game.filterPlayer(p => p != player)),
                     positive: (player) => false,
+                    multi: true,
                   },
                   '对所有其他角色使用【顺手牵羊】': {
                     content: (player) => player.useCard({ name: 'shunshou' }, game.filterPlayer(p => p != player)),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '从牌堆或弃牌堆随机获得两张红色牌': {
                     content: (player) => {
                       let cards = Array.from(ui.cardPile.childNodes)
-                        .concat(ui.discardPile.childNodes)
+                        .concat(...ui.discardPile.childNodes)
                         .filter(c => get.color(c) == 'red')
                         .randomGets(2);
                       if (cards.length) {
@@ -24739,7 +24806,7 @@ const b = 1;
                   '从牌堆或弃牌堆随机获得两张黑色牌': {
                     content: (player) => {
                       let cards = Array.from(ui.cardPile.childNodes)
-                        .concat(ui.discardPile.childNodes)
+                        .concat(...ui.discardPile.childNodes)
                         .filter(c => get.color(c) == 'black')
                         .randomGets(2);
                       if (cards.length) {
@@ -24751,7 +24818,7 @@ const b = 1;
                   '从牌堆或弃牌堆随机获得两张基本牌': {
                     content: (player) => {
                       let cards = Array.from(ui.cardPile.childNodes)
-                        .concat(ui.discardPile.childNodes)
+                        .concat(...ui.discardPile.childNodes)
                         .filter(c => get.type(c) == 'basic')
                         .randomGets(2);
                       if (cards.length) {
@@ -24763,7 +24830,7 @@ const b = 1;
                   '从牌堆或弃牌堆随机获得两张锦囊牌': {
                     content: (player) => {
                       let cards = Array.from(ui.cardPile.childNodes)
-                        .concat(ui.discardPile.childNodes)
+                        .concat(...ui.discardPile.childNodes)
                         .filter(c => get.type2(c) == 'trick')
                         .randomGets(2);
                       if (cards.length) {
@@ -24775,7 +24842,7 @@ const b = 1;
                   '从牌堆或弃牌堆随机获得两张装备牌': {
                     content: (player) => {
                       let cards = Array.from(ui.cardPile.childNodes)
-                        .concat(ui.discardPile.childNodes)
+                        .concat(...ui.discardPile.childNodes)
                         .filter(c => get.type(c) == 'equip')
                         .randomGets(2);
                       if (cards.length) {
@@ -24799,6 +24866,7 @@ const b = 1;
                   '对其他角色各造成1点伤害': {
                     content: (player) => game.filterPlayer(p => p != player).sortBySeat().forEach(p => p.damage(player)),
                     positive: (player) => true,
+                    multi: true,
                   },
                   '加1点体力上限': {
                     content: (player) => player.gainMaxHp(),
@@ -24896,6 +24964,7 @@ const b = 1;
                       });
                     },
                     positive: (player) => true,
+                    multi: true,
                   },
                   '随机将所有手牌分配给其他角色': {
                     content: (player) => {
@@ -24918,10 +24987,11 @@ const b = 1;
                       }).setContent('gaincardMultiple');
                     },
                     positive: (player) => false,
+                    multi: true,
                   },
                   '与手牌数更少的随机角色交换手牌': {
                     content: (player) => {
-                      let target = game.filterPlayer(p => p.countCards(h) < player.countCards('h'))
+                      let target = game.filterPlayer(p => p.countCards('h') < player.countCards('h'))
                         .randomGet();
                       player.swapHandcards(target);
                     },
@@ -25052,8 +25122,18 @@ const b = 1;
               content() {
                 'step 0'
                 var targets = lib.skill.jlsg_linglong.validTargets(player, trigger.removeSkill);
-
-                player.chooseTarget(`###${get.prompt(event.name)}###选择一名角色失去技能并抵消或转移该效果`, (_, player, target) => {
+                var prompt = `###${get.prompt(event.name)}###选择失去技能的角色`;
+                if (trigger.name == 'changeSkills') {
+                  prompt += `来抵消失去${trigger.removeSkill.map(s => `【${get.translation(s)}】`).join("")}`;
+                } else {
+                  let eff = {
+                    "damage": "受到伤害",
+                    "loseHp": "失去体力",
+                    "loseMaxHp": "扣减体力上限",
+                  }[trigger.name];
+                  prompt += `来抵消或转移<span style="font-weight: bold;">${eff}</span>效果`;
+                }
+                player.chooseTarget(prompt, (_, player, target) => {
                   return _status.event.targets.includes(target);
                 })
                   .set('ai', (target, targets) => Math.random())
@@ -25135,7 +25215,7 @@ const b = 1;
                 }
               },
               validSkillsSelf(player, ignoreSkills) {
-                let skills = player.getSkills()
+                let skills = player.getSkills(null, false, false)
                   .removeArray(player.getStockSkills())
                   .filter(s => lib.translate[s] && lib.translate[s + '_info'] && !lib.skill[s].charlotte);
                 if (ignoreSkills) {
@@ -25144,7 +25224,7 @@ const b = 1;
                 return skills;
               },
               validSkillsOthers(player) {
-                return player.getSkills().filter(s => s.startsWith('jlsg_tiangong_jiguan_'));
+                return player.getSkills(null, false, false).filter(s => s.startsWith('jlsg_tiangong_jiguan_'));
               },
               validTargets(player, ignoreSkills) {
                 let result = game.filterPlayer(p => p != player
@@ -25379,7 +25459,7 @@ const b = 1;
             jlsg_tiangong: '天工',
             jlsg_tiangong_info: '游戏开始/回合开始/回合结束时，你可以创造2/1/1个机关技能并令一名角色获得之。一名角色至多拥有七个机关技能。',
             jlsg_linglong: '玲珑',
-            jlsg_linglong_info: '当其他角色令你受到伤害时/失去体力时/减体力上限前/失去技能前，你可以令你失去一个非初始技能，然后抵消此效果;或令一名其他角色失去一个机关技能，然后将此效果转移给该角色。',
+            jlsg_linglong_info: '当其他角色令你受到伤害时/失去体力时/减体力上限前/失去技能前，你可以令你失去一个非初始技能，然后抵消此效果;或令一名其他角色失去一个机关技能，然后将此效果转移给该角色（若效果为失去技能则改为抵消效果）。',
 
             jlsg_feiying_info: '锁定技，若你的武将牌正面朝上，你使用【杀】无距离限制；若你的武将牌正面朝下，你不能成为【杀】的目标。',
             jlsg_guixin_info: '当你受到一次伤害后，你可以获得每名其他角色区域里的一张牌，再摸X张牌（X为阵亡/败退的角色数），然后翻面。',
@@ -25759,7 +25839,7 @@ const b = 1;
               trigger: { player: 'damageEnd' },
               forced: true,
               content: function () {
-                player, changeSkills(['jlsgsy_shisha'], ['jlsgsy_mingzheng']);
+                player.changeSkills(['jlsgsy_shisha'], ['jlsgsy_mingzheng']);
                 player.draw(game.phaseNumber);
               }
             },
@@ -26536,7 +26616,7 @@ const b = 1;
                 event.evt = player.useCard({ name: 'sha', jlsgsy_kuangxi: true }, trigger.targets.slice(), false);
                 "step 1"
                 let evt = player.getHistory('sourceDamage', e => e.getParent(2) === event.evt);
-                if (!evt.length) {
+                if (!evt.length && player.isIn()) {
                   player.loseHp();
                 }
               },
@@ -27176,12 +27256,11 @@ const b = 1;
                 target.chooseToDiscard(cnt)
                   .set('prompt2', '否则减一点体力上限')
                   .set('ai', c => {
-                    debugger;
                     let player = _status.event.player;
                     if (player.maxHp == 1 && !player.storage.nohp) {
                       return 20 - get.value(c);
                     }
-                    let v = 7 - _status.event.select[0] - get.value(c);
+                    let v = 7 - _status.event.selectCard[0] - get.value(c);
                     if (player.isHealthy()) {
                       v += 3;
                     }
@@ -29656,7 +29735,9 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
-新QQ群：392224094<br>
+群：702142668<br>
+一群（已满）：392224094<br>
+本拓展版本也已在无名杀QQ频道&无名杀DoDo同步更新<br>
 <span onclick="if (jlsg) jlsg.openLink('https://keu1vrp2sz.feishu.cn/docx/CpsrdV4sDoazzUxzChMcqGjIneh')" 
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 更新计划</span><br>
