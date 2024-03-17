@@ -1,6 +1,9 @@
-'use strict';
+// game.import(name: "极略"
 import { game } from '../../noname.js';
+import { Player } from '../../noname/library/element';
 game.import("extension", function (lib, game, ui, get, ai, _status) {
+  /** @type {Player} */
+  let player;
   return {
     name: "极略",
     editable: false,
@@ -195,6 +198,7 @@ const b = 1;
             'jlsgsk_shamoke',
             'jlsgsk_zhaoyan',
             'jlsgsoul_sp_huangyueying',
+            'jlsgsk_caoying',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -413,6 +417,7 @@ const b = 1;
               'jlsgsk_hetaihou',
               'jlsgsk_zhaoyan',
               'jlsgsk_beimihu',
+              'jlsgsk_caoying',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -674,7 +679,8 @@ const b = 1;
                 'jlsgsk_panshu', 'jlsgsk_zhangrang', 'jlsgsk_xinxianying', 'jlsgsk_wuxian', 'jlsgsk_jushou',
                 'jlsgsk_wenyang', 'jlsgsk_zhugezhan', 'jlsgsk_sunru', 'jlsgsk_liuyan', 'jlsgsk_guohuanghou',
                 'jlsgsk_zhaoxiang', 'jlsgsk_lvfan', 'jlsgsk_hetaihou', 'jlsgsk_zhangyi', 'jlsgsk_caochun',
-                'jlsgsk_shamoke', 'jlsgsk_lingcao', 'jlsgsk_zhaoyan', 'jlsgsk_beimihu', 'jlsgsk_wutugu'],
+                'jlsgsk_shamoke', 'jlsgsk_lingcao', 'jlsgsk_zhaoyan', 'jlsgsk_beimihu', 'jlsgsk_wutugu',
+                'jlsgsk_caoying'],
               jlsg_disha: ['jlsgsk_sunce', 'jlsgsk_caoren', 'jlsgsk_gongsunzan', 'jlsgsk_huaxiong', 'jlsgsk_zumao',
                 'jlsgsk_miheng', 'jlsgsk_zhangbu', 'jlsgsk_guonvwang', 'jlsgsk_quancong', 'jlsgsk_mateng',
                 'jlsgsk_zhoufei', 'jlsgsk_liuchen', 'jlsgsk_xiahoushi', 'jlsgsk_yanyan', 'jlsgsk_panzhang',
@@ -810,6 +816,7 @@ const b = 1;
             jlsgsk_zhaoyan: ["female", 'wu', 3, ["jlsg_sanjue"], []],
             jlsgsk_beimihu: ["female", 'qun', 3, ["jlsg_canshi", "jlsg_xianji"], []],
             jlsgsk_wutugu: ["male", 'qun', 6, ["jlsg_hanyong"], []],
+            jlsgsk_caoying: ["female", 'wei', 4, ["jlsg_lingruo", "jlsg_fujian"], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -11762,6 +11769,85 @@ const b = 1;
                 },
               }
             },
+            jlsg_lingruo: {
+              audio: "ext:极略:2",
+              trigger: {
+                player: 'useCardToPlayered',
+                target: 'useCardToTargeted',
+              },
+              filter(event, player) {
+                if (event.player == event.target) {
+                  return false;
+                }
+                return event.card.name == 'sha' || get.type(event.card) == 'trick';
+              },
+              check(event, player) {
+                let target = event.target;
+                if (event.target == player) {
+                  target = event.player;
+                }
+                if (target.countCards('he') == 0) {
+                  return true;
+                }
+                return get.attitude(player, target) <= 1;
+              },
+              logTarget(event, player) {
+                if (event.name == 'useCardToPlayered') {
+                  return event.target;
+                }
+                return event.player;
+              },
+              content() {
+                'step 0'
+                event.target = trigger.target;
+                if (event.target == player) {
+                  event.target = trigger.player;
+                }
+              if (event.target.countCards('he') > 0 && player.ai.shown > target.ai.shwon) {
+                player.addExpose(0.1);
+              }
+                event.cnt = ['basic', 'trick', 'equip'].filter(
+                  t => player.countCards('he', { type: t }) > event.target.countCards('he', { type: t })
+                ).length;
+                'step 1'
+                if (event.cnt > 0) {
+                  --event.cnt;
+                } else {
+                  event.finish();
+                  return;
+                }
+                let choice;
+                if (event.target.countCards('he') == 0) {
+                  choice = 0;
+                } else {
+                  let dist = [1, 1, 1];
+                  // option 1 & 2 are less likely to happen consecutively 
+                  if (event.choice) {
+                    dist[event.choice] -= 0.5
+                  }
+                  choice = jlsg.distributionGet(dist);
+                }
+                switch (choice) {
+                  case 0:
+                    player.draw();
+                  case 1:
+                    var card = target.getCards('he').randomGet();
+                    if (card) {
+                      player.gain(card, target, 'giveAuto');
+                    }
+                  case 2:
+                    var card = target.getCards('he').randomGet();
+                    if (card) {
+                      target.discard(card, 'notBySelf').discarder = player;
+                    }
+                }
+                event.redo();
+              },
+            },
+            jlsg_fujian: {
+              audio: "ext:极略:2",
+
+            },
           },
           translate: {
             jlsg_sk: "SK武将",
@@ -11873,6 +11959,7 @@ const b = 1;
             jlsgsk_zhaoyan: 'SK赵嫣',
             jlsgsk_beimihu: 'SK卑弥呼',
             jlsgsk_wutugu: 'SK兀突骨',
+            jlsgsk_caoying: 'SK曹婴',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -12163,6 +12250,10 @@ const b = 1;
             jlsg_xianji_info: "回合开始阶段，你可以选择一名拥有「蚕食」标记数大于其体力上限的其他角色并移除其所有「蚕食」标记。若如此做，你加X点体力上限并回复X点体力(X为目标角色拥有的技能数)，然后与其交换所有技能且你于本局游戏中不能成为〖献祭〗的目标。",
             jlsg_hanyong: "悍勇",
             jlsg_hanyong_info: "锁定技，若你的装备区里没有武器牌/防具牌，你视为装备着【贯石斧】/【藤甲】。",
+            jlsg_lingruo: "凌弱",
+            jlsg_lingruo_info: "当你使用【杀】或非延时锦囊牌指定一名其他角色为目标后，或成为其他角色对你使用这些牌的目标后，你可以随机执行以下效果之一:摸一张牌;随机获得其一张牌;令其随机弃置一张牌。共执行X次(X为你的基本牌/锦囊牌/装备牌中数量多于该角色的类别数)。",
+            jlsg_fujian: "伏间",
+            jlsg_fujian_info: "回合开始阶段，你可以观看一名其他角色的手牌并标记其中一张，若如此做，当该角色失去此牌后，你令其失去1点体力，然后你摸X张牌(X为其拥有此标记牌时使用的牌数)。",
 
             jlsg_limu: "立牧",
             jlsg_limu_info: "出牌阶段限一次，你可以将方片牌当【乐不思蜀】对自己使用，然后回复1点体力并摸X张牌(X为 此牌的点数)；若你的判定区里有牌，你使用牌无次数限制。",
@@ -24461,95 +24552,95 @@ const b = 1;
                   case '当你成为【杀】的目标时，':
                     skill.trigger = { target: 'useCardToTarget' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.card.name == 'sha';
                     };
                     break;
                   case '当你成为【杀】的目标后，':
                     skill.trigger = { target: 'useCardToTargeted' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.card.name == 'sha';
                     };
                     break;
                   case '当你使用或打出【杀】时，':
                     skill.trigger = { player: ['useCard', 'respond'] };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.card.name == 'sha';
                     };
                     break;
                   case '当你使用或打出【闪】时，':
                     skill.trigger = { player: ['useCard', 'respond'] };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.card.name == 'shan';
                     };
                     break;
                   case '当你造成伤害时，':
                     skill.trigger = { source: 'damageBegin2' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你造成伤害后，':
                     skill.trigger = { source: 'damageSource' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     }; break;
                   case '当你受到伤害时，':
                     skill.trigger = { player: 'damageBegin3' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     }; break;
                   case '当你受到伤害后，':
                     skill.trigger = { player: 'damageEnd' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你回复体力或加体力上限后，':
                     skill.trigger = { player: ['recoverAfter', 'gainMaxHpAfter'] };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你失去体力或减体力上限后，':
                     skill.trigger = { player: ['loseHpEnd', 'loseMaxHpAfter'] };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你进入濒死状态时，':
                     skill.trigger = { player: 'dying' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你脱离濒死状态后，':
                     skill.trigger = { player: 'dyingAfter' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   case '当你获得技能后，':
                     skill.trigger = { player: 'changeSkillsAfter' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.addSkill.length;
                     };
                     break;
                   case '当你失去技能后，':
                     skill.trigger = { player: 'changeSkillsAfter' };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt
                         && event.removeSkill.length;
                     };
                     break;
                   case '当你横置/重置/翻面后，':
                     skill.trigger = { player: ['turnOverAfter', 'linkAfter'] };
                     skill.extraFilter = function (event, player) {
-                      return (event, player) => player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
+                      return player.getHistory('useSkill', e => e.skill == this.name).length >= this.cnt;
                     };
                     break;
                   default:
@@ -24689,8 +24780,8 @@ const b = 1;
                     let v = Math.min(...game.filterPlayer().map(p => p.hp));
                     return game.filterPlayer(p => p.hp == v);
                   },
-                  '随机一名未受伤的角色': (player) => game.filterPlayer(p => p.isDamaged()).randomGets(1),
-                  '随机两名未受伤的角色': (player) => game.filterPlayer(p => p.isDamaged()).randomGets(2),
+                  '随机一名未受伤的角色': (player) => game.filterPlayer(p => p.isHealthy()).randomGets(1),
+                  '随机两名未受伤的角色': (player) => game.filterPlayer(p => p.isHealthy()).randomGets(2),
                   '所有未受伤的角色': (player) => game.filterPlayer(p => p.isHealthy()),
                   '随机一名已受伤的角色': (player) => game.filterPlayer(p => p.isDamaged()).randomGets(1),
                   '随机两名已受伤的角色': (player) => game.filterPlayer(p => p.isDamaged()).randomGets(2),
@@ -25014,6 +25105,7 @@ const b = 1;
                       let skills = player.getSkills();
                       let skill = _status.jlsgsy_bolue_list[g]
                         .filter(s => !skills.includes(s)).randomGet();
+                      player.popup(skill);
                       player.addSkills(skill);
                     },
                     positive: (player) => true,
@@ -25108,6 +25200,11 @@ const b = 1;
               audio: "ext:极略:2",
               trigger: { player: ['damageBegin3', 'loseHpBefore', 'loseMaxHpBefore', 'changeSkillsBefore'] },
               filter(event, player) {
+                if (event.name == 'damage') {
+                  if (!event.source || event.source == player) {
+                    return false;
+                  }
+                }
                 if (event.name == 'changeSkills') {
                   if (!event.removeSkill.length) {
                     return false;
@@ -25194,7 +25291,6 @@ const b = 1;
                   };
                   return;
                 }
-                // TODO
                 var next = player.chooseButton([
                   `玲珑：请选择${get.translation(result.links.length)}个技能不被失去`,
                   [trigger.removeSkill.map(s => [s, get.translation(s)]), 'tdnodes'],
@@ -27174,11 +27270,11 @@ const b = 1;
                 next.set('subject', target);
                 next.set('prompt', `选择${get.translation(card)}的目标`);
                 next.set('prompt2', `由${get.translation(target)}使用`);
-                'step 3'
+                'step 4'
                 if (result.bool) {
                   target.useCard(event.card, result.targets, 'noai');
                 }
-                'step 4'
+                'step 5'
                 if (player.isDamaged()) {
                   player.recover();
                 }
@@ -29727,11 +29823,11 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
 <a onclick="if (jlsg) jlsg.checkUpdate(this)" style="cursor: pointer;text-decoration: underline;font-weight: bold;">
 检查更新Beta<br></a>
 </div>`,
-      author: "可乐，赵云，青冢，萧墨(17岁)",
+      author: "可乐，赵云，青冢，萧墨(17岁)<br>维护：xiaoas",
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.6.0303",
+      version: "2.6.0303fix",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
@@ -29744,6 +29840,11 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 <span onclick="if (jlsg) jlsg.openLink('https://keu1vrp2sz.feishu.cn/docx/CpsrdV4sDoazzUxzChMcqGjIneh')" 
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 汇报bug点我</span><br>
+2024.03.04更新<br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK曹婴</div><br>
+&ensp; 修复SP神黄月英 机关技能触发时机<br>
+&ensp; 修复三英神孙鲁班<br>
+<span style="font-size: large;">历史：</span><br>
 2024.03.03更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK兀突骨</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">三英神孙鲁班</div><br>
@@ -29758,12 +29859,6 @@ style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline
 &ensp; 加强三英神司马懿 博略<br>
 &ensp; 修复SK神小乔 星舞 弃牌<br>
 &ensp; 修复SK神小乔 沉鱼 为锁定技<br>
-<span style="font-size: large;">历史：</span><br>
-2024.01.16更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK赵嫣</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK卑弥呼</div><br>
-&ensp; 修复SK张梁 集军 AI<br>
-&ensp; 修改SP神貂蝉 离魂。现在目标可以多指。修改相关描述<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
