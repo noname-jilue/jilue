@@ -12943,7 +12943,7 @@ const b = 1;
                 player.chooseBool(`是否令${get.translation(trigger.player)}失去1点体力？`, get.attitude(player, trigger.player) < 0);
                 'step 1'
                 if (result.bool) {
-                  trigger.player.loseHp(player);
+                  trigger.player.loseHp();
                   if (trigger.player.ai.shown > player.ai.shown) {
                     player.addExpose(0.3);
                   }
@@ -25792,7 +25792,7 @@ const b = 1;
                   target:function(card,player,target,current){
                     if(player!=target
                       &&['basic', 'trick'].includes(get.type(card))
-                      &&!target.getAllHistory('useCard').map(e => e.card.name).includes(event.card.name)) return 'zeroplayertarget';
+                      &&!target.getAllHistory('useCard').map(e => e.card.name).includes(card.name)) return 'zeroplayertarget';
                   },
                 },
               },
@@ -30296,7 +30296,7 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.6.0405",
+      version: "2.6.0405fix",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
