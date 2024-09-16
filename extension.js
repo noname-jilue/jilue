@@ -84,6 +84,8 @@ const b = 1;
         jlsgsk_jdjg_sunshangxiang: 'sunshangxiang',
         jlsgsk_syqj_guanyu: 'guanyu',
         jlsgsk_sslh_zhenji: 'zhenji',
+        jlsgsk_pangtong: 'sp_pangtong',
+        jlsgsk_spwq_lvbu: 'lvbu',
       };
       var trivialSolveCharacterReplace = function (name, prefix = '') {
         var originalName = prefix + name.substring(name.lastIndexOf('_') + 1);
@@ -203,6 +205,7 @@ const b = 1;
             'jlsgsoul_caoren',
             'jlsgsoul_sp_simayi',
             'jlsgsk_nanhualaoxian',
+            'jlsgsoul_caopi',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -839,7 +842,7 @@ const b = 1;
             jlsgsk_mayunlu: ["female", 'shu', 4, ["mashu", "jlsg_fengyin", "jlsg_rongzhuang"], []],
             jlsgsk_zhongyao: ["male", 'wei', 3, ["jlsg_huomo", "jlsg_dingguan"], []],
             jlsgsk_nanhualaoxian: ["male", 'qun', 3, ["jlsg_xianshou", "jlsg_chengfeng"], []],
-            jlsgsk_jiangwei: ["male", 'wei', 3, ["jlsg_kunfen", "jlsg_caiyu"], []],
+            jlsgsk_jiangwei: ["male", 'wei', 5, ["jlsg_kunfen", "jlsg_caiyu"], []],
             jlsgsk_huanghao: ["male", 'shu', 3, ["jlsg_qinqing", "jlsg_huisheng"], []],
             jlsgsk_huaman: ["female", 'shu', 3, ["jlsg_manyi", "jlsg_souying"], []],
           },
@@ -12376,7 +12379,6 @@ const b = 1;
                 result: {
                   effect: function (card, player, target) {
                     if (get.tag(card, "damage")) {
-                      if (player.hasSkillTag("jueqing", false, target)) return [1, -2];
                       if (!target.hasFriend()) return;
                       var num = 1;
                       if (get.attitude(player, target) > 0) {
@@ -12394,7 +12396,7 @@ const b = 1;
             jlsg_caiyu: {
               audio: "ext:极略:2",
               trigger: { player: "phaseZhunbeiBegin" },
-              check() {
+              check(event, player) {
                 if (player.maxHp <= 1 || player.isHealthy()) {
                   return false;
                 }
@@ -12413,7 +12415,7 @@ const b = 1;
                   'jlsgsoul_sp_zhugeliang',
                 ]);
                 let skills = [];
-                for (let name in names) {
+                for (let name of names) {
                   skills.addArray(lib.character[name]?.[3] ?? []);
                 }
                 // TODO
@@ -12492,7 +12494,7 @@ const b = 1;
                 // target.viewCards(event.name, event.cards);
                 if (target.countDiscardableCards(target, "he") >= event.cards.length) {
                   let { result } = await target.chooseToDiscard(event.cards.length, 'he')
-                    .set('dialog', [`###贿生###选择${get.cnNumber(event.cards.length)}张牌弃置，否则获得${get.translation(player)}的一张手牌并防止此伤害`,event.cards])
+                    .set('dialog', [`###贿生###选择${get.cnNumber(event.cards.length)}张牌弃置，否则获得${get.translation(player)}的一张手牌并防止此伤害`, event.cards])
                     .set('ai', card => {
                       let target = _status.event.target;
                       if (get.attitude(_status.event.player, target) >= 0) {
@@ -12515,7 +12517,7 @@ const b = 1;
                 }
                 let { result } = await target.chooseCardButton(event.cards, true, `获得的${get.translation(player)}一张牌`)
                   .set('ai', card => get.value(card));
-                  debugger;
+                debugger;
                 if (result.cards) {
                   await target.gain(player, result.cards, 'giveAuto');
                   trigger.cancel();
@@ -12524,7 +12526,7 @@ const b = 1;
             },
             jlsg_manyi: {
               audio: "ext:极略:2",
-              trigger: {global: 'useCard'},
+              trigger: { global: 'useCard' },
               filter(event, player) {
                 if (!event.targets || !event.targets.length) {
                   return false;
@@ -12534,7 +12536,7 @@ const b = 1;
               },
               check(event, player) {
                 let eff1 = event.targets.map(t => get.effect(t, event.card, player, player)).reduce((a, b) => a + b);
-                let eff2 = event.targets.map(t => get.effect(t, {name: 'nanman'}, player, player)).reduce((a, b) => a + b);
+                let eff2 = event.targets.map(t => get.effect(t, { name: 'nanman' }, player, player)).reduce((a, b) => a + b);
                 return eff2 + 5 - eff1 > 0;
               },
               frequent(event, player) {
@@ -12554,7 +12556,7 @@ const b = 1;
             },
             jlsg_souying: {
               audio: "ext:极略:2",
-              trigger: {global: 'respondAfter'},
+              trigger: { global: 'respondAfter' },
               filter(event, player) {
                 switch (event.card.name) {
                   case 'sha':
@@ -12563,22 +12565,22 @@ const b = 1;
                   case 'sha':
                     return game.hasPlayer(p => !player.getStorage('jlsg_souying_temp').includes(p) && p.isDamaged());
                     break;
-                    default:
-                      return false;
+                  default:
+                    return false;
                 }
               },
               async cost(event, trigger, player) {
                 event.result = await player.chooseTarget((_, player, target) => {
-                  if (player.getStorage('jlsg_souying_temp').includes(target)) {return false;}
+                  if (player.getStorage('jlsg_souying_temp').includes(target)) { return false; }
                   return _status.event.cardName != 'shan' || target.isDamaged();
                 })
-                .set('prompt', get.prompt(event.skill))
-                .set('prompt2', trigger.card.name == 'sha' ? '对一名角色造成1点伤害' : '令一名角色回复1点体力')
-                .set('cardName', trigger.card.name)
-                .set('ai', target => get[_status.event.cardName == 'sha' ? 'damageEffect' : 'recoverEffect'](target, _status.event.player, _status.event.player))
-                .forResult();
+                  .set('prompt', get.prompt(event.skill))
+                  .set('prompt2', trigger.card.name == 'sha' ? '对一名角色造成1点伤害' : '令一名角色回复1点体力')
+                  .set('cardName', trigger.card.name)
+                  .set('ai', target => get[_status.event.cardName == 'sha' ? 'damageEffect' : 'recoverEffect'](target, _status.event.player, _status.event.player))
+                  .forResult();
               },
-              async content(event, trigger, player){
+              async content(event, trigger, player) {
                 if (trigger.card.name == 'sha') {
                   event.targets[0].damage();
                 } else {
@@ -19285,6 +19287,7 @@ const b = 1;
             jlsgsoul_huangzhong: ['male', 'shen', 4, ['jlsg_liegong'], ['shu']],
             jlsgsoul_xiaoqiao: ['female', 'shen', 3, ['jlsg_xingwu', 'jlsg_chenyu'], ['wu']],
             jlsgsoul_caoren: ['male', 'shen', 8, ['jlsg_bamen', 'jlsg_gucheng'], ['wei']],
+            jlsgsoul_caopi: ['male', 'shen', 3, ['jlsg_chuyuan', 'jlsg_dengji'], ['wei']],
           },
           characterIntro: {},
           skill: {
@@ -26912,6 +26915,14 @@ const b = 1;
                 },
               }
             },
+            jlsg_chuyuan: {
+              audio: "ext:极略:2",
+
+            },
+            jlsg_dengji: {
+              audio: "ext:极略:2",
+
+            },
           },
           translate: {
             jlsg_soul: "魂烈包",
@@ -26955,6 +26966,7 @@ const b = 1;
             jlsgsoul_huangzhong: 'SK神黄忠',
             jlsgsoul_xiaoqiao: 'SK神小乔',
             jlsgsoul_caoren: 'SK神曹仁',
+            jlsgsoul_caopi: 'SK神曹丕',
 
             jlsg_yinyang_s: '阴阳',
             jlsg_yinyang_s_info: '锁定技，若你的体力：多于已损失体力，你拥有〖极阳〗；少于已损失体力，你拥有〖极阴〗；等于已损失体力，你拥有〖相生〗。',
@@ -27041,6 +27053,10 @@ const b = 1;
             jlsg_shenyin2: '神隐',
             jlsg_shenyin3: '神隐',
             jlsg_shenyin_info: '锁定技，游戏开始时，你获得1枚「神隐」标记。回合开始时，若你拥有「神隐」标记，你可以记录你当前的体力、体力上限、技能、“鹰”和“狼”，然后获得1枚「神隐」标记。当你进入濒死状态时，或失去此技能后，若有记录的信息，你可以弃置所有「神隐」标记，将你恢复至记录的状态，并摸两倍弃置标记数的牌。当你杀死其他角色后，你获得一枚「神隐」标记。',
+            jlsg_chuyuan: '储元',
+            jlsg_chuyuan_info: '当任意角色使用【杀】/【闪】后，你可以摸两张牌然后将一张黑色/红色牌置于你的武将牌上，称为「储」。你每有一张黑色「储」和红色「储」，摸牌数和手牌上限+1。',
+            jlsg_dengji: '登极',
+            jlsg_dengji_info: '觉醒技，回合开始阶段，若你的「储」数为单数且不小于5，你获得所有「储」并失去〖储元〗；若以此法获得的黑色「储」多于红色「储」，你获得〖极权〗；否则你获得〖仁政〗。每以此法获得一张黑色「储」和红色「储」，你随机获得一个主公技。',
 
             jlsg_qinyin: '琴音',
             jlsg_qinyin1: '琴音',
