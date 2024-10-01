@@ -206,6 +206,7 @@ const b = 1;
             'jlsgsoul_sp_simayi',
             'jlsgsk_nanhualaoxian',
             'jlsgsoul_caopi',
+            'jlsgsk_wanniangongzhu',
           ],
           ap: [
             'jlsgsr_lvbu',
@@ -242,6 +243,8 @@ const b = 1;
             'jlsgsk_zhongyao',
             'jlsgsk_huanghao',
             'jlsgsk_huaman',
+            'jlsgsk_wangyuanji',
+            'jlsgsk_zhangchangpu',
           ],
           a: [
             'jlsgsoul_zhouyu',
@@ -266,6 +269,7 @@ const b = 1;
             'jlsgsk_guohuanghou',
             'jlsgsk_chenqun',
             'jlsgsk_jiangwei',
+            'jlsgsk_spwq_lvbu',
           ],
           am: [
             'jlsgsoul_zhangjiao',
@@ -301,6 +305,7 @@ const b = 1;
             'jlsgsk_caochun',
             'jlsgsk_syqj_guanyu',
             'jlsgsk_beimihu',
+            'jlsgsk_pangtong',
           ],
           bp: [
             'jlsgsr_zhouyu',
@@ -377,6 +382,7 @@ const b = 1;
             'jlsgsk_mifuren',
             'jlsgsk_machao',
             'jlsgsk_panzhang',
+            'jlsgsk_lvdai',
           ],
           c: [
             'jlsgsk_gongsunzan',
@@ -390,6 +396,8 @@ const b = 1;
               'jlsgsk_jdjg_sunshangxiang',
               'jlsgsk_syqj_guanyu',
               'jlsgsk_sslh_zhenji',
+              'jlsgsk_spwq_lvbu',
+              'jlsgsk_wanniangongzhu',
             ],
             epic: [ // 史诗
               "jlsgsk_zhangning",
@@ -436,6 +444,9 @@ const b = 1;
               'jlsgsk_nanhualaoxian',
               'jlsgsk_jiangwei',
               'jlsgsk_huaman',
+              'jlsgsk_pangtong',
+              'jlsgsk_wangyuanji',
+              'jlsgsk_zhangchangpu',
             ],
             rare: [ // 稀有
               "jlsgsk_simashi",
@@ -492,6 +503,7 @@ const b = 1;
               "jlsgsk_wutugu",
               "jlsgsk_zhongyao",
               "jlsgsk_huanghao",
+              "jlsgsk_lvdai",
             ],
             junk: [ // 平凡
               'jlsgsk_xuyou',
@@ -709,7 +721,7 @@ const b = 1;
                 'jlsgsk_luzhi', 'jlsgsk_mifuren', 'jlsgsk_xizhicai', 'jlsgsk_zhangliang', 'jlsgsk_caorui',
                 'jlsgsk_sunxiu', 'jlsgsk_sundeng', 'jlsgsk_zhuzhi', 'jlsgsk_wanglang', 'jlsgsk_sunliang',
                 'jlsgsk_mayunlu', 'jlsgsk_zhongyao', 'jlsgsk_nanhualaoxian', 'jlsgsk_jiangwei', 'jlsgsk_huanghao',
-                'jlsgsk_huaman',],
+                'jlsgsk_huaman', 'jlsgsk_pangtong', 'jlsgsk_lvdai', 'jlsgsk_wangyuanji', 'jlsgsk_zhangchangpu'],
               jlsg_pojun: ['jlsgsk_zhuran', 'jlsgsk_yanliang', 'jlsgsk_chendao', 'jlsgsk_dingfeng', 'jlsgsk_dongzhuo',
                 'jlsgsk_yujin', 'jlsgsk_panfeng', 'jlsgsk_jiangqin', 'jlsgsk_guanxing', 'jlsgsk_guansuo',
                 'jlsgsk_baosanniang', 'jlsgsk_dongbai', 'jlsgsk_xushi', 'jlsgsk_caoxiu', 'jlsgsk_caojie'],
@@ -721,14 +733,14 @@ const b = 1;
                 'jlsgsk_wuyi',],
               jlsg_jiangxing: ['jlsgsk_sunluyu', 'jlsgsk_chengyu', 'jlsgsk_mizhu', 'jlsgsk_zhangren', 'jlsgsk_zangba',
                 'jlsgsk_hejin', 'jlsgsk_zhangbao', 'jlsgsk_bianfuren', 'jlsgsk_heqi', 'jlsgsk_tianfeng'],
-              jlsg_sp: ['jlsgsk_guanyu', 'jlsgsk_huangyueying', 'jlsgsk_machao', 'jlsgsk_caiwenji'],
+              jlsg_sp: ['jlsgsk_guanyu', 'jlsgsk_huangyueying', 'jlsgsk_machao', 'jlsgsk_caiwenji', 'jlsgsk_wanniangongzhu'],
             },
           },
           character: {
-            jlsgsk_simashi: ["male", 'wei', 4, ["jlsg_quanlue"], []],
+            jlsgsk_simashi: ["male", 'wei', 4, ["jlsg_quanlue"], ["name:司马|师"]],
             jlsgsk_xianglang: ["male", 'shu', 3, ["jlsg_cangshu", "jlsg_kanwu"], []],
             jlsgsk_luji: ["male", 'wu', 3, ["jlsg_huaiju", "jlsg_huntian"], []],
-            jlsgsk_bianfuren: ["female", 'wei', 3, ["jlsg_huage", "jlsg_muyi"], []],
+            jlsgsk_bianfuren: ["female", 'wei', 3, ["jlsg_huage", "jlsg_muyi"], ['name:卞|null']],
             jlsgsk_heqi: ["male", 'wu', 4, ["jlsg_diezhang"], []],
             jlsgsk_mateng: ["male", 'qun', 4, ["mashu", "jlsg_xiongyi"], []],
             jlsgsk_tianfeng: ["male", 'qun', 3, ["jlsg_sijian", "jlsg_gangzhi"], []],
@@ -745,9 +757,9 @@ const b = 1;
             jlsgsk_miheng: ['male', 'qun', 3, ['jlsg_shejian', 'jlsg_kuangao'], []],
             jlsgsk_zumao: ['male', 'wu', 4, ['jlsg_yinbing'], []],
             jlsgsk_huaxiong: ['male', 'qun', 5, ['jlsg_fenwei', 'jlsg_shiyong'], []],
-            jlsgsk_sunce: ['male', 'wu', 4, ['jlsg_angyang', 'jlsg_weifeng', 'jlsg_xieli'], ['zhu',]],
+            jlsgsk_sunce: ['male', 'wu', 4, ['jlsg_angyang', 'jlsg_weifeng', 'jlsg_xieli'], []],
             jlsgsk_caoren: ['male', 'wei', 4, ['jlsg_jushou'], []],
-            jlsgsk_gongsunzan: ['male', 'qun', 4, ['jlsg_yicong', 'jlsg_muma'], []],
+            jlsgsk_gongsunzan: ['male', 'qun', 4, ['jlsg_yicong', 'jlsg_muma'], ['name:公孙|瓒']],
             jlsgsk_sunqian: ['male', 'shu', 3, ['jlsg_suiji', 'jlsg_fengyi'], []],
             jlsgsk_maliang: ['male', 'shu', 3, ['jlsg_yalv', 'jlsg_xiemu'], []],
             jlsgsk_buzhi: ['male', 'wu', 3, ['jlsg_zhejie', 'jlsg_fengya'], []],
@@ -765,17 +777,17 @@ const b = 1;
             jlsgsk_caochong: ['male', 'wei', 3, ['jlsg_chengxiang', 'jlsg_renxin'], ['unseen']],
             jlsgsk_zhanglu: ['male', 'qun', 3, ['jlsg_midao', 'jlsg_yishe', 'jlsg_pudu'], []],
             jlsgsk_guanlu: ['male', 'wei', 3, ['jlsg_zongqing', 'jlsg_bugua'], []],
-            jlsgsk_simazhao: ['male', 'wei', 3, ['jlsg_zhaoxin', 'jlsg_zhihe'], []],
+            jlsgsk_simazhao: ['male', 'wei', 3, ['jlsg_zhaoxin', 'jlsg_zhihe'], ['name:司马|昭']],
             jlsgsk_yangxiu: ['male', 'wei', 3, ['jlsg_caijie', 'jlsg_jilei'], []],
             jlsgsk_liyan: ['male', 'shu', 4, ['jlsg_yanliang'], []],
             jlsgsk_jiping: ['male', 'qun', 3, ['jlsg_duzhi', 'jlsg_lieyi'], []],
             jlsgsk_sunhao: ['male', 'wu', 4, ['jlsg_baoli'], []],
-            jlsgsk_zhugejin: ['male', 'wu', 3, ['jlsg_huanbing', 'jlsg_hongyuan'], []],
+            jlsgsk_zhugejin: ['male', 'wu', 3, ['jlsg_huanbing', 'jlsg_hongyuan'], ['name:诸葛|瑾']],
             jlsgsk_zhangxiu: ['male', 'qun', 4, ['jlsg_huaqiang', 'jlsg_chaohuang'], []],
             jlsgsk_sunluyu: ['female', 'wu', 3, ['jlsg_huilian', 'jlsg_wenliang'], []],
             jlsgsk_luzhi: ['male', 'qun', 3, ['jlsg_jinglun', 'jlsg_ruzong'], []],
             jlsgsk_yuji: ['male', 'qun', 3, ['jlsg_guhuo', 'jlsg_fulu'], []],
-            jlsgsk_mifuren: ['female', 'shu', 3, ['jlsg_guixiu', 'jlsg_cunsi'], []],
+            jlsgsk_mifuren: ['female', 'shu', 3, ['jlsg_guixiu', 'jlsg_cunsi'], ['name:糜|null']],
             jlsgsk_zhangning: ['female', 'qun', 3, ['jlsg_leiji', 'jlsg_shanxi'], []],
             jlsgsk_guonvwang: ['female', 'wei', 3, ['jlsg_gongshen', 'jlsg_jianyue'], []],
             jlsgsk_chengyu: ['male', 'wei', 3, ['jlsg_pengri', 'jlsg_danmou'], []],
@@ -788,63 +800,68 @@ const b = 1;
 
             jlsgsk_guanyu: ['male', 'wei', 4, ['jlsg_wusheng', 'jlsg_danqi'], []],
             jlsgsk_machao: ['male', 'qun', 4, ['jlsg_zhuiji', 'jlsg_xionglie'], []],
-            jlsgsk_caiwenji: ['female', 'wei', 3, ['jlsg_chenqing', 'jlsg_mozhi'], []],
+            jlsgsk_caiwenji: ['female', 'wei', 3, ['jlsg_chenqing', 'jlsg_mozhi'], ['name:蔡|琰']],
             jlsgsk_zhangbao: ['male', 'qun', 3, ['jlsg_zhoufu', 'jlsg_yingbing'], []],
-            jlsgsk_guanxing: ["male", 'shu', 4, ["jlsg_yongji", "jlsg_wuzhi"], []],
-            jlsgsk_kuaiyue: ["male", 'qun', 3, ["jlsg_yidu", "jlsg_zhubao"], []],
-            jlsgsk_zhoutai: ["male", 'wu', 4, ["jlsg_buqu", "jlsg_fenji"], []],
-            jlsgsk_zoushi: ["female", 'qun', 3, ["jlsg_jiaomei", "jlsg_huoshui"], []],
+            jlsgsk_guanxing: ['male', 'shu', 4, ['jlsg_yongji', 'jlsg_wuzhi'], []],
+            jlsgsk_kuaiyue: ['male', 'qun', 3, ['jlsg_yidu', 'jlsg_zhubao'], []],
+            jlsgsk_zhoutai: ['male', 'wu', 4, ['jlsg_buqu', 'jlsg_fenji'], []],
+            jlsgsk_zoushi: ['female', 'qun', 3, ['jlsg_jiaomei', 'jlsg_huoshui'], ['name:邹|null']],
             jlsgsk_yanliang: ['male', 'qun', 4, ['jlsg_hubu'], []],
-            jlsgsk_zhugeguo: ["female", 'shu', 3, ["jlsg_yuhua", "jlsg_dengxian"], []],
-            jlsgsk_xizhicai: ["male", 'wei', 3, ["jlsg_tiance", "jlsg_jiexin"], []],
-            jlsgsk_guansuo: ["male", 'shu', 4, ["jlsg_zhengnan", "jlsg_tongxin"], []],
-            jlsgsk_baosanniang: ["female", 'shu', 3, ["jlsg_jianwu", "jlsg_zhennan", "jlsg_tongxin"], []],
-            jlsgsk_dongbai: ["female", 'qun', 3, ["jlsg_shemi", "jlsg_jiaohui"], []],
-            jlsgsk_xushi: ["female", 'wu', 3, ["jlsg_wengua", "jlsg_fuzhu"], []],
-            jlsgsk_zhoufei: ["female", 'wu', 3, ["jlsg_yinyuan", "jlsg_konghou"], []],
-            jlsgsk_wuyi: ["male", 'shu', 4, ["jlsg_zhidi"], []],
-            jlsgsk_zhangliang: ["male", 'qun', 4, ["jlsg_jijun", "jlsg_fangtong"], []],
-            jlsgsk_panshu: ["female", 'wu', 3, ["jlsg_jinzhi", "jlsg_yuyou"], []],
-            jlsgsk_caorui: ["male", 'wei', 3, ["jlsg_huituo", "jlsg_xingshuai"], []],
-            jlsgsk_liuchen: ["male", 'shu', 4, ["jlsg_zhanjue"], []],
-            jlsgsk_sunxiu: ["male", 'wu', 3, ["jlsg_yanzhu", "jlsg_xingxue"], []],
-            jlsgsk_zhangrang: ["male", 'qun', 3, ["jlsg_taoluan"], []],
-            jlsgsk_xiahoushi: ["female", 'shu', 3, ["jlsg_shiqiao", "jlsg_yingge"], []],
-            jlsgsk_sundeng: ["male", 'wu', 3, ["jlsg_kuangbi"], []],
-            jlsgsk_caoxiu: ["male", 'wei', 4, ["jlsg_taoxi"], []],
-            jlsgsk_caojie: ["female", 'qun', 3, ["jlsg_huaibi", "jlsg_zhixi"], []],
-            jlsgsk_xinxianying: ["female", 'wei', 3, ["jlsg_caijian", "jlsg_zhishix"], []],
-            jlsgsk_zhuzhi: ["male", 'wu', 4, ["jlsg_anguo"], []],
-            jlsgsk_wanglang: ["male", 'wei', 3, ["jlsg_quanxiang", "jlsg_gushe", "jlsg_jici"], []],
-            jlsgsk_wuxian: ["female", 'shu', 3, ["jlsg_hechun", "jlsg_daiyan"], []],
-            jlsgsk_jushou: ["male", 'qun', 3, ["jlsg_jianying", "jlsg_shibei"], []],
-            jlsgsk_sunliang: ["male", 'wu', 3, ["jlsg_kuizhu", "jlsg_chezheng"], []],
-            jlsgsk_wenyang: ["male", 'wei', 7, ["jlsg_jueyong", "jlsg_choujue"], []],
-            jlsgsk_yanyan: ["male", 'shu', 4, ["jlsg_juzhan"], []],
-            jlsgsk_zhugezhan: ["male", 'shu', 4, ["jlsg_zuilun", "jlsg_fuzhi"], []],
-            jlsgsk_panzhang: ["male", 'wu', 4, ["jlsg_jiejun"], []],
-            jlsgsk_sunru: ["female", 'wu', 3, ["jlsg_xiecui", "jlsg_youxu"], []],
-            jlsgsk_liuyan: ["male", 'qun', 3, ["jlsg_zhulu", "jlsg_limu"], []],
-            jlsgsk_gongsunyuan: ["male", 'qun', 4, ["jlsg_huaiyi"], []],
-            jlsgsk_guohuanghou: ["female", 'wei', 3, ["jlsg_jiaozhao", "jlsg_danxin"], []],
-            jlsgsk_zhaoxiang: ["female", 'shu', 4, ["jlsg_fanghun", "jlsg_fuhan"], []],
-            jlsgsk_chenqun: ["male", 'wei', 3, ["jlsg_pindi", "jlsg_faen"], []],
-            jlsgsk_lvfan: ["male", 'wu', 3, ["jlsg_diaodu", "jlsg_diancai"], []],
-            jlsgsk_hetaihou: ["female", 'qun', 3, ["jlsg_zhendu", "jlsg_qiluan"], []],
-            jlsgsk_zhangyi: ["male", 'shu', 4, ["jlsg_wurong"], []],
-            jlsgsk_caochun: ["male", 'wei', 4, ["jlsg_shanjia"], []],
-            jlsgsk_shamoke: ["male", 'shu', 4, ["jlsg_jili"], []],
-            jlsgsk_lingcao: ["male", 'wu', 4, ["jlsg_dujin"], []],
-            jlsgsk_zhaoyan: ["female", 'wu', 3, ["jlsg_sanjue"], []],
-            jlsgsk_beimihu: ["female", 'qun', 3, ["jlsg_canshi", "jlsg_xianji"], []],
-            jlsgsk_wutugu: ["male", 'qun', 6, ["jlsg_hanyong"], []],
-            jlsgsk_caoying: ["female", 'wei', 4, ["jlsg_lingruo", "jlsg_fujian"], []],
-            jlsgsk_mayunlu: ["female", 'shu', 4, ["mashu", "jlsg_fengyin", "jlsg_rongzhuang"], []],
-            jlsgsk_zhongyao: ["male", 'wei', 3, ["jlsg_huomo", "jlsg_dingguan"], []],
-            jlsgsk_nanhualaoxian: ["male", 'qun', 3, ["jlsg_xianshou", "jlsg_chengfeng"], []],
-            jlsgsk_jiangwei: ["male", 'wei', 5, ["jlsg_kunfen", "jlsg_caiyu"], []],
-            jlsgsk_huanghao: ["male", 'shu', 3, ["jlsg_qinqing", "jlsg_huisheng"], []],
-            jlsgsk_huaman: ["female", 'shu', 3, ["jlsg_manyi", "jlsg_souying"], []],
+            jlsgsk_zhugeguo: ['female', 'shu', 3, ['jlsg_yuhua', 'jlsg_dengxian'], ['name:诸葛|果']],
+            jlsgsk_xizhicai: ['male', 'wei', 3, ['jlsg_tiance', 'jlsg_jiexin'], []],
+            jlsgsk_guansuo: ['male', 'shu', 4, ['jlsg_zhengnan', 'jlsg_tongxin'], []],
+            jlsgsk_baosanniang: ['female', 'shu', 3, ['jlsg_jianwu', 'jlsg_zhennan', 'jlsg_tongxin'], []],
+            jlsgsk_dongbai: ['female', 'qun', 3, ['jlsg_shemi', 'jlsg_jiaohui'], []],
+            jlsgsk_xushi: ['female', 'wu', 3, ['jlsg_wengua', 'jlsg_fuzhu'], ['name:徐|null']],
+            jlsgsk_zhoufei: ['female', 'wu', 3, ['jlsg_yinyuan', 'jlsg_konghou'], ['name:周|null']],
+            jlsgsk_wuyi: ['male', 'shu', 4, ['jlsg_zhidi'], []],
+            jlsgsk_zhangliang: ['male', 'qun', 4, ['jlsg_jijun', 'jlsg_fangtong'], []],
+            jlsgsk_panshu: ['female', 'wu', 3, ['jlsg_jinzhi', 'jlsg_yuyou'], []],
+            jlsgsk_caorui: ['male', 'wei', 3, ['jlsg_huituo', 'jlsg_xingshuai'], []],
+            jlsgsk_liuchen: ['male', 'shu', 4, ['jlsg_zhanjue'], []],
+            jlsgsk_sunxiu: ['male', 'wu', 3, ['jlsg_yanzhu', 'jlsg_xingxue'], []],
+            jlsgsk_zhangrang: ['male', 'qun', 3, ['jlsg_taoluan'], []],
+            jlsgsk_xiahoushi: ['female', 'shu', 3, ['jlsg_shiqiao', 'jlsg_yingge'], ['name:夏侯|null']],
+            jlsgsk_sundeng: ['male', 'wu', 3, ['jlsg_kuangbi'], []],
+            jlsgsk_caoxiu: ['male', 'wei', 4, ['jlsg_taoxi'], []],
+            jlsgsk_caojie: ['female', 'qun', 3, ['jlsg_huaibi', 'jlsg_zhixi'], []],
+            jlsgsk_xinxianying: ['female', 'wei', 3, ['jlsg_caijian', 'jlsg_zhishix'], []],
+            jlsgsk_zhuzhi: ['male', 'wu', 4, ['jlsg_anguo'], []],
+            jlsgsk_wanglang: ['male', 'wei', 3, ['jlsg_quanxiang', 'jlsg_gushe', 'jlsg_jici'], []],
+            jlsgsk_wuxian: ['female', 'shu', 3, ['jlsg_hechun', 'jlsg_daiyan'], []],
+            jlsgsk_jushou: ['male', 'qun', 3, ['jlsg_jianying', 'jlsg_shibei'], []],
+            jlsgsk_sunliang: ['male', 'wu', 3, ['jlsg_kuizhu', 'jlsg_chezheng'], []],
+            jlsgsk_wenyang: ['male', 'wei', 7, ['jlsg_jueyong', 'jlsg_choujue'], []],
+            jlsgsk_yanyan: ['male', 'shu', 4, ['jlsg_juzhan'], []],
+            jlsgsk_zhugezhan: ['male', 'shu', 4, ['jlsg_zuilun', 'jlsg_fuzhi'], ['name:诸葛|瞻']],
+            jlsgsk_panzhang: ['male', 'wu', 4, ['jlsg_jiejun'], []],
+            jlsgsk_sunru: ['female', 'wu', 3, ['jlsg_xiecui', 'jlsg_youxu'], []],
+            jlsgsk_liuyan: ['male', 'qun', 3, ['jlsg_zhulu', 'jlsg_limu'], []],
+            jlsgsk_gongsunyuan: ['male', 'qun', 4, ['jlsg_huaiyi'], ['name:公孙|渊']],
+            jlsgsk_guohuanghou: ['female', 'wei', 3, ['jlsg_jiaozhao', 'jlsg_danxin'], ['name:郭|null']],
+            jlsgsk_zhaoxiang: ['female', 'shu', 4, ['jlsg_fanghun', 'jlsg_fuhan'], []],
+            jlsgsk_chenqun: ['male', 'wei', 3, ['jlsg_pindi', 'jlsg_faen'], []],
+            jlsgsk_lvfan: ['male', 'wu', 3, ['jlsg_diaodu', 'jlsg_diancai'], []],
+            jlsgsk_hetaihou: ['female', 'qun', 3, ['jlsg_zhendu', 'jlsg_qiluan'], ['name:何|null']],
+            jlsgsk_zhangyi: ['male', 'shu', 4, ['jlsg_wurong'], []],
+            jlsgsk_caochun: ['male', 'wei', 4, ['jlsg_shanjia'], []],
+            jlsgsk_shamoke: ['male', 'shu', 4, ['jlsg_jili'], []],
+            jlsgsk_lingcao: ['male', 'wu', 4, ['jlsg_dujin'], []],
+            jlsgsk_zhaoyan: ['female', 'wu', 3, ['jlsg_sanjue'], []],
+            jlsgsk_beimihu: ['female', 'qun', 3, ['jlsg_canshi', 'jlsg_xianji'], ['name:卑弥|呼']],
+            jlsgsk_wutugu: ['male', 'qun', 6, ['jlsg_hanyong'], []],
+            jlsgsk_caoying: ['female', 'wei', 4, ['jlsg_lingruo', 'jlsg_fujian'], []],
+            jlsgsk_mayunlu: ['female', 'shu', 4, ['mashu', 'jlsg_fengyin', 'jlsg_rongzhuang'], []],
+            jlsgsk_zhongyao: ['male', 'wei', 3, ['jlsg_huomo', 'jlsg_dingguan'], []],
+            jlsgsk_nanhualaoxian: ['male', 'qun', 3, ['jlsg_xianshou', 'jlsg_chengfeng'], ['name:庄|周']],
+            jlsgsk_jiangwei: ['male', 'wei', 5, ['jlsg_kunfen', 'jlsg_caiyu'], []],
+            jlsgsk_huanghao: ['male', 'shu', 3, ['jlsg_qinqing', 'jlsg_huisheng'], []],
+            jlsgsk_huaman: ['female', 'shu', 3, ['jlsg_manyi', 'jlsg_souying'], []],
+            jlsgsk_pangtong: ['male', 'wu', 3, ['jlsg_guolun', 'jlsg_songsang'], []],
+            jlsgsk_lvdai: ['male', 'wu', 4, ['jlsg_qinguo'], []],
+            jlsgsk_wanniangongzhu: ['female', 'qun', 3, ['jlsg_zhenge', 'jlsg_xinghan'], ['name:刘|null']],
+            jlsgsk_wangyuanji: ['female', 'qun', 3, ['jlsg_qianchong', 'jlsg_shangjian'], []],
+            jlsgsk_zhangchangpu: ['female', 'wei', 3, ['jlsg_yanjiao', 'jlsg_xingshen'], []],
           },
           characterIntro: {
             jlsgsk_kuaiyue: "蒯越（？－214年），字异度，襄阳中庐（今湖北襄阳西南）人。东汉末期人物，演义中为蒯良之弟。原本是荆州牧刘表的部下，曾经在刘表初上任时帮助刘表铲除荆州一带的宗贼（以宗族、乡里关系组成的武装集团）。刘表病逝后与刘琮一同投降曹操，后来官至光禄勋。",
@@ -11331,7 +11348,7 @@ const b = 1;
                   player.chooseBool(`是否重复此流程？`).frequentSkill = event.name;
                 } else {
                   target.addTempSkill('jlsg_wurong2');
-                  target.popup(result.control, 'grey');
+                  target.popup(result.control, 'gray');
                   target.storage.jlsg_wurong2 = target.storage.jlsg_wurong2 || [];
                   target.storage.jlsg_wurong2.add(result.control);
                   target.disableSkill('jlsg_wurong2', result.control);
@@ -12517,7 +12534,6 @@ const b = 1;
                 }
                 let { result } = await target.chooseCardButton(event.cards, true, `获得的${get.translation(player)}一张牌`)
                   .set('ai', card => get.value(card));
-                debugger;
                 if (result.cards) {
                   await target.gain(player, result.cards, 'giveAuto');
                   trigger.cancel();
@@ -12592,6 +12608,527 @@ const b = 1;
             },
             jlsg_souying_temp: {
               onremove: true,
+            },
+            jlsg_guolun: {
+              audio: "ext:极略:2",
+              init(player) {
+                player.storage.jlsg_guolun = 0;
+              },
+              trigger: { global: ['drawAfter', 'discardAfter', 'recoverAfter', 'damageAfter'] },
+              priority: 1,
+              filter(event, player) {
+                return game.hasPlayer(p => this.filterTargetDefault(event, player, p, false));
+              },
+              usable: 1,
+              filterTargetDefault(trigger, player, target, isReverse) {
+                switch (player.storage.jlsg_guolun) {
+                  case 0:
+                    if (!isReverse) {
+                      return false;
+                    }
+                  // fall through
+                  case 1:
+                    if (trigger.player != player) {
+                      return false;
+                    }
+                  // fall through
+                  case 2:
+                    if (!['draw', 'discard'].includes(trigger.name)) {
+                      return false;
+                    }
+                }
+                let action = trigger.name;
+                if (isReverse) {
+                  action = {
+                    'draw': 'discard',
+                    'discard': 'draw',
+                    'recover': 'damage',
+                    'damage': 'recover',
+                  }[trigger.name];
+                }
+                let source = trigger.player;
+                if (trigger.name == 'damage') {
+                  if (!trigger.source) {
+                    return false;
+                  }
+                  source = trigger.source;
+                }
+                if (source == target) {
+                  return false;
+                }
+                if (action == 'discard') {
+                  return target.countDiscardableCards(target, 'he');
+                }
+                if (action == 'recover') {
+                  return target.isDamaged();
+                }
+                return true;
+              },
+              getAITarget(trigger, player, isReverse) {
+                let targets = game.filterPlayer(p => lib.skill.jlsg_guolun.filterTargetDefault(trigger, player, p, isReverse));
+                let action = trigger.name;
+                if (isReverse) {
+                  action = {
+                    'draw': 'discard',
+                    'discard': 'draw',
+                    'recover': 'damage',
+                    'damage': 'recover',
+                  }[trigger.name];
+                }
+                let aiTarget, maxEff = 0;
+                switch (action) {
+                  case 'draw':
+                    return targets.filter(p => get.attitude(player, p) > 0).randomGet();
+                  case 'discard':
+                    for (let target of targets) {
+                      let eff = -Math.min(trigger.num, target.countDiscardableCards(target, 'he'));
+                      eff *= get.attitude(player, target);
+                      if (eff > maxEff) {
+                        maxEff = eff;
+                        aiTarget = target;
+                      }
+                    }
+                    return aiTarget;
+                  case 'recover':
+                    for (let target of targets) {
+                      let eff = get.recoverEffect(target, trigger.source || player, player);
+                      if (eff > maxEff) {
+                        maxEff = eff;
+                        aiTarget = target;
+                      }
+                    }
+                    return aiTarget;
+                  case 'damage':
+                    for (let target of targets) {
+                      let eff = get.damageEffect(target, trigger.source || player, player, trigger.nature);
+                      if (eff > maxEff) {
+                        maxEff = eff;
+                        aiTarget = target;
+                      }
+                    }
+                    return aiTarget;
+                    break;
+                }
+              },
+              async cost(event, trigger, player) {
+                let prompt2 = '选择一名角色';
+                let aiTarget = lib.skill.jlsg_guolun.getAITarget(trigger, player, false);
+                switch (trigger.name) {
+                  case 'draw':
+                    prompt2 += `摸${get.cnNumber(trigger.num)}张牌`;
+                    break;
+                  case 'discard':
+                    prompt2 += `弃${get.cnNumber(trigger.cards.length)}张牌`;
+                    break;
+                  case 'recover':
+                    prompt2 += `回复${trigger.num}点体力`;
+                    break;
+                  case 'damage':
+                    let nature = '';
+                    if (trigger.nature) {
+                      nature = get.translation(trigger.nature) + '属性';
+                    }
+                    prompt2 += `受到来自${get.translation(trigger.source)}的${trigger.num}点${nature}伤害`;
+                    break;
+                }
+                event.result = await player
+                  .chooseTarget(`###${get.prompt('jlsg_guolun')}###${prompt2}`, (_, player, target) => {
+                    return lib.skill.jlsg_guolun.filterTargetDefault(_status.event.getTrigger(), player, target, false);
+                  })
+                  .set("ai", target => {
+                    return target == _status.event.aiTarget;
+                  })
+                  .set('aiTarget', aiTarget)
+                  .forResult();
+                if (event.result.bool) {
+                  let target = event.result.targets[0];
+                  if (trigger.source) {
+                    player.line2([trigger.source, target], 'green');
+                  } else {
+                    player.line(target, 'green');
+                  }
+                }
+              },
+              line: false,
+              async content(event, trigger, player) {
+                let target = event.targets[0];
+                switch (trigger.name) {
+                  case 'draw':
+                    target.draw(trigger.num);
+                    break;
+                  case 'discard':
+                    target.chooseToDiscard(true, 'he', trigger.cards.length);
+                    break;
+                  case 'recover':
+                    target.recover(trigger.num, trigger.source || player);
+                    break;
+                  case 'damage':
+                    target.damage(trigger.num, trigger.source);
+                    break;
+                }
+              },
+              group: 'jlsg_guolun_reverse',
+              derivation: ['jlsg_guolun2', 'jlsg_guolun3', 'jlsg_guolun4'],
+              subSkill: {
+                reverse: {
+                  audio: 'jlsg_guolun',
+                  trigger: { global: ['drawAfter', 'discardAfter', 'recoverAfter', 'damageAfter'] },
+                  filter(event, player) {
+                    return game.hasPlayer(p => lib.skill.jlsg_guolun.filterTargetDefault(event, player, p, true));
+                  },
+                  usable: 1,
+                  async cost(event, trigger, player) {
+                    let prompt2 = '选择一名角色';
+                    let aiTarget = lib.skill.jlsg_guolun.getAITarget(trigger, player, true);
+                    switch (trigger.name) {
+                      case 'draw':
+                        prompt2 += `弃${get.cnNumber(trigger.num)}张牌`;
+                        break;
+                      case 'discard':
+                        prompt2 += `摸${get.cnNumber(trigger.cards.length)}张牌`;
+                        break;
+                      case 'recover':
+                        let source = '';
+                        if (trigger.source) {
+                          source = `来自${get.translation(trigger.source)}的`;
+                        }
+                        prompt2 += `受到${source}${trigger.num}点伤害`;
+                        break;
+                      case 'damage':
+                        prompt2 += `回复${trigger.num}点体力`;
+                        break;
+                    }
+                    event.result = await player
+                      .chooseTarget(`###${get.prompt('jlsg_guolun')}###${prompt2}`, (_, player, target) => {
+                        return lib.skill.jlsg_guolun.filterTargetDefault(_status.event.getTrigger(), player, target, true);
+                      })
+                      .set("ai", target => {
+                        return target == _status.event.aiTarget;
+                      })
+                      .set('aiTarget', aiTarget)
+                      .forResult();
+                    if (event.result.bool) {
+                      let target = event.result.targets[0];
+                      if (trigger.source) {
+                        player.line2([trigger.source, target], 'green');
+                      } else {
+                        player.line(target, 'green');
+                      }
+                    }
+                  },
+                  line: false,
+                  async content(event, trigger, player) {
+                    let target = event.targets[0];
+                    switch (trigger.name) {
+                      case 'draw':
+                        target.chooseToDiscard(true, 'he', trigger.num);
+                        break;
+                      case 'discard':
+                        target.draw(trigger.cards.length);
+                        break;
+                      case 'recover':
+                        target.damage(trigger.num, trigger.source || player);
+                        break;
+                      case 'damage':
+                        target.recover(trigger.num, trigger.source);
+                        break;
+                    }
+                  },
+                },
+              }
+            },
+            jlsg_songsang: {
+              audio: "ext:极略:2",
+              trigger: { global: 'die' },
+              filter(event, player) {
+                return event.player != player;
+              },
+              forced: true,
+              async content(event, trigger, player) {
+                if (player.hasSkill('jlsg_guolun')) {
+                  player.storage.jlsg_guolun = Math.min(3, player.storage.jlsg_guolun + 1);
+                  player.syncStorage("jlsg_guolun");
+                }
+                player.draw(game.countPlayer());
+              },
+            },
+            jlsg_qinguo: {
+              audio: "ext:极略:2",
+              locked: false,
+              mod: {
+                playerEnabled: (card, player, target) => {
+                  let info = get.info(card);
+                  if (info.type != 'equip') {
+                    return;
+                  }
+                  if (!player.isPhaseUsing()) {
+                    return;
+                  }
+                  if (info.selectTarget && info.selectTarget !== -1) {
+                    return true;
+                  }
+                  if (info.modTarget) {
+                    if (typeof info.modTarget == 'boolean') return info.modTarget;
+                    if (typeof info.modTarget == 'function') return Boolean(info.modTarget(card, player, target));
+                  }
+                },
+                selectTarget(card, player, num) {
+                  let info = get.info(card);
+                  if (info.type != 'equip') {
+                    return;
+                  }
+                  if (!player.isPhaseUsing()) {
+                    return;
+                  }
+                  if (num[1] < 0) {
+                    if (num[0] === num[1]) {
+                      num[0] = 1;
+                    }
+                    num[1] = 1;
+                  }
+                }
+              },
+              trigger: { player: 'useCardAfter' },
+              filter(event, player) {
+                if (get.type(event.card) != 'equip') {
+                  return false;
+                }
+                let cards = lib.inpile
+                  .filter(c => lib.card[c].type === 'basic')
+                  .map(c => {
+                    let cards = [{ name: c, isCard: true }];
+                    if (c == 'sha') {
+                      for (let nature of lib.inpile_nature) {
+                        cards.push({ name: c, nature, isCard: true });
+                      }
+                    }
+                    return cards;
+                  })
+                  .flat()
+                  .filter(c => player.hasUseTarget(c, undefined, false));
+                return cards.length;
+              },
+              direct: true,
+              async content() {
+                let cards = lib.inpile
+                  .filter(c => lib.card[c].type === 'basic')
+                  .map(c => {
+                    let cards = [{ name: c, isCard: true }];
+                    if (c == 'sha') {
+                      for (let nature of lib.inpile_nature) {
+                        cards.push({ name: c, nature, isCard: true });
+                      }
+                    }
+                    return cards;
+                  })
+                  .flat()
+                  .filter(c => player.hasUseTarget(c, undefined, false));
+
+                let { result } = await player.chooseButton([
+                  get.prompt('jlsg_qinguo'),
+                  [
+                    cards.map(c => ["基本", "", c.name, c.nature]),
+                    'vcard',
+                  ],
+                ]);
+                if (!result.bool) {
+                  event.finish();
+                  return;
+                }
+                let card = { name: result.links[0][2], nature: result.links[0][3], isCard: true };
+                await player.chooseUseTarget(card, false)
+                  .set('logSkill', event.name);
+              },
+              group: ['jlsg_qinguo_gain'],
+              subSkill: {
+                gain: {
+                  audio: 'jlsg_qinguo',
+                  trigger: {
+                    global: ["equipAfter", "loseAfter", "loseAsyncAfter", "cardsDiscardAfter"],
+                  },
+                  filter(event, player) {
+                    let cards = this.getCards(event, player);
+                    return cards.length;
+                  },
+                  getCards(event, player) {
+                    if (event.name == 'cardsDiscard') {
+                      // 装备牌转化出牌
+                      let parent = event.getParent();
+                      if (parent.name !== 'orderingDiscard') {
+                        return false;
+                      }
+                      let source = parent.relatedEvent || parent.getParent();
+                      let dcards = event.getd().filter(c => get.type(c) == 'equip');
+                      let lcards = new Set();
+                      for (let p of game.filterPlayer(p => p != player)) {
+                        let events = p.getHistory('lose', e => source == (e.relatedEvent || e.getParent()));
+                        for (let plose of events) {
+                          for (let v of plose.getl(p).es) {
+                            lcards.add(v);
+                          }
+                        }
+                      }
+                      return dcards.filter(c => lcards.has(c)).filterInD('d');
+                    }
+                    let lcards = game.filterPlayer(p => p != player)
+                      .map(p => event.getl(p).es)
+                      .flat();
+                    let dcards = game.filterPlayer(p => p != player)
+                      .map(p => event.getd(p))
+                      .flat();
+                    return lcards.filter(c => get.type(c) == 'equip' && dcards.includes(c)).filterInD('d');
+                  },
+                  usable: 1,
+                  async cost(event, trigger, player) {
+                    let cards = lib.skill.jlsg_qinguo_gain.getCards(trigger, player);
+                    if (cards.length == 1) {
+                      let prompt = `###${get.prompt('jlsg_qinguo')}###获得弃牌堆中的${get.translation(cards[0])}`;
+                      event.result = await player.chooseBool(prompt, true)
+                        .forResult();
+                      if (event.result.bool) {
+                        event.result.cards = cards;
+                      }
+                    } else {
+                      let prompt = `###${get.prompt('jlsg_qinguo')}###获得弃牌堆中的一张装备`;
+                      event.result = await player.chooseCardButton(prompt, cards)
+                        .set('ai', button => {
+                          let player = _status.event.player;
+                          let card = button.link;
+                          let value = get.value(card);
+                          let cnt = player.countCards('hx', { type: 'equip', subtype: get.subtype(card) });
+                          if (cnt) {
+                            value /= (1 + 2 * cnt);
+                          }
+                          if (player.countCards('hx', { name: card.name })) {
+                            value /= 2;
+                          }
+                          return value;
+                        })
+                        .forResult();
+                      event.result.cards = event.result.links.slice();
+                    }
+                  },
+                  async content(event, trigger, player) {
+                    player.gain(event.cards[0], 'gain2');
+                  },
+                },
+              }
+            },
+            jlsg_zhenge: {
+              audio: "ext:极略:2",
+              derivation: 'jlsg_zhenge_derivation',
+              trigger: { player: 'useCardBegin' },
+              silent: true,
+              charlotte: true,
+              lastDo: true,
+              filter(event, player) {
+                return Array.isArray(event.cards);
+              },
+              async content(event, trigger, player) {
+                if (trigger.cards.some(c => !c.hasGaintag('jlsg_zhenge'))) {
+                  trigger.set('jlsg_zhenge_gain_valid', true);
+                }
+                if (trigger.cards.length && trigger.cards.every(c => c.hasGaintag('jlsg_zhenge'))) {
+                  trigger.set('jlsg_zhenge_target_valid', true);
+                }
+              },
+              subfrequent: 'gain',
+              group: ['jlsg_zhenge_gain', 'jlsg_zhenge_target'],
+              subSkill: {
+                gain: {
+                  audio: 'jlsg_zhenge',
+                  trigger: { player: 'useCardAfter' },
+                  frequent: true,
+                  filter(event, player) {
+                    return event.jlsg_zhenge_gain_valid;
+                  },
+                  async content(event, trigger, player) {
+                    let card = ui.cardPile.lastChild;
+                    if (card) {
+                      player.gain(card).set("gaintag", ['jlsg_zhenge']);
+                      player.$drawAuto([card]);
+                      await game.delayx(0.5);
+                    }
+                  },
+                },
+                target: {
+                  audio: 'jlsg_zhenge',
+                  trigger: {player: 'useCardToPlayered'},
+                  filter(event, player) {
+                    return event.getParent().jlsg_zhenge_target_valid && ['red', 'black'].includes(get.color(event.card));
+                  },
+                  logTarget: 'target',
+                  check(event, player) {
+                    if (get.color(event.card) == 'red') {
+                      return get.attitude(player, event.target) > 0.5 + Math.random();
+                    } else {
+                      return get.attitude(player, event.target) < 0.5 - Math.random();
+                    }
+                  },
+                  async content(event, trigger, player) {
+                    let target =trigger.target;
+                    if (get.color(trigger.card) == 'red') {
+                      let index = Math.floor(8 * Math.random());
+                      switch (index) {
+                        case 0: 
+                        let skills = [];
+                        for (let name of jlsg.characterList) {
+                          skills.addArray(lib.character[name]?.[3] ?? []);                          
+                        }
+                        for (let p of game.filterPlayer()) {
+                          skills.removeArray(p.getSkills(null, false, false));
+                        }
+                        let skill = skills.randomGet();
+                        if (!skill) {
+                          break;
+                        }
+                        target.addSkills(skill);
+                        target.popup(skill);
+                        target.flashAvatar(player == target ? event.name: null, skill);
+                        break;
+                        case 1:
+                        target.addSkill('jlsg_zhenge_buff');
+                        target.storage.jlsg_zhenge_buff.hand += 1;
+                        break;
+                        case 2:
+                          
+                      }
+                    } else {
+
+                    }
+                  },
+                },
+                buff: {
+                  init(player) {
+                    player.storage.jlsg_zhenge_buff = {
+                      hand: 0,
+                      draw: 0,
+                      sha: 0,
+                    };
+                  }
+                },
+              }
+            },
+            jlsg_zhenge_derivation: { sub: true },
+            jlsg_xinghan: {
+              audio: "ext:极略:2",
+
+            },
+            jlsg_qianchong: {
+              audio: "ext:极略:2",
+
+            },
+            jlsg_shangjian: {
+              audio: "ext:极略:2",
+
+            },
+            jlsg_yanjiao: {
+              audio: "ext:极略:2",
+
+            },
+            jlsg_xingshen: {
+              audio: "ext:极略:2",
+
             },
           },
           translate: {
@@ -12711,6 +13248,11 @@ const b = 1;
             jlsgsk_jiangwei: 'SP姜维',
             jlsgsk_huanghao: 'SK黄皓',
             jlsgsk_huaman: 'SK花鬘',
+            jlsgsk_pangtong: 'SP庞统',
+            jlsgsk_lvdai: 'SK吕岱',
+            jlsgsk_wanniangongzhu: 'SK万年公主',
+            jlsgsk_wangyuanji: 'SK王元姬',
+            jlsgsk_zhangchangpu: 'SK张昌蒲',
 
             jlsg_hemeng: '和盟',
             jlsg_sujian: '素检',
@@ -13033,6 +13575,34 @@ const b = 1;
             jlsg_manyi_info: "当你使用的【杀】或非延时锦囊牌指定目标后，或当你成为其他角色使用这些牌的目标后，你可以将此牌的效果改为【南蛮入侵】，然后摸一张牌。",
             jlsg_souying: "薮影",
             jlsg_souying_info: "每回合对每名角色限一次，当任意角色打出【杀】后，你可以对一名角色造成1点伤害;每回合对每名角色限一次，当任意角色打出【闪】后，你可以令一名角色回复1点体力。",
+            jlsg_guolun: "过论",
+            jlsg_guolun_info: "每回合限一次，当你摸牌或弃牌后，你可以令一名其他角色执行相反的效果。",
+            jlsg_guolun2: "过论2",
+            jlsg_guolun2_info: "每回合限一次， 当你摸牌或弃牌后， 你可以令一名其他角色执行相反的效果;每回合限一次，当你摸牌或弃牌后，你可以令一名其他角色执行相同的效果。",
+            jlsg_guolun3: "过论3",
+            jlsg_guolun3_info: "每回合限一次，当任意角色摸牌或弃牌后，你可以令另一名角色执行相反的效果;每回合限一次，当任意角色摸牌或弃牌后，你可以令另一名角色执行相同的效果。",
+            jlsg_guolun4: "过论4",
+            jlsg_guolun4_info: "每回合限一次，当任意角色摸牌、弃牌、回复体力或受到伤害后， 你可以令另一名角色执行相反的效果;每回合限一次，当任意角色摸牌、弃牌、回复体力或造成伤害后，你可以令另一名角色执行相同的效果。",
+            jlsg_songsang: "送丧",
+            jlsg_songsang_info: "锁定技，当其他角色死亡时，你修改“过论”(至多三次)并摸X张牌(X为存活角色数)。",
+            jlsg_qinguo: "勤国",
+            jlsg_qinguo_info: "出牌阶段，你可以对任意角色使用装备牌。当你使用装备牌后，你可以视为使用任意一张无次数限制的基本牌。每回合限一次，当任意角色装备区里的牌进入弃牌堆后，你可以获得之。",
+            jlsg_zhenge: "枕戈",
+            jlsg_zhenge_buff: "枕戈",
+            jlsg_zhenge_info: "锁定技，当你使用非「枕戈」牌后，你获得牌堆底牌并标记为「枕戈」牌，你的「枕戈」牌不计入手牌上限且无次数限制。当你使用黑色/红色「枕戈」牌指定一名角色为目标后，你可以令其受到随机负面/正面效果。",
+            jlsg_zhenge_derivation: "负面/正面效果",
+            jlsg_zhenge_derivation_ab: "负面/正面效果",
+            jlsg_zhenge_derivation_info: "正面：随机获得一个技能；手牌上限+1；从牌堆或弃牌堆获得1/2张基本牌/锦囊牌/装备牌；随机加1~3点体力上限；随机回复1~3点体力；摸牌数+1；使用杀的次数上限+1；随机摸1~5张牌。<br>负面：横置；随机弃置1~5张牌；随机受到1~3点伤害；随机失去一个技能；翻面；随机受到1~3点火焰伤害；随机减1~2点体力上限；随机失去1~3点体力。",
+            jlsg_xinghan: "兴汉",
+            jlsg_xinghan_info: "游戏开始时，或回合结束时，你可以从任意势力中招募一名未上场过且你拥有的武将。你至多拥有三名势力各不相同的招募武将，若任意势力的招募武将阵亡，则不可再从该势力中招募其他武将。",
+            jlsg_qianchong: "谦冲",
+            jlsg_qianchong_info: "任意角色的回合结束时，若你于本回合内使用的红色牌数为1，你可以令一名角色回复2点体力或摸X张牌;若你于本回合内使用的黑色牌数为1，你可以令一名角色失去2点体力或弃置X张牌(X为其体力上限)。若你于本回合内执行过以上两项，且本回合不为额外回合，你于本回合结束后执行一个额外回合。",
+            jlsg_shangjian: "尚俭",
+            jlsg_shangjian_info: "锁定技，弃牌阶段开始时，你将超出手牌上限数量的手牌交给其他角色，然后于此阶段结束时摸等量的牌。",
+            jlsg_yanjiao: "严教",
+            jlsg_yanjiao_info: "出牌阶段不同的X各限一次，你可以将满足条件的X张手牌交给一名角色，然后摸X张牌。X为1的条件是点数最大的牌; X为2的条件是点数相同的牌; X为3的条件是花色相同的牌; X为4的条件是点数连续的牌; X为5的条件是花色相同且点数连续的牌。当其他角色以此法获得牌后，若你拥有「省身」标记，你可以对其造成X点伤害。",
+            jlsg_xingshen: "省身",
+            jlsg_xingshen_info: "锁定技，当你受到1点伤害后，你摸两张牌，然后若你没有「省身」标记，你回复1点体力，并获得1枚「省身」标记直到你的下个回合结束。",
 
             jlsg_limu: "立牧",
             jlsg_limu_info: "出牌阶段限一次，你可以将方片牌当【乐不思蜀】对自己使用，然后回复1点体力并摸X张牌(X为 此牌的点数)；若你的判定区里有牌，你使用牌无次数限制。",
@@ -13236,6 +13806,18 @@ const b = 1;
               let storage = player.storage.jlsg_tiandao;
               return `锁定技，回合开始阶段，你摸${storage[0]}张牌，随机获得${storage[1]}个群势力技能，然后可以选择一名角色，令其随机弃置${storage[2]}张牌，对其造成${storage[3]}点雷电伤害。`;
             },
+            jlsg_guolun(player) {
+              switch (player.storage.jlsg_guolun) {
+                case 3:
+                  return lib.translate['jlsg_guolun4_info'];
+                case 2:
+                  return lib.translate['jlsg_guolun3_info'];
+                case 1:
+                  return lib.translate['jlsg_guolun2_info'];
+                default:
+                  return lib.translate['jlsg_guolun_info'];
+              }
+            },
           },
         };
         lib.namePrefix.set('极略★SK', {
@@ -13254,11 +13836,13 @@ const b = 1;
             jlsgsk_jdjg_sunshangxiang: ["female", 'wu', 3, ["jlsg_jieyin", "jlsg_xiaoji"], []],
             jlsgsk_syqj_guanyu: ["male", 'shu', 4, ["jlsg_syqj_wusheng"], []],
             jlsgsk_sslh_zhenji: ["female", 'wei', 3, ["jlsg_sslh_luoshen", "jlsg_sslh_qingguo"], []],
+            jlsgsk_spwq_lvbu: ["male", 'qun', 4, ["jlsg_spwq_wushuang"], []],
           },
           characterTitle: {
             jlsgsk_jdjg_sunshangxiang: '绝代巾帼',
             jlsgsk_syqj_guanyu: '水淹七军',
             jlsgsk_sslh_zhenji: '似水莲华',
+            jlsgsk_spwq_lvbu: '杀破万千',
           },
           skill: {
             jlsg_jieyin: {
@@ -13598,6 +14182,10 @@ const b = 1;
                 },
               },
             },
+            jlsg_spwq_wushuang: {
+              audio: "ext:极略:2",
+
+            },
           },
           translate: {
             jlsg_skpf: '极略皮肤',
@@ -13608,6 +14196,8 @@ const b = 1;
             jlsgsk_syqj_guanyu_ab: '关羽',
             jlsgsk_sslh_zhenji: 'SPF甄姬',
             jlsgsk_sslh_zhenji_ab: '甄姬',
+            jlsgsk_spwq_lvbu: 'SPF吕布',
+            jlsgsk_spwq_lvbu_ab: '吕布',
             jlsg_jieyin: '结姻',
             jlsg_jieyin_info: '出牌阶段限一次，你可以弃置一张牌并选择一名其他角色，你与该角色中未受伤的角色摸两张牌，已受伤的角色回复1点体力，若没有角色以此法摸牌，此技能视为未发动过。',
             jlsg_xiaoji: '枭姬',
@@ -13619,6 +14209,8 @@ const b = 1;
             jlsg_sslh_luoshen_info: '回合开始阶段，你可以判定并获得生效后的判定牌，重复此流程直到点数重复的判定牌生效后，你于本回合内加此牌点数的手牌上限。',
             jlsg_sslh_qingguo: '倾国',
             jlsg_sslh_qingguo_info: '当其他角色使用【杀】或非延时锦囊牌指定你为目标后，你可以弃置一张黑色手牌并令此牌对你无效，然后若你弃置的牌为黑桃牌，你可以令该角色失去1点体力。',
+            jlsg_spwq_wushuang: '无双',
+            jlsg_spwq_wushuang_info: '每回合限一次，当你需要使用【杀】时，你 可以弃置所有手牌并摸等量的牌，视为使用之。你以此法使用的【杀】造成的伤害翻倍，无次数和距离限制，并于指定目标后选择一项: 1.将其区域里的所有牌于本回合内移出游戏; 2.令其的非锁定技于本回合内失效。若你以此法弃置的牌里有武器牌，改为依次执行两项且令此技能于本回合内可再发动一次。',
           },
 
           dynamicTranslate: {},
@@ -13632,7 +14224,7 @@ const b = 1;
           connect: true,
           character: {
             jlsgsr_zhangliao: ['male', 'wei', 4, ['jlsg_wuwei', 'jlsg_yansha'], []],
-            jlsgsr_xiahoudun: ['male', 'wei', 4, ['jlsg_zhonghou', 'jlsg_ganglie'], []],
+            jlsgsr_xiahoudun: ['male', 'wei', 4, ['jlsg_zhonghou', 'jlsg_ganglie'], ['name:夏侯|惇']],
             // jlsgsr_zhenji: ['female', 'wei', 3, ['jlsg_liuyun', 'jlsg_lingbo', 'jlsg_qingcheng_zhu'], []],
             jlsgsr_zhenji: ['female', 'wei', 3, ['jlsg_liuyun', 'jlsg_lingbo', 'jlsg_qingcheng'], []],
             jlsgsr_xuzhu: ['male', 'wei', 4, ['jlsg_aozhan', 'jlsg_huxiao'], []],
@@ -13643,11 +14235,11 @@ const b = 1;
             jlsgsr_zhangfei: ['male', 'shu', 4, ['jlsg_xujin', 'jlsg_paoxiao'], []],
             jlsgsr_machao: ['male', 'shu', 4, ['jlsg_benxi', 'jlsg_yaozhan'], []],
             jlsgsr_guanyu: ['male', 'shu', 4, ['jlsg_wenjiu', 'jlsg_shuixi'], []],
-            jlsgsr_zhugeliang: ['male', 'shu', 3, ['jlsg_sanfen', 'jlsg_guanxing', 'jlsg_weiwo'], []],
+            jlsgsr_zhugeliang: ['male', 'shu', 3, ['jlsg_sanfen', 'jlsg_guanxing', 'jlsg_weiwo'], ['name:诸葛|亮']],
             jlsgsr_huangyueying: ['female', 'shu', 3, ['jlsg_shouji', 'jlsg_hemou', 'jlsg_qicai'], []],
             jlsgsr_liubei: ['male', 'shu', 4, ['jlsg_rende', 'jlsg_chouxi', 'jlsg_yongbing'], ['zhu',]],
             jlsgsr_sunshangxiang: ['female', 'wu', 3, ['jlsg_yinmeng', 'jlsg_xiwu', 'jlsg_juelie'], []],
-            jlsgsr_daqiao: ['female', 'wu', 3, ['jlsg_fangxin', 'jlsg_xiyu', 'jlsg_wanrou'], []],
+            jlsgsr_daqiao: ['female', 'wu', 3, ['jlsg_fangxin', 'jlsg_xiyu', 'jlsg_wanrou'], ['name:桥|null']],
             jlsgsr_huanggai: ['male', 'wu', 4, ['jlsg_zhouyan', 'jlsg_zhaxiang'], []],
             jlsgsr_lvmeng: ['male', 'wu', 4, ['jlsg_shixue', 'jlsg_guoshi'], []],
             jlsgsr_zhouyu: ['male', 'wu', 3, ['jlsg_yingcai', 'jlsg_weibao', 'jlsg_choulve'], []],
@@ -13656,7 +14248,7 @@ const b = 1;
             jlsgsr_sunquan: ['male', 'wu', 4, ['jlsg_quanheng', 'jlsg_xionglve', 'jlsg_fuzheng'], ['zhu',]],
             jlsgsr_lvbu: ['male', 'qun', 4, ['jlsg_jiwu', 'jlsg_sheji'], []],
             jlsgsr_huatuo: ['male', 'qun', 3, ['jlsg_xingyi', 'jlsg_guagu', 'jlsg_wuqin'], []],
-            jlsgsr_diaochan: ['female', 'qun', 3, ['jlsg_lijian', 'jlsg_manwu', 'jlsg_baiyue'], []],
+            jlsgsr_diaochan: ['female', 'qun', 3, ['jlsg_lijian', 'jlsg_manwu', 'jlsg_baiyue'], ['name:null|null']],
           },
           characterIntro: {},
           skill: {
@@ -19251,9 +19843,9 @@ const b = 1;
             jlsgsoul_sunquan: ['male', 'shen', 4, ['jlsg_huju'], ['wu']],
             jlsgsoul_jiaxu: ['male', 'shen', 3, ['jlsg_yanmie', 'jlsg_shunshi'], ['wei']],
             jlsgsoul_liubei: ['male', 'shen', 4, ['jlsg_junwang', 'jlsg_jizhao'], ['shu']],
-            jlsgsoul_zhugeliang: ['male', 'shen', 3, ['jlsg_qixing', 'jlsg_kuangfeng', 'jlsg_dawu'], ['shu']],
-            jlsgsoul_sp_zhugeliang: ['male', 'shen', 7, ['jlsg_yaozhi', 'jlsg_xingyun'], ['shu']],
-            jlsgsoul_simayi: ['male', 'shen', 3, ['jlsg_jilve', 'jlsg_tongtian'], ['wei', 'nei']],
+            jlsgsoul_zhugeliang: ['male', 'shen', 3, ['jlsg_qixing', 'jlsg_kuangfeng', 'jlsg_dawu'], ['shu', 'name:诸葛|亮']],
+            jlsgsoul_sp_zhugeliang: ['male', 'shen', 7, ['jlsg_yaozhi', 'jlsg_xingyun'], ['shu', 'name:诸葛|亮']],
+            jlsgsoul_simayi: ['male', 'shen', 3, ['jlsg_jilve', 'jlsg_tongtian'], ['wei', 'name:司马|懿']],
             jlsgsoul_sp_simayi: ['male', 'shen', 3, ['jlsg_yingshi', 'jlsg_langxi', 'jlsg_shenyin'], ['wei']],
             jlsgsoul_luxun: ['male', 'shen', 3, ['jlsg_jieyan', 'jlsg_fenying'], ['wu']],
             jlsgsoul_lvbu: ['male', 'shen', 5, ['jlsg_kuangbao', 'jlsg_wumou', 'jlsg_wuqian', 'jlsg_shenfen'], ['qun']],
@@ -19268,14 +19860,14 @@ const b = 1;
             jlsgsoul_sp_zhangjiao: ['male', 'shen', 3, ['jlsg_yinyang_s', 'jlsg_dingming'], ['qun', 'fan']],
             jlsgsoul_lvmeng: ['male', 'shen', 3, ['jlsg_shelie', 'jlsg_gongxin'], ['wu']],
             jlsgsoul_guojia: ['male', 'shen', 3, ['jlsg_tianqi', 'jlsg_tianji'], ['wei']],
-            jlsgsoul_diaochan: ['female', 'shen', 3, ['jlsg_tianzi', 'jlsg_meixin'], ['qun']],
-            jlsgsoul_sp_diaochan: ['female', 'shen', 1, ['jlsg_lihun', 'jlsg_jueshi'], ['qun']],
+            jlsgsoul_diaochan: ['female', 'shen', 3, ['jlsg_tianzi', 'jlsg_meixin'], ['qun', 'name:null|null']],
+            jlsgsoul_sp_diaochan: ['female', 'shen', 1, ['jlsg_lihun', 'jlsg_jueshi'], ['qun', 'name:null|null']],
             jlsgsoul_zhangfei: ['male', 'shen', 4, ['jlsg_shayi', 'jlsg_zhenhun'], ['shu']],
-            jlsgsoul_simahui: ['male', 'shen', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['qun']],
+            jlsgsoul_simahui: ['male', 'shen', 3, ['jlsg_zhitian', 'jlsg_yinshi'], ['qun', 'name:司马|徽']],
             jlsgsoul_sunshangxiang: ['female', 'shen', 3, ['jlsg_xianzhu', 'jlsg_liangyuan'], ['shu']],
             jlsgsoul_ganning: ['male', 'shen', 4, ['jlsg_lvezhen', 'jlsg_youlong'], ['wu']],
             jlsgsoul_sp_ganning: ['male', 'shen', 4, ['jlsg_jieying', 'jlsg_jinlong'], ['wu']],
-            jlsgsoul_xiahoudun: ['male', 'shen', 5, ['jlsg_danjing', 'jlsg_zhonghun'], ['wei']],
+            jlsgsoul_xiahoudun: ['male', 'shen', 5, ['jlsg_danjing', 'jlsg_zhonghun'], ['wei', 'name:夏侯|惇']],
             jlsgsoul_dianwei: ['male', 'shen', 6, ['jlsg_zhiji'], ['wei']],
             jlsgsoul_huatuo: ['male', 'shen', 3, ['jlsg_yuanhua', 'jlsg_guiyuan', 'jlsg_chongsheng'], ['qun']],
             jlsgsoul_zhouyu: ['male', 'shen', 4, ['jlsg_qinyin', 'jlsg_yeyan'], ['wu']],
@@ -19283,9 +19875,9 @@ const b = 1;
             jlsgsoul_zhenji: ['female', 'shen', 3, ['jlsg_shenfu'], ['wei']],
             jlsgsoul_huanggai: ['male', 'shen', 6, ['jlsg_lianti', 'jlsg_yanlie'], ['wu']],
             jlsgsoul_xuzhu: ['male', 'shen', 5, ['jlsg_huchi', 'jlsg_xiejia'], ['wei']],
-            jlsgsoul_daqiao: ['female', 'shen', 3, ['jlsg_wangyue', 'jlsg_luoyan'], ['wu']],
+            jlsgsoul_daqiao: ['female', 'shen', 3, ['jlsg_wangyue', 'jlsg_luoyan'], ['wu', 'name:桥|null']],
             jlsgsoul_huangzhong: ['male', 'shen', 4, ['jlsg_liegong'], ['shu']],
-            jlsgsoul_xiaoqiao: ['female', 'shen', 3, ['jlsg_xingwu', 'jlsg_chenyu'], ['wu']],
+            jlsgsoul_xiaoqiao: ['female', 'shen', 3, ['jlsg_xingwu', 'jlsg_chenyu'], ['wu', 'name:桥|null']],
             jlsgsoul_caoren: ['male', 'shen', 8, ['jlsg_bamen', 'jlsg_gucheng'], ['wei']],
             jlsgsoul_caopi: ['male', 'shen', 3, ['jlsg_chuyuan', 'jlsg_dengji'], ['wei']],
           },
@@ -25257,7 +25849,7 @@ const b = 1;
                       return;
                     }
                     // TODO: make popup synced
-                    player.popup(event.skill, 'grey');
+                    player.popup(event.skill, 'gray');
                     player.removeSkills(event.skill);
                   });
                 }
@@ -26917,11 +27509,290 @@ const b = 1;
             },
             jlsg_chuyuan: {
               audio: "ext:极略:2",
-
+              trigger: { global: "useCardAfter" },
+              filter(event, player) {
+                return ['sha', 'shan'].includes(event.card.name);
+              },
+              frequent(event, player) {
+                if (event.card.name == 'sha' && !player.countCards('he', { color: 'black' })) {
+                  return true;
+                }
+                if (event.card.name == 'shan' && !player.countCards('he', { color: 'red' })) {
+                  return true;
+                }
+                return false;
+              },
+              prompt2(event, player) {
+                return `摸两张牌，并将一张${get.translation(event.card.name == 'sha' ? 'black' : 'red')}牌置于武将牌上`;
+              },
+              async content(event, trigger, player) {
+                await player.draw(2);
+                let color = trigger.card.name == 'sha' ? 'black' : 'red';
+                let result;
+                switch (player.countCards('he', { color })) {
+                  case 0:
+                    return;
+                  case 1:
+                    result = {
+                      bool: true,
+                      cards: player.getCards('he', { color }),
+                    };
+                    break;
+                  default:
+                    ({ result } = await player.chooseCard('he', card => get.color(card) === _status.event.color, true)
+                      .set('color', color));
+                }
+                if (!result?.bool) {
+                  return;
+                }
+                await player.addToExpansion(result.cards, player, "give")
+                  .set("gaintag", [event.name]);
+              },
+              marktext: "储",
+              intro: {
+                content: "expansion",
+                markcount: "expansion",
+              },
+              group: ['jlsg_chuyuan_buff'],
+              subSkill: {
+                buff: {
+                  audio: 'jlsg_chuyuan',
+                  trigger: { player: "phaseDrawBegin2" },
+                  filter(event, player) {
+                    if (event.numFixed) {
+                      return false;
+                    }
+                    let cards = player.getExpansions('jlsg_chuyuan');
+                    return cards.some(c => get.color(c) == 'black') && cards.some(c => get.color(c) == 'red');
+                  },
+                  locked: false,
+                  forced: true,
+                  content() {
+                    let cards = player.getExpansions('jlsg_chuyuan');
+                    let minCnt = Math.min(
+                      cards.filter(c => get.color(c) == 'black').length,
+                      cards.filter(c => get.color(c) == 'red').length,
+                    );
+                    trigger.num += minCnt;
+                  },
+                  mod: {
+                    maxHandcard(player, num) {
+                      let cards = player.getExpansions('jlsg_chuyuan');
+                      let minCnt = Math.min(
+                        cards.filter(c => get.color(c) == 'black').length,
+                        cards.filter(c => get.color(c) == 'red').length,
+                      );
+                      return num + minCnt;
+                    },
+                  },
+                },
+              },
             },
             jlsg_dengji: {
               audio: "ext:极略:2",
+              trigger: { player: "phaseZhunbeiBegin" },
+              filter(event, player) {
+                let cnt = player.getExpansions('jlsg_chuyuan').length;
+                return cnt >= 5 && cnt & 1;
+              },
+              forced: true,
+              juexingji: true,
+              skillAnimation: true,
+              animationColor: "thunder",
+              async content(event, trigger, player) {
+                player.awakenSkill(event.name);
+                let cards = player.getExpansions("jlsg_chuyuan");
+                await player.gain(cards, "gain2");
+                await player.removeSkills('jlsg_chuyuan');
 
+                let black = cards.filter(c => get.color(c) == 'black').length,
+                  red = cards.filter(c => get.color(c) == 'red').length;
+                if (black > red) {
+                  await player.addSkills('jlsg_jiquan');
+                } else {
+                  if (black == red && Math.random < 0.01) {
+                    await player.addSkills('jlsg_jiquan');
+                  }
+                  await player.addSkills('jlsg_renzheng');
+                }
+                let skills = [];
+                for (let c of jlsg.characterList) {
+                  skills.addArray(lib.character[c][3].filter(s => lib.skill[s] && lib.skill[s].zhuSkill));
+                }
+                skills = skills.randomGets(Math.min(black, red));
+                for (let skill of skills.slice(0, 5)) {
+                  player.flashAvatar(event.name, skill);
+                }
+                await player.addSkills(skills);
+              },
+              derivation: ["jlsg_jiquan", "jlsg_renzheng"],
+              ai: {
+                combo: "jlsg_chuyuan",
+              },
+            },
+            jlsg_jiquan: {
+              audio: "ext:极略:1",
+              enable: "phaseUse",
+              usable: 1,
+              filterTarget: lib.filter.notMe,
+              selectTarget: [1, Infinity],
+              multitarget: true,
+              multiline: true,
+              async content(event, trigger, player) {
+                event.targets.sortBySeat();
+                for (let target of event.targets) {
+                  if (player.ai.shown > target.ai.shown && get.attitute(player, target) < -1) {
+                    player.addExpose(0.1);
+                  }
+                }
+                let history = player.getAllHistory('useSkill', e => e.skill == 'jlsg_jiquan');
+                for (let target of event.targets) {
+                  if (!player.isIn()) {
+                    return;
+                  }
+                  if (!target.isIn()) {
+                    continue;
+                  }
+                  let cnt = history.filter(e => e.event.targets.includes(target)).length;
+                  cnt = Math.min(cnt, 3);
+                  let index;
+                  let valid0 = cnt <= target.countGainableCards(player, 'he');
+                  let valid1 = target.getSkills(null, false, false).length != 0;
+                  if (!valid0 && !valid1) {
+                    continue;
+                  }
+                  if (!valid0) {
+                    index = 1;
+                  }
+                  else if (!valid1) {
+                    index = 0;
+                  }
+                  else {
+                    ({ result: { index } } = await target.chooseControlList([
+                      `交给${get.translation(player)}${get.cnNumber(cnt)}张牌`,
+                      `交给${get.translation(player)}一个技能`,
+                    ], true, () => _status.event.choice,
+                    ).set('choice', cnt != 3 ? 0 : 1));
+                  }
+                  switch (index) {
+                    case 0:
+                      await target.chooseToGive(player, cnt, 'he', true);
+                      break;
+                    case 1:
+                      let skills = target.getSkills(null, false, false).map(s => [s, get.translation(s)]);
+                      let { result } = await target.chooseButton([
+                        `选择一个技能交给${get.translation(player)}`,
+                        [skills, 'tdnodes'],
+                      ], true);
+                      if (result.bool) {
+                        let skill = result.links[0];
+                        target.popup(skill, 'gray');
+                        player.popup(skill);
+                        await Promise.all([
+                          target.removeSkills(skill),
+                          player.addSkills(skill),
+                        ]);
+                      }
+                      break;
+                  }
+                }
+                if (player.maxHp <= event.targets.map(p => p.maxHp || 0).reduce((a, b) => a + b, 0)) {
+                  player.gainMaxHp();
+                  player.recover();
+                }
+              },
+              ai: {
+                threaten: 3,
+              }
+            },
+            jlsg_renzheng: {
+              audio: "ext:极略:1",
+              enable: 'phaseUse',
+              usable: 1,
+              chooseButton: {
+                dialog(event, player) {
+                  let skills = player.getSkills(null, false, false);
+                  let choices = [skills.map(s => [s, get.translation(s)]), "tdnodes"];
+                  return ui.create.dialog(`###仁政###选择交出的技能, 不选则交手牌`, choices);
+                },
+                select: [0, Infinity],
+                check: button => 0,
+                backup: function (links) {
+                  let next = {
+                    audio: "jlsg_renzheng",
+                    discard: false,
+                    lose: false,
+                    delay: false,
+                    links: links,
+                    filterTarget: function (card, player, target) {
+                      return player != target;
+                    },
+                    ai1: lib.skill.rende.check,
+                    async content(event, trigger, player) {
+                      let target = event.target;
+                      let links = lib.skill.jlsg_renzheng_backup.links;
+                      if (links && links.length) {
+                        for (let link of links) {
+                          player.popup(link, 'gray');
+                          target.popup(link);
+                        }
+                        await player.removeSkills(links);
+                        await target.addSkills(links);
+                        return;
+                      } else {
+                        await player.give(event.cards, target);
+                      }
+                      if (player.isIn() && target.isIn() && player.getAllHistory('useSkill',
+                        e => e.sourceSkill == 'jlsg_renzheng' && e.event.childEvents[0] != event && e.event.targets[0] == target
+                      ).length == 0) {
+                        let { result } = await player.chooseBool(`是否令你与${get.translation(target)}各增加1点体力上限并回复1点体力？`, get.attitude(player, target) > 0 || player.hp < target.hp);
+                        if (result.bool) {
+                          player.gainMaxHp();
+                          player.recover();
+                          target.gainMaxHp();
+                          target.recover();
+                        }
+                      }
+                    },
+                  };
+                  if (!links.length) {
+                    next.filterCard = true;
+                    next.selectCard = [1, Infinity];
+                    next.ai = {
+                      result: {
+                        target: function (player, target) {
+                          if (target.hasSkillTag("nogain")) return 0;
+                          if (ui.selected.cards.length && ui.selected.cards[0].name == "du") {
+                            if (target.hasSkillTag("nodu")) return 0;
+                            return -10;
+                          }
+                          if (target.hasJudge("lebu")) return 0;
+                          var nh = target.countCards("h");
+                          var np = player.countCards("h");
+                          if (player.hp == player.maxHp || player.storage.rerende < 0 || player.countCards("h") <= 1) {
+                            if (nh >= np - 1 && np <= player.hp && !target.hasSkill("haoshi")) return 0;
+                          }
+                          return Math.max(1, 5 - nh);
+                        },
+                      },
+                    };
+                  }
+                  return next;
+                },
+                prompt(links, player) {
+                  let prompt2 = '选择一名角色，令其获得你选择的牌';
+                  if (links.length) {
+                    prompt2 = `选择一名角色，令其获得` + links.map(s => `【${get.translation(s)}】`).join(" ");
+                  }
+                  return `###${get.prompt('jlsg_renzheng')}###${prompt2}`;
+                },
+              },
+              ai: {
+                order: 4,
+                result: {
+                  player: 1,
+                },
+              },
             },
           },
           translate: {
@@ -27057,6 +27928,11 @@ const b = 1;
             jlsg_chuyuan_info: '当任意角色使用【杀】/【闪】后，你可以摸两张牌然后将一张黑色/红色牌置于你的武将牌上，称为「储」。你每有一张黑色「储」和红色「储」，摸牌数和手牌上限+1。',
             jlsg_dengji: '登极',
             jlsg_dengji_info: '觉醒技，回合开始阶段，若你的「储」数为单数且不小于5，你获得所有「储」并失去〖储元〗；若以此法获得的黑色「储」多于红色「储」，你获得〖极权〗；否则你获得〖仁政〗。每以此法获得一张黑色「储」和红色「储」，你随机获得一个主公技。',
+            jlsg_jiquan: '极权',
+            jlsg_jiquan_info: '出牌阶段限一次，你可以令任意名其他角色各选择一项:1.交给你X张牌，若牌数不足则改为不交(X为你对其发动此技能的次数且至多为3) ; 2.交给你一个技能。然后若你的体力上限不大于目标的体力上限之和，你加1点体力上限并回复1点体力。',
+            jlsg_renzheng: '仁政',
+            jlsg_renzheng_backup: '仁政',
+            jlsg_renzheng_info: '出牌阶段限一次，你可以将任意数量的手牌或技能交给一名其他角色，然后若该角色是第一次成为此技能的目标，你可以令你与其各加1点体力上限并回复1点体力。',
 
             jlsg_qinyin: '琴音',
             jlsg_qinyin1: '琴音',
@@ -27265,12 +28141,12 @@ const b = 1;
             jlsgsy_weiyanbaonu: ['male', 'shen', 4, ['jlsgsy_shiao', 'jlsgsy_fangu', 'jlsgsy_kuangxi'], ['shu', 'hiddenboss', 'bossallowed'], 'shu'],
             jlsgsy_sunhao: ['male', 'shen', 8, ['jlsgsy_mingzheng', 'jlsgsy_baonusunhao'], ['wu', 'boss', 'bossallowed'], 'wu'],
             jlsgsy_sunhaobaonu: ['male', 'shen', 4, ['jlsgsy_shisha', 'jlsgsy_huangyin', 'jlsgsy_zuijiu', 'jlsgsy_guiming'], ['wu', 'hiddenboss', 'bossallowed'], 'wu'],
-            jlsgsy_caifuren: ['female', 'shen', 7, ['jlsgsy_dihui', 'jlsgsy_baonucaifuren'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            jlsgsy_caifurenbaonu: ['female', 'shen', 4, ['jlsgsy_dihui', 'jlsgsy_luansi', 'jlsgsy_huoxin'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
-            jlsgsy_simayi: ['male', 'shen', 7, ['jlsgsy_bolue', 'jlsgsy_baonusimayi'], ['jin', 'boss', 'bossallowed'], 'jin'],
-            jlsgsy_simayibaonu: ['male', 'shen', 4, ['jlsgsy_bolue', 'jlsgsy_renji', 'jlsgsy_biantian', 'jlsgsy_tianyou'], ['jin', 'hiddenboss', 'bossallowed'], 'jin'],
-            jlsgsy_diaochan: ['female', 'shen', 7, ['jlsgsy_meihuo', 'jlsgsy_baonudiaochan'], ['qun', 'boss', 'bossallowed'], 'qun'],
-            jlsgsy_diaochanbaonu: ['female', 'shen', 4, ['jlsgsy_meihuo', 'jlsgsy_yaoyan', 'jlsgsy_miluan'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
+            jlsgsy_caifuren: ['female', 'shen', 7, ['jlsgsy_dihui', 'jlsgsy_baonucaifuren'], ['qun', 'boss', 'bossallowed', 'name:蔡|null'], 'qun'],
+            jlsgsy_caifurenbaonu: ['female', 'shen', 4, ['jlsgsy_dihui', 'jlsgsy_luansi', 'jlsgsy_huoxin'], ['qun', 'hiddenboss', 'bossallowed', 'name:蔡|null'], 'qun'],
+            jlsgsy_simayi: ['male', 'shen', 7, ['jlsgsy_bolue', 'jlsgsy_baonusimayi'], ['jin', 'boss', 'bossallowed', 'name:司马|懿'], 'jin'],
+            jlsgsy_simayibaonu: ['male', 'shen', 4, ['jlsgsy_bolue', 'jlsgsy_renji', 'jlsgsy_biantian', 'jlsgsy_tianyou'], ['jin', 'hiddenboss', 'bossallowed', 'name:司马|懿'], 'jin'],
+            jlsgsy_diaochan: ['female', 'shen', 7, ['jlsgsy_meihuo', 'jlsgsy_baonudiaochan'], ['qun', 'boss', 'bossallowed', 'name:null|null'], 'qun'],
+            jlsgsy_diaochanbaonu: ['female', 'shen', 4, ['jlsgsy_meihuo', 'jlsgsy_yaoyan', 'jlsgsy_miluan'], ['qun', 'hiddenboss', 'bossallowed', 'name:null|null'], 'qun'],
             jlsgsy_yuanshao: ['male', 'shen', 8, ['jlsgsy_mojian', 'jlsgsy_baonuyuanshao'], ['qun', 'boss', 'bossallowed'], 'qun'],
             jlsgsy_yuanshaobaonu: ['male', 'shen', 4, ['jlsgsy_mojian', 'jlsgsy_zhuzai', 'jlsgsy_duoji'], ['qun', 'hiddenboss', 'bossallowed'], 'qun'],
             jlsgsy_sunluban: ['female', 'shen', 7, ['jlsgsy_quanqing', 'jlsgsy_baonusunluban'], ['wu', 'boss', 'bossallowed'], 'wu'],
@@ -31705,27 +32581,15 @@ Visit Repository</a><br>
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 汇报bug点我</span><br>
 2024.08.04更新<br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神曹丕</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SP庞统</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK吕岱</div><br>
+&ensp; 接入无名杀姓名API<br>
+<span style="font-size: large;">历史：</span><br>
+2024.08.04更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SP姜维</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK黄皓</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="soilmm">SK花鬘</div><br>
-<span style="font-size: large;">历史：</span><br>
-&ensp; 修复SP神黄月英 天工时机<br>
-2024.05.21更新<br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK钟繇</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SP神司马懿</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">三英神曹操</div><br>
-&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK南华老仙</div><br>
-&ensp; 修改SK神关羽<br>
-&ensp; 修改SP神张角<br>
-&ensp; 修复SK神曹仁 八门伤害<br>
-&ensp; 修复SK神赵云 龙魂报错<br>
-&ensp; 修复SK似水莲华·甄姬 倾国 效果<br>
-&ensp; 修复SK曹婴 伏间<br>
-&ensp; 重写SR吕蒙 国士<br>
-&ensp; 修复七杀孔明灯 触发条件<br>
-&ensp; 修复SK曹婴 凌弱 效果<br>
-&ensp; 修复SK马云禄 戎妆 效果<br>
-&ensp; 优化SK诸葛瞻 罪论 UX<br>
 `
       ,
     }, files: { "character": [], "card": [], "skill": [] }
