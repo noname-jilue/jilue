@@ -13019,7 +13019,7 @@ const b = 1;
               derivation: 'jlsg_zhenge_derivation',
               trigger: { player: 'useCardBegin' },
               silent: true,
-              charlotte: true,
+              forced: true,
               lastDo: true,
               filter(event, player) {
                 return Array.isArray(event.cards);
@@ -13030,6 +13030,7 @@ const b = 1;
                 }
                 if (trigger.cards.length && trigger.cards.every(c => c.hasGaintag('jlsg_zhenge'))) {
                   trigger.set('jlsg_zhenge_target_valid', true);
+                  trigger.set('addCount', false);
                 }
               },
               subfrequent: 'gain',
@@ -13053,7 +13054,7 @@ const b = 1;
                 },
                 target: {
                   audio: 'jlsg_zhenge',
-                  trigger: {player: 'useCardToPlayered'},
+                  trigger: { player: 'useCardToPlayered' },
                   filter(event, player) {
                     return event.getParent().jlsg_zhenge_target_valid && ['red', 'black'].includes(get.color(event.card));
                   },
@@ -13065,37 +13066,142 @@ const b = 1;
                       return get.attitude(player, event.target) < 0.5 - Math.random();
                     }
                   },
+                  locked: false,
+                  prompt2(event, player) {
+                    let eff = get.color(event.card) == 'red' ? '正面效果' : '负面效果';
+                    return '使其获得随机一个' + eff;
+                  },
                   async content(event, trigger, player) {
-                    let target =trigger.target;
+                    let target = trigger.target;
                     if (get.color(trigger.card) == 'red') {
+                      if (get.attitude(player, target) > 1 && target.ai.shown > player.ai.shown) {
+                        player.addExpose(0.2);
+                      }
                       let index = Math.floor(8 * Math.random());
+                      let cnt;
                       switch (index) {
-                        case 0: 
-                        let skills = [];
-                        for (let name of jlsg.characterList) {
-                          skills.addArray(lib.character[name]?.[3] ?? []);                          
-                        }
-                        for (let p of game.filterPlayer()) {
-                          skills.removeArray(p.getSkills(null, false, false));
-                        }
-                        let skill = skills.randomGet();
-                        if (!skill) {
+                        case 0:
+                          let skills = [];
+                          for (let name of jlsg.characterList) {
+                            skills.addArray(lib.character[name]?.[3] ?? []);
+                          }
+                          for (let p of game.filterPlayer()) {
+                            skills.removeArray(p.getSkills(null, false, false));
+                          }
+                          let skill = skills.randomGet();
+                          if (!skill) {
+                            break;
+                          }
+                          target.popup(skill);
+                          target.flashAvatar(player == target ? event.name : null, skill);
+                          await target.addSkills(skill);
                           break;
-                        }
-                        target.addSkills(skill);
-                        target.popup(skill);
-                        target.flashAvatar(player == target ? event.name: null, skill);
-                        break;
                         case 1:
-                        target.addSkill('jlsg_zhenge_buff');
-                        target.storage.jlsg_zhenge_buff.hand += 1;
-                        break;
+                          target.addSkill('jlsg_zhenge_buff');
+                          target.storage.jlsg_zhenge_buff.hand += 1;
+                          break;
                         case 2:
-                          
+                          cnt = [1, 2].randomGet();
+                          let type = ['basic', 'trick', 'equip'].randomGet();
+                          let cards = Array.from(ui.cardPile.childNodes).filter(c => get.type(c) == type);
+                          if (cards.length < cnt) {
+                            cards.push(...Array.from(ui.discardPile.childNodes).filter(c => get.type(c) == type));
+                          }
+                          cards = cards.randomGets(cnt);
+                          if (!cards.length) {
+                            game.log(target, '没能获得', get.translation(type), '牌');
+                            await game.delayx(0.5);
+                          } else {
+                            await target.gain(cards, 'gain2');
+                          }
+                          break;
+                        case 3:
+                          cnt = jlsg.distributionGet([0, 1, 0.2, 0.1]);
+                          await target.gainMaxHp(cnt);
+                          break;
+                        case 4:
+                          cnt = jlsg.distributionGet([0, 1, 0.2, 0.1]);
+                          if (target.isHealthy()) {
+                            game.log(target, "回复了体力");
+                            await game.delayx(0.5);
+                          } else {
+                            await target.recover(cnt, player);
+                          }
+                          break;
+                        case 5:
+                          target.addSkill('jlsg_zhenge_buff');
+                          target.storage.jlsg_zhenge_buff.draw += 1;
+                          break;
+                        case 6:
+                          target.addSkill('jlsg_zhenge_buff');
+                          target.storage.jlsg_zhenge_buff.sha += 1;
+                          break;
+                        case 7:
+                          cnt = jlsg.distributionGet([0, 1, 1, 0.4, 0.2, 0.1]);
+                          target.draw(cnt, player);
+                          break;
                       }
                     } else {
-
+                      if (get.attitude(player, target) < -1 && target.ai.shown > player.ai.shown) {
+                        player.addExpose(0.2);
+                      }
+                      let index = Math.floor(8 * Math.random());
+                      let cnt;
+                      switch (index) {
+                        case 0:
+                          await target.link();
+                          break;
+                        case 1:
+                          cnt = jlsg.distributionGet([0, 1, 1, 0.4, 0.2, 0.1]);
+                          target.randomDiscard(cnt);
+                          break;
+                        case 2:
+                          cnt = jlsg.distributionGet([0, 1, 0.2, 0.1]);
+                          target.damage(cnt);
+                          break;
+                        case 3:
+                          let skill = target.getSkills(null, false, false);
+                          if (!skill) {
+                            game.log(target, '没有可以失去的技能');
+                          } else {
+                            target.popup(skill, 'gray');
+                            await target.removeSkills(skill);
+                          }
+                          break;
+                        case 4:
+                          await target.turnOver();
+                          break;
+                        case 5:
+                          cnt = jlsg.distributionGet([0, 1, 0.2, 0.1]);
+                          target.damage(cnt, 'fire');
+                          break;
+                        case 6:
+                          cnt = jlsg.distributionGet([0, 1, 0.1]);
+                          target.loseMaxHp(cnt);
+                          break;
+                        case 7:
+                          cnt = jlsg.distributionGet([0, 1, 0.2, 0.1]);
+                          target.loseHp(cnt);
+                          break;
+                      }
                     }
+                  },
+                  mod: {
+                    ignoredHandcard(card, player) {
+                      if (card.hasGaintag("jlsg_zhenge")) {
+                        return true;
+                      }
+                    },
+                    cardDiscardable(card, player, name) {
+                      if (name == "phaseDiscard" && card.hasGaintag("jlsg_zhenge")) {
+                        return false;
+                      }
+                    },
+                    cardUsable(card, player, num) {
+                      if (card.cards && card.cards.every(i => i.hasGaintag("jlsg_zhenge"))) {
+                        return Infinity;
+                      }
+                    },
                   },
                 },
                 buff: {
@@ -13105,30 +13211,916 @@ const b = 1;
                       draw: 0,
                       sha: 0,
                     };
-                  }
+                  },
+                  locked: false,
+                  popup: false,
+                  forced: true,
+                  trigger: { player: "phaseDrawBegin2" },
+                  filter: function (event, player) {
+                    return !event.numFixed && player.storage.jlsg_zhenge_buff.draw;
+                  },
+                  content: function () {
+                    trigger.num += player.storage.jlsg_zhenge_buff.draw;
+                  },
+                  mark: true,
+                  marktext: '枕',
+                  intro: {
+                    markcount(storage) {
+                      return storage.hand + storage.draw + storage.sha;
+                    },
+                    content(storage) {
+                      let result = [];
+                      if (storage.hand) {
+                        result.push(`手牌上限+${storage.hand}`);
+                      }
+                      if (storage.draw) {
+                        result.push(`摸牌阶段摸牌数+${get.cnNumber(storage.draw)}`);
+                      }
+
+                      if (storage.sha) {
+                        result.push(`使用杀次数上限+${get.cnNumber(storage.sha)}`);
+                      }
+
+                      return result.join('<br>');
+                    },
+                  },
+                  mod: {
+                    cardUsable(card, player, num) {
+                      if (card.name == "sha") {
+                        return num + player.storage.jlsg_zhenge_buff.sha;
+                      }
+                    },
+                    maxHandcard: function (player, num) {
+                      return num + player.storage.jlsg_zhenge_buff.hand;
+                    },
+                  },
                 },
               }
             },
             jlsg_zhenge_derivation: { sub: true },
             jlsg_xinghan: {
               audio: "ext:极略:2",
-
+              forbid: ['hearth', 'guozhan'],
+              changeSeat: true,
+              init(player) {
+                player.storage.jlsg_xinghan_token = lib.group.filter(g => jlsg.characterList.some(c => lib.character[c][1] == g));
+                player.storage.jlsg_xinghan_location = false;
+                player.storage.jlsg_xinghan = [];
+                player.storage.jlsg_xinghan_removed = [];
+                if (_status.jlsg_xinghan_init) {
+                  return;
+                }
+                _status.jlsg_xinghan_init = true;
+                Object.defineProperty(_status, 'jlsg_xinghan_compact', {
+                  enumerable: true,
+                  configurable: true,
+                  get() {
+                    let result = game.hasPlayer(p => p.getSkills(null, false, false).some(s => s != 'jlsg_xinghan' && lib.skill[s].changeSeat));
+                    delete this.jlsg_xinghan_compact;
+                    this.jlsg_xinghan_compact = result;
+                    return result;
+                  },
+                });
+                game.broadcastAll(function () {
+                  // player.isMin
+                  let isMin = Object.getOwnPropertyDescriptor(lib.element.Player.prototype, 'isMin');
+                  Object.defineProperty(lib.element.Player.prototype, 'isMin', {
+                    ...isMin,
+                    value: function (distance) {
+                      if (this.hasSkill('jlsg_xinghan_recruit')) {
+                        return false;
+                      }
+                      return isMin.value.apply(this, arguments);
+                    }
+                  });
+                  // player.setIdentity
+                  let setIdentity = Object.getOwnPropertyDescriptor(lib.element.Player.prototype, 'setIdentity');
+                  Object.defineProperty(lib.element.Player.prototype, 'setIdentity', {
+                    ...setIdentity,
+                    value: function (identity, nature) {
+                      let result = setIdentity.value.apply(this, arguments);
+                      if (this.storage.jlsg_xinghan) {
+                        arguments[0] = lib.skill.jlsg_xinghan.mapIdentity(identity);
+                        for (let recruit of this.storage.jlsg_xinghan) {
+                          setIdentity.value.apply(recruit, arguments);
+                        }
+                      }
+                      return result;
+                    }
+                  });
+                  player.isUnderControl
+                  let isUnderControl = Object.getOwnPropertyDescriptor(lib.element.Player.prototype, 'isUnderControl');
+                  Object.defineProperty(lib.element.Player.prototype, 'isUnderControl', {
+                    ...isUnderControl,
+                    value: function (self, me) {
+                      me = me || game.me;
+                      var that = this._trueMe || this;
+                      if (that.isMad() || game.notMe) return false;
+                      if (this === me) {
+                        if (self) return true;
+                        return false;
+                      }
+                      me = me._trueMe || me;
+                      if (that === me) {
+                        return true;
+                      }
+                      if (_status.connectMode) return false;
+                      if (lib.config.mode == "versus") {
+                        if (_status.mode == "three") return this.side == me.side;
+                        if (_status.mode == "standard") return lib.storage.single_control && this.side == me.side;
+                        if (_status.mode == "four") return get.config("four_phaseswap") && this.side == me.side;
+                        if (_status.mode == "two") return get.config("two_phaseswap") && this.side == me.side;
+                        return false;
+                      } else if (lib.config.mode == "boss") {
+                        if (me.side) return false;
+                        return this.side == me.side && get.config("single_control");
+                      } else if (game.chess) {
+                        if (lib.config.mode == "chess") {
+                          if (_status.mode == "combat" && !get.config("single_control")) return false;
+                        }
+                        return this.side == me.side;
+                      }
+                      return false;
+                    }
+                  });
+                  // get.realAttitude
+                  if (get.realAtitude) {
+                    get.realAtitude = new Proxy(get.realAtitude, {
+                      apply(target, thisArg, argumentsList) {
+                        let [from, to] = argumentsList;
+                        if (from.storage.jlsg_xinghan_recruit) {
+                          argumentsList[0] = from.storage.jlsg_xinghan_recruit;
+                        }
+                        if (to.storage.jlsg_xinghan_recruit) {
+                          argumentsList[1] = to.storage.jlsg_xinghan_recruit;
+                        }
+                        return Reflect.apply(target, thisArg, argumentsList);
+                      },
+                    });
+                  }
+                  const style = document.createElement('style');
+                  style.type = 'text/css';
+                  style.id = "jlsg-xinghan";
+                  document.head.appendChild(style);
+                  let scale = 0.8, scale2 = 0.9;
+                  if (ui.arena.dataset.number > 8) {
+                    scale = 4.8 / ui.arena.dataset.number;
+                    scale2 = 5.4 / ui.arena.dataset.number;
+                  }
+                  let testP = ui.create.player(ui.arena);
+                  testP.classList.add('fullskin', 'minskin');
+                  if (getComputedStyle(testP).width == "120px") {
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit { width: 110px; height: 110px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .avatar { left: 2px !important; top: 2px !important; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .identity { left: 92px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .hp { left: 82px; bottom: 8px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .count { left: -11px; bottom: 10px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .equips > *:first-child:last-child { border-radius: 8px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .equips > *:first-child { border-radius: 8px 8px 0px 0px; }`);
+                    style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .equips > *:last-child { border-radius: 0px 0px 8px 8px; }`);
+                  }
+                  testP.remove();
+                  style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit { transform: scale(${scale}); }`);
+                  style.sheet.insertRule(`#arena > .player.minskin.jlsg-xinghan-recruit .equips { left: 2px; bottom: 1px; }`);
+                  style.sheet.insertRule(`#arena > .player.jlsg-xinghan-recruit:not(.minskin):not([data-position="0"]) { transform: scale(${scale2}); }`);
+                  style.sheet.insertRule(`#arena > .player.jlsg-xinghan-recruit > .dieidentity { display:none; }`);
+                });
+              },
+              onremove(player) {
+                let recruits = player.storage.jlsg_xinghan.slice();
+                if (typeof player.seatNum == "number") {
+                  recruits.sort((a, b) => a.seatNum - b.seatNum);
+                }
+                for (let recruit of recruits) {
+                  let next = recruit.die();
+                  next._triggered = null;
+                  next.then(() => {
+                    lib.skill.jlsg_xinghan.removeRecruit(recruit);
+                  })
+                }
+              },
+              intro: {
+                mark: function (dialog, storage, player) {
+                  dialog.add(storage);
+                  if (player.storage.jlsg_xinghan_removed.length) {
+                    let removed = player.storage.jlsg_xinghan_removed;
+                    dialog.add(removed);
+                    for (let i = 0; i != removed.length; ++i) {
+                      dialog.buttons[dialog.buttons.length - i].classList.add('dead');
+                    }
+                  }
+                },
+              },
+              trigger: {
+                player: ["enterGame", "phaseEnd"],
+                global: "phaseBefore",
+              },
+              filter(event, player, triggerName) {
+                if (triggerName == "phaseBefore" && game.phaseNumber != 0) {
+                  return false;
+                }
+                if (!player.storage.jlsg_xinghan_token.length) {
+                  return false;
+                }
+                return player.storage.jlsg_xinghan.length < 3;
+              },
+              async cost(event, trigger, player) {
+                let result;
+                if (player.storage.jlsg_xinghan_token.length == 1) {
+                  result = {
+                    control: player.storage.jlsg_xinghan_token[0],
+                  };
+                } else {
+                  ({ result } = await player.chooseControl(player.storage.jlsg_xinghan_token.concat('cancel2'))
+                    .set('prompt', get.prompt('jlsg_xinghan'))
+                    .set('prompt2', '选择招募的势力'));
+                }
+                if (result.control == 'cancel2') {
+                  return;
+                }
+                let choices = jlsg.characterList.filter(c => lib.character[c][1] == result.control).randomGets(3);
+                if (!choices.length) {
+                  return;
+                }
+                let { result: result2 } = await player.chooseButton([
+                  `招募一名的${get.translation(result.control)}势力武将`,
+                  [choices, 'character'],
+                ]);
+                event.result = {
+                  bool: result2.bool,
+                  cost_data: [result.control, result2.links[0]],
+                };
+              },
+              async content(event, trigger, player) {
+                let [token, name] = event.cost_data;
+                player.storage.jlsg_xinghan_token.remove(token);
+                let compact = _status.jlsg_xinghan_compact;
+                let recruit;
+                if (compact) {
+                  let before;
+                  if (player.storage.jlsg_xinghan_location) {
+                    before = player;
+                    while (before.previousSeat.storage.jlsg_xinghan_recruit === player) {
+                      before = before.previous;
+                    }
+                  } else {
+                    before = player.nextSeat;
+                    while (before.storage.jlsg_xinghan_recruit === player) {
+                      before = before.next;
+                    }
+                  }
+                  let position = before.dataset.position;
+                  recruit = game.addPlayer(position, name);
+                  recruit.getId();
+                } else {
+                  recruit = game.addFellow(player.dataset.position, name, 'zoominanim');
+                  if (player.storage.jlsg_xinghan_location) {
+                    game.players.remove(recruit);
+                    game.players.unshift(recruit);
+                    game.arrangePlayers();
+                  }
+                }
+                if (recruit.previousSeat.seatNum) {
+                  // 在一号位前时作为末置位
+                  recruit.seatNum = recruit.previousSeat.seatNum + 1;
+                  for (let p of game.players.concat(game.dead)) {
+                    if (p != recruit && p.seatNum >= recruit.seatNum) {
+                      p.seatNum += 1;
+                    }
+                  }
+                }
+                jlsg.characterList.remove(name);
+                recruit.storage.jlsg_xinghan_recruit = player;
+                recruit.addSkill('jlsg_xinghan_recruit');
+                recruit.draw()._triggered = null;
+                game.log(player, '招募了', recruit);
+                player.storage.jlsg_xinghan_location = !player.storage.jlsg_xinghan_location;
+                recruit._trueMe = player;
+                game.addGlobalSkill("autoswap");
+                // await game.delayx(0.3);
+                if (!compact) {
+                  // relocate
+                  jlsg.makeDraggable(recruit);
+                  let { top: pTop, height: pHeight, left: pLeft, width: pWidth } = getComputedStyle(recruit.previous);
+                  let { top: nTop, left: nLeft } = getComputedStyle(recruit.next);
+                  let { height: rHeight, width: rWidth } = getComputedStyle(recruit);
+                  let pDist = 0.5;
+                  switch (player) {
+                    case recruit.previous:
+                      pDist = 0.625;
+                      break;
+                    case recruit.next:
+                      pDist = 0.375;
+                      break;
+                    case recruit.previous.previous:
+                      pDist = 0.375;
+                      break;
+                    case recruit.next.next:
+                      pDist = 0.625;
+                      break;
+                  }
+                  recruit.style.top = `calc(${pDist} * ${pTop} + ${1 - pDist} * ${nTop} + 0.5 * ${pHeight} - 0.5 * ${rHeight})`;
+                  recruit.style.left = `calc(${pDist} * ${pLeft} + ${1 - pDist} * ${nLeft} + 0.5 * ${pWidth} - 0.5 * ${rWidth})`;
+                }
+                // AI expose
+                recruit.ai = {
+                  ...player.ai,
+                  handcards: recruit.ai.handcards,
+                }
+                game.broadcastAll(function (recruit, player) {
+                  Object.defineProperty(recruit.ai, 'shown', {
+                    enumerable: true,
+                    get() {
+                      return player.ai.shown;
+                    },
+                    set(value) {
+                      player.ai.shown = value;
+                    },
+                  })
+                }, recruit, player);
+                Object.defineProperty(recruit, 'identity', {
+                  enumerable: true,
+                  get() {
+                    if (this.storage.jlsg_xinghan_recruit) {
+                      return lib.skill.jlsg_xinghan.mapIdentity(this.storage.jlsg_xinghan_recruit.identity);
+                    }
+                  },
+                });
+                Object.defineProperty(recruit, 'identityShown', {
+                  enumerable: true,
+                  get() {
+                    let recruiter = this.storage.jlsg_xinghan_recruit;
+                    if (recruiter) {
+                      return recruiter.identityShown;
+                    }
+                  },
+                  set(value) {
+                    let recruiter = this.storage.jlsg_xinghan_recruit;
+                    if (recruiter) {
+                      recruiter.identityShown = value;
+                    }
+                  },
+                });
+                if (recruit.showIdentity) {
+                  game.broadcastAll(function (player, recruit) {
+                    if (player.identity && !game.getIdentityList(player)) {
+                      recruit.setIdentity();
+                    } else {
+                      recruit.setIdentity(player.node.identity.firstChild.innerHTML, player.node.identity.dataset.color);
+                    }
+                  }, player, recruit);
+                }
+                for (let p of player.storage.jlsg_xinghan.concat(player)) {
+                  p.storage.zhibi = p.getStorage('zhibi').concat(recruit);
+                  recruit.storage.zhibi = recruit.getStorage('zhibi').concat(p);
+                }
+                // AI attitude
+                player.markAuto('jlsg_xinghan', recruit);
+                if (get.attitude(player, recruit) <= 0 || get.attitude(recruit, player) <= 0) {
+                  if (_status.jlsg_xinghan_attitude_patch) {
+                    console.error("jlsg_xinghan get.attitude not working");
+                  } else {
+                    _status.jlsg_xinghan_attitude_patch = true;
+                    get.attitude = new Proxy(get.attitude, {
+                      apply(target, thisArg, argumentsList) {
+                        let [from, to] = argumentsList;
+                        if (from.storage.jlsg_xinghan_recruit) {
+                          argumentsList[0] = from.storage.jlsg_xinghan_recruit;
+                        }
+                        if (to.storage.jlsg_xinghan_recruit) {
+                          argumentsList[1] = to.storage.jlsg_xinghan_recruit;
+                        }
+                        return Reflect.apply(target, thisArg, argumentsList);
+                      },
+                    });
+                  }
+                }
+                //
+                game.triggerEnter(recruit);
+              },
+              mapIdentity(identity) {
+                switch (identity) {
+                  case 'rZhu':
+                    return 'rZhong';
+                  case 'bZhu':
+                    return 'bZhong';
+                  case 'zhu':
+                    return 'zhong';
+                  default:
+                    return identity;
+                }
+              },
+              removeRecruit(player) {
+                let recruiter = player.storage.jlsg_xinghan_recruit;
+                recruiter.storage.jlsg_xinghan.remove(player);
+                recruiter.storage.jlsg_xinghan_removed.push(player);
+                if (!_status.over) {
+                  if (_status.jlsg_xinghan_compact) {
+                    game.removePlayer(player);
+                  } else {
+                    player.delete();
+                    game.dead.remove(player);
+                    player.removed = true;
+                  }
+                }
+              },
+              ai: {
+                threaten(player, target) {
+                  if (!target.storage.jlsg_xinghan_token.length && !target.storage.jlsg_xinghan.length) return 0;
+                  return 3;
+                },
+              }
+            },
+            jlsg_xinghan_recruit: {
+              init(player) {
+                player.classList.add('jlsg-xinghan-recruit');
+                if (!_status.jlsg_xinghan_compact) {
+                  player.classList.add('minskin');
+                }
+              },
+              firstDo: true,
+              charlotte: true,
+              mark: true,
+              marktext: '招',
+              intro: {
+                name: '招募',
+                name2: '招募',
+                content(storage) {
+                  return `受${get.translation(storage)}招募`;
+                },
+              },
+              silent: true,
+              forceDie: true,
+              forced: true,
+              trigger: { global: ['phaseBefore', 'phaseAfter', 'die'] },
+              filter(event, player) {
+                if (event.name == 'die') {
+                  return event.player == player.storage.jlsg_xinghan_recruit || event.player == player;
+                }
+                return !player._trueMe;
+              },
+              async content(event, trigger, player) {
+                let recruiter = player.storage.jlsg_xinghan_recruit;
+                if (!player._trueMe) {
+                  player._trueMe = recruiter;
+                }
+                if (trigger.name == 'die') {
+                  if (trigger.player == recruiter) {
+                    let next = player.die();
+                    next._triggered = null;
+                    await next;
+                    if (recruiter.isUnderControl(self)) {
+                      game.swapPlayerAuto(recruiter);
+                    }
+                  }
+                  lib.skill.jlsg_xinghan.removeRecruit(player);
+                }
+              },
             },
             jlsg_qianchong: {
               audio: "ext:极略:2",
-
+              group: ['jlsg_qianchong_red', 'jlsg_qianchong_black', 'jlsg_qianchong_extra'],
+              subSkill: {
+                red: {
+                  audio: 'jlsg_qianchong',
+                  trigger: { global: 'phaseEnd' },
+                  priority: 1,
+                  filter(event, player) {
+                    let evts = player.getHistory('useCard', e => get.color(e.card) == 'red');
+                    return evts.length == 1;
+                  },
+                  async cost(event, trigger, player) {
+                    let { result } = await player.chooseTarget(`###${get.prompt('jlsg_qianchong')}###令一名角色回复2点体力或摸其体力上限张牌`)
+                      .set('ai', target => {
+                        let player = _status.event.player;
+                        let eff = get.recoverEffect(target, player, player);
+                        if (target.getDamagedHp() >= 2) {
+                          eff += 0.58 * eff;
+                        }
+                        let eff2 = get.attitude(player, target) * target.maxHp;
+                        return Math.max(eff, eff2);
+                      });
+                    if (!result.bool) {
+                      return;
+                    }
+                    let target = result.targets[0];
+                    let result2;
+                    if (target.isHealthy()) {
+                      result2 = {
+                        index: 1,
+                      };
+                    } else {
+                      let eff = get.recoverEffect(target, player, player);
+                      if (target.getDamagedHp() >= 2) {
+                        eff += 0.58 * eff;
+                      }
+                      let eff2 = get.attitude(player, target) * target.maxHp;
+                      let choice = eff > eff2 ? 0 : 1;
+                      result2 = await player.chooseControlList([
+                        `令${get.translation(target)}回复2点体力`,
+                        `令${get.translation(target)}摸${get.cnNumber(target.maxHp)}张牌`,
+                      ])
+                        .set('ai', () => _status.event.choice)
+                        .set('choice', choice)
+                        .forResult();
+                      if (result2.control == 'cancel2') {
+                        return;
+                      }
+                    }
+                    event.result = {
+                      bool: true,
+                      targets: [target],
+                      cost_data: result2.index,
+                    }
+                  },
+                  async content(event, trigger, player) {
+                    let target = event.targets[0];
+                    if (get.attitude(player, target) > 0 && target.ai.shown > player.ai.shown) {
+                      player.addExpose(0.2);
+                    }
+                    if (event.cost_data == 0) {
+                      target.recover(2, player);
+                    } else {
+                      target.draw(target.maxHp, player);
+                    }
+                  },
+                },
+                black: {
+                  audio: 'jlsg_qianchong',
+                  trigger: { global: 'phaseEnd' },
+                  priority: 0.9,
+                  filter(event, player) {
+                    let evts = player.getHistory('useCard', e => get.color(e.card) == 'black');
+                    return evts.length == 1;
+                  },
+                  async cost(event, trigger, player) {
+                    let { result } = await player.chooseTarget(`###${get.prompt('jlsg_qianchong')}###令一名角色失去2点体力或弃置其体力上限张牌`)
+                      .set('ai', target => {
+                        let player = _status.event.player;
+                        let eff = 1.4 * jlsg.getLoseHpEffect(target) * (get.attitude(player, target) - 1);
+                        let eff2 = (get.attitude(player, target) - 1) * -Math.min(target.countCards('he'), target.maxHp);
+                        return Math.max(eff, eff2);
+                      });
+                    if (!result.bool) {
+                      return;
+                    }
+                    let target = result.targets[0];
+                    let result2;
+                    if (target.countCards('he') == 0) {
+                      result2 = {
+                        index: 0,
+                      };
+                    } else {
+                      let eff = 1.4 * jlsg.getLoseHpEffect(target) * (get.attitude(player, target) - 1);
+                      let eff2 = (get.attitude(player, target) - 1) * -Math.min(target.countCards('he'), target.maxHp);
+                      let choice = eff > eff2 ? 0 : 1;
+                      result2 = await player.chooseControlList([
+                        `令${get.translation(target)}失去2点体力`,
+                        `令${get.translation(target)}弃置${get.cnNumber(target.maxHp)}张牌`,
+                      ])
+                        .set('ai', () => _status.event.choice)
+                        .set('choice', choice)
+                        .forResult();
+                      if (result2.control == 'cancel2') {
+                        return;
+                      }
+                    }
+                    event.result = {
+                      bool: true,
+                      targets: [target],
+                      cost_data: result2.index,
+                    }
+                  },
+                  async content(event, trigger, player) {
+                    let target = event.targets[0];
+                    if (get.attitude(player, target) < 0 && target.ai.shown > player.ai.shown) {
+                      player.addExpose(0.3);
+                    }
+                    if (event.cost_data == 0) {
+                      target.loseHp(2);
+                    } else {
+                      target.chooseToDiscard(target.maxHp, 'he', true);
+                    }
+                  },
+                },
+                extra: {
+                  forced: true,
+                  locked: false,
+                  trigger: { player: 'phaseEnd' },
+                  filter(event, player) {
+                    let evts = player.getHistory('useSkill');
+                    return !event.skill && evts.some(e => e.skill == 'jlsg_qianchong_red') &&
+                      evts.some(e => e.skill == 'jlsg_qianchong_black');
+                  },
+                  popup: false,
+                  async content(event, trigger, player) {
+                    game.log(player, '获得了一个额外回合');
+                    player.insertPhase(event.name)
+                  }
+                },
+              },
+              ai: {
+                effect: {
+                  player_use: function (card, player, target) {
+                    if (_status.currentPhase != player) {
+                      return;
+                    }
+                    let color = get.color(card);
+                    if (!color) {
+                      return;
+                    }
+                    let cnt = player.getHistory('useCard', e => get.color(e) == color).length;
+                    if (cnt == 0) {
+                      return [1, 8];
+                    }
+                    else if (cnt == 1) {
+                      let color2 = color == 'red' ? 'black' : 'red';
+                      let cnt2 = player.getHistory('useCard', e => get.color(e) == color2).length;
+                      if (_status.event.getParent('phase').skill || cnt2 > 1) {
+                        return;
+                      }
+                      return [1, -8];
+                    }
+                  },
+                },
+                pretao: true,
+              },
             },
             jlsg_shangjian: {
               audio: "ext:极略:2",
-
+              trigger: { player: 'phaseDiscardBegin' },
+              filter(event, player) {
+                return player.countCards('h') > player.getHandcardLimit();
+              },
+              forced: true,
+              async content(event, trigger, player) {
+                let num = player.countCards('h') - player.getHandcardLimit();
+                let num0 = num;
+                let list = [];
+                while (num > 0) {
+                  let select = [1, num];
+                  if (game.filterPlayer(p => p != player && !list.map(i => i[0]).includes(p)).length == 1) {
+                    select = num;
+                  }
+                  let { result } = await player.chooseCardTarget({
+                    forced: true,
+                    selectCard: [1, num],
+                    filterCard(card, player) {
+                      return !_status.event.list.map(i => i[1]).flat().includes(card);
+                    },
+                    filterTarget(card, player, target) {
+                      return player != target && !_status.event.list.map(i => i[0]).includes(target);
+                    },
+                    ai1(card) {
+                      if (card.name == "du") return 20;
+                      if (ui.selected.cards.some(c => c.name == 'du')) {
+                        return -Math.random();
+                      }
+                      return Math.random();
+                    },
+                    ai2: function (target) {
+                      const player = get.event("player"),
+                        att = get.attitude(player, target);
+                      if (ui.selected.cards.some(c => c.name == 'du') && !target.hasSkillTag("nodu"))
+                        return -20 * att;
+                      return att + 2 * Math.random();
+                    },
+                    prompt: `尚俭：将${get.cnNumber(num0)}张手牌分配给其他角色`,
+                    prompt2: num == num0 ? null : `剩余${get.cnNumber(num)}张`,
+                  }).set('list', list);
+                  if (!result.bool) {
+                    return;
+                  }
+                  list.push([result.targets[0], result.cards]);
+                  player.addGaintag(result.cards, "olsujian_given");
+                  num -= result.cards.length;
+                }
+                let cards = list.map(i => i[1]).flat();
+                await game.loseAsync({
+                  gain_list: list,
+                  player: player,
+                  cards: cards,
+                  giver: player,
+                  animate: "giveAuto",
+                })
+                  .setContent("gaincardMultiple");
+                player.when({ player: "phaseDiscardEnd" })
+                  .filter(evt => evt == trigger)
+                  .vars({ cnt: cards.length })
+                  .then(() => {
+                    player.draw(cnt);
+                  });
+              }
             },
             jlsg_yanjiao: {
               audio: "ext:极略:2",
-
+              init(player) {
+                player.storage.jlsg_yanjiao = [null, false, false, false, false];
+              },
+              enable: "phaseUse",
+              filter(event, player) {
+                let invalid = [];
+                let hand = player.getCards('h');
+                invalid.push(
+                  player.storage.jlsg_yanjiao[1] || hand.length < 1,
+                );
+                let nums = new Set(hand.map(c => get.number(c, player)));
+                invalid.push(
+                  player.storage.jlsg_yanjiao[2] || hand.length < 2 || hand.length == nums.size,
+                );
+                let suits = hand.map(c => get.suit(c, player));
+                invalid.push(
+                  player.storage.jlsg_yanjiao[3] || hand.length < 3 || lib.suits.every(s => suits.filter(cs => cs == s).length < 3),
+                );
+                let continuous = Array.from(new Array(14).keys())
+                  .some(n => nums.has(n) && nums.has(n + 1) && nums.has(n + 2) && nums.has(n + 3));
+                invalid.push(
+                  player.storage.jlsg_yanjiao[4] || hand.length < 4 || !continuous,
+                );
+                let valid5 = !player.storage.jlsg_yanjiao[5] && hand.length >= 5;
+                if (valid5) {
+                  valid5 = lib.suits.some(s => {
+                    let nums = new Set(hand
+                      .filter(c => get.suit(c, player) == s)
+                      .map(c => get.number(c, player)));
+                    return Array.from(new Array(14).keys())
+                      .some(n => nums.has(n) && nums.has(n + 1) && nums.has(n + 2) && nums.has(n + 3) && nums.has(n + 4));
+                  });
+                }
+                invalid.push(!valid5);
+                return invalid.some(invalid => !invalid);
+              },
+              filterCard(card, player) {
+                return lib.skill.jlsg_yanjiao.mayValid(ui.selected.cards.concat(card));
+              },
+              check(card) {
+                return Math.random();
+              },
+              selectCard: [1, 5],
+              complexCard: true,
+              discard: false,
+              lose: false,
+              delay: false,
+              filterTarget(_, player, target) {
+                if (!lib.skill.jlsg_yanjiao.isValid(ui.selected.cards)) {
+                  return false;
+                }
+                return player != target;
+              },
+              filterOk() {
+                return lib.skill.jlsg_yanjiao.isValid(ui.selected.cards);
+              },
+              isValid(cards) {
+                let player = _status.event.player;
+                let hand = player.getCards('h');
+                if (player.storage.jlsg_yanjiao[cards.length]) {
+                  return false;
+                }
+                let nums;
+                switch (cards.length) {
+                  case 1:
+                    return hand.every(c => get.number(c, player) <= get.number(cards[0], player));
+                  case 2:
+                    return get.number(cards[0], player) === get.number(cards[1], player);
+                  case 3:
+                    let suit0 = get.suit(cards[0], player);
+                    return suit0 == get.suit(cards[1], player) && suit0 == get.suit(cards[2], player);
+                  case 4:
+                    nums = cards.map(c => get.number(c, player)).sort((a, b) => a - b);
+                    return nums.every((n, i) => n - nums[0] == i);
+                  case 5:
+                    let suit = get.suit(cards[0], player);
+                    if (cards.some(c => get.suit(c, player) != suit)) {
+                      return false;
+                    }
+                    nums = cards.map(c => get.number(c, player)).sort((a, b) => a - b);
+                    return nums.every((n, i) => n - nums[0] == i);
+                  default:
+                    return false;
+                }
+              },
+              mayValid(cards) {
+                let player = _status.event.player;
+                if (cards.length == 0) {
+                  return this.filter(null, player);
+                }
+                if (this.isValid(cards)) {
+                  return true;
+                }
+                let hand = player.getCards('h');
+                hand.removeArray(cards);
+                let nums = cards.map(c => get.number(c, player));
+                let suits = cards.map(c => get.suit(c, player));
+                let suit;
+                if (suits.every(s => s == suits[0])) {
+                  suit = suits[0];
+                }
+                switch (cards.length) {
+                  case 1:
+                    if (!player.storage.jlsg_yanjiao[2] && hand.some(c => get.number(c, player) == nums[0])) {
+                      return true;
+                    }
+                  // fall through
+                  case 2:
+                    if (!player.storage.jlsg_yanjiao[3]
+                      && suit
+                      && hand.filter(c => get.suit(c, player) == suit).length + cards.length >= 3
+                    ) {
+                      return true;
+                    };
+                  case 3:
+                  case 4:
+                    nums.sort((a, b) => a - b);
+                    let num0 = nums[0], num1 = nums[nums.length - 1];
+                    if (player.storage.jlsg_yanjiao[4] && (player.storage.jlsg_yanjiao[5] || !suit)) {
+                      return false;
+                    }
+                    if (nums.some((n, i) => i != 0 && n == nums[i - 1])) {
+                      return false;
+                    }
+                    if (num1 - num0 + 1 > (player.storage.jlsg_yanjiao[4] ? 5 : 4)) {
+                      return false;
+                    }
+                    let allNums = hand.map(c => get.number(c, player));
+                    for (let i = num0; i <= num1; ++i) {
+                      if (!nums.includes(i) && !allNums.includes(i)) {
+                        return false;
+                      }
+                    }
+                    while (allNums.includes(num1 + 1)) {
+                      num1 += 1;
+                      if (num1 - num0 + 1 >= (player.storage.jlsg_yanjiao[4] ? 5 : 4)) {
+                        return true;
+                      }
+                    }
+                    while (allNums.includes(num0 - 1)) {
+                      num0 -= 1;
+                      if (num1 - num0 + 1 >= (player.storage.jlsg_yanjiao[4] ? 5 : 4)) {
+                        return true;
+                      }
+                    }
+                    return false;
+                  default:
+                    return false;
+                }
+              },
+              async content(event, trigger, player) {
+                let num = event.cards.length;
+                let target = event.target;
+                player.storage.jlsg_yanjiao[num] = true;
+                player.when({ player: "phaseUseAfter", global: "phaseAfter", })
+                  .then(() => {
+                    player.storage.jlsg_yanjiao = [null, false, false, false, false];
+                  });
+                await player.give(event.cards, target);
+                await player.draw(num);
+                if (player.hasMark('jlsg_xingshen')) {
+                  let { result } = await player.chooseBool(
+                    `是否对${get.translation(target)}造成${num}点伤害？`,
+                    get.damageEffect(target, player, player) > 0,
+                  );
+                  if (result.bool) {
+                    target.damage(num);
+                  }
+                }
+              },
+              combo: 'jlsg_xingshen',
+              ai: {
+                order: 7,
+                result: {
+                  target(player, target) {
+                    if (!player.hasMark('jlsg_xingshen')) {
+                      return 2;
+                    }
+                    return get.attitude(player, target) >= 0 ? 2 : -1;
+                  },
+                },
+              }
             },
             jlsg_xingshen: {
               audio: "ext:极略:2",
-
+              trigger: { player: "damageEnd" },
+              filter(event, player) {
+                return event.num > 0;
+              },
+              getIndex(event, player) {
+                return event.num;
+              },
+              forced: true,
+              async content(event, trigger, player) {
+                await player.draw(2);
+                if (!player.hasMark('jlsg_xingshen')) {
+                  await player.recover();
+                  player.addMark('jlsg_xingshen');
+                  player.when({ player: ['phaseEnd', 'phaseAfter'] })
+                    .then(() => {
+                      player.removeMark('jlsg_xingshen');
+                    });
+                }
+              },
+              intro: {
+                content: 'mark',
+              }
             },
           },
           translate: {
@@ -13592,13 +14584,13 @@ const b = 1;
             jlsg_zhenge_info: "锁定技，当你使用非「枕戈」牌后，你获得牌堆底牌并标记为「枕戈」牌，你的「枕戈」牌不计入手牌上限且无次数限制。当你使用黑色/红色「枕戈」牌指定一名角色为目标后，你可以令其受到随机负面/正面效果。",
             jlsg_zhenge_derivation: "负面/正面效果",
             jlsg_zhenge_derivation_ab: "负面/正面效果",
-            jlsg_zhenge_derivation_info: "正面：随机获得一个技能；手牌上限+1；从牌堆或弃牌堆获得1/2张基本牌/锦囊牌/装备牌；随机加1~3点体力上限；随机回复1~3点体力；摸牌数+1；使用杀的次数上限+1；随机摸1~5张牌。<br>负面：横置；随机弃置1~5张牌；随机受到1~3点伤害；随机失去一个技能；翻面；随机受到1~3点火焰伤害；随机减1~2点体力上限；随机失去1~3点体力。",
+            jlsg_zhenge_derivation_info: "正面：随机获得一个技能；手牌上限+1；从牌堆或弃牌堆获得1/2张基本牌/锦囊牌/装备牌；随机加1~3点体力上限；随机回复1~3点体力；摸牌数+1；使用【杀】的次数上限+1；随机摸1~5张牌。<br>负面：横置；随机弃置1~5张牌；随机受到1~3点伤害；随机失去一个技能；翻面；随机受到1~3点火焰伤害；随机减1~2点体力上限；随机失去1~3点体力。",
             jlsg_xinghan: "兴汉",
-            jlsg_xinghan_info: "游戏开始时，或回合结束时，你可以从任意势力中招募一名未上场过且你拥有的武将。你至多拥有三名势力各不相同的招募武将，若任意势力的招募武将阵亡，则不可再从该势力中招募其他武将。",
+            jlsg_xinghan_info: "游戏开始时，或回合结束时，你可以从任意势力中招募一名未上场过的武将。你至多拥有三名势力各不相同的招募武将，若任意势力的招募武将阵亡，则不可再从该势力中招募其他武将。",
             jlsg_qianchong: "谦冲",
-            jlsg_qianchong_info: "任意角色的回合结束时，若你于本回合内使用的红色牌数为1，你可以令一名角色回复2点体力或摸X张牌;若你于本回合内使用的黑色牌数为1，你可以令一名角色失去2点体力或弃置X张牌(X为其体力上限)。若你于本回合内执行过以上两项，且本回合不为额外回合，你于本回合结束后执行一个额外回合。",
+            jlsg_qianchong_info: "任意角色的回合结束时，若你于本回合内使用的红色牌数为1，你可以令一名角色回复2点体力或摸X张牌;若你于本回合内使用的黑色牌数为1，你可以令一名角色失去2点体力或弃置X张牌(X为其体力上限)。若你执行了以上两项，且本回合不为额外回合，你于本回合结束后执行一个额外回合。",
             jlsg_shangjian: "尚俭",
-            jlsg_shangjian_info: "锁定技，弃牌阶段开始时，你将超出手牌上限数量的手牌交给其他角色，然后于此阶段结束时摸等量的牌。",
+            jlsg_shangjian_info: "锁定技，弃牌阶段开始时，你将超出手牌上限数量的手牌交给任意名其他角色，然后于此阶段结束时摸等量的牌。",
             jlsg_yanjiao: "严教",
             jlsg_yanjiao_info: "出牌阶段不同的X各限一次，你可以将满足条件的X张手牌交给一名角色，然后摸X张牌。X为1的条件是点数最大的牌; X为2的条件是点数相同的牌; X为3的条件是花色相同的牌; X为4的条件是点数连续的牌; X为5的条件是花色相同且点数连续的牌。当其他角色以此法获得牌后，若你拥有「省身」标记，你可以对其造成X点伤害。",
             jlsg_xingshen: "省身",
@@ -14184,7 +15176,141 @@ const b = 1;
             },
             jlsg_spwq_wushuang: {
               audio: "ext:极略:2",
-
+              prompt: '弃置所有手牌并摸等量的牌，视为使用一张【杀】',
+              enable: 'chooseToUse',
+              viewAs: {
+                name: 'sha',
+                storage: { jlsg_spwq_wushuang: true },
+              },
+              viewAsFilter: function (player) {
+                if (!player.countCards('h')) {
+                  return false;
+                }
+                let used = player.getStat("skill").jlsg_spwq_wushuang || 0;
+                return player.countMark('jlsg_spwq_wushuang_mark') >= used;
+              },
+              filterCard: function () { return false },
+              selectCard: -1,
+              delay: false,
+              async precontent(event, trigger, player) {
+                let cards = player.getCards('h');
+                if (cards.some(c => get.subtype(c) == 'equip1')) {
+                  player.addTempSkill('jlsg_spwq_wushuang_mark');
+                  player.addMark('jlsg_spwq_wushuang_mark');
+                  event.getParent().result.card.storage.jlsg_spwq_wushuang_double = true;
+                }
+                await player.discard(cards);
+                if (player.isIn()) {
+                  await player.draw(cards.length);
+                }
+              },
+              mod: {
+                targetInRange: function (card) {
+                  if (card.storage && card.storage.jlsg_spwq_wushuang) return true;
+                },
+                cardUsable: function (card, player) {
+                  if (card.storage && card.storage.jlsg_spwq_wushuang) return Infinity;
+                },
+              },
+              group: ['jlsg_spwq_wushuang_sha'],
+              subSkill: {
+                sha: {
+                  audio: 'jlsg_spwq_wushuang',
+                  trigger: {
+                    player: ['useCardToPlayered', 'useCard']
+                  },
+                  filter(event, player) {
+                    return event.card.storage && event.card.storage.jlsg_spwq_wushuang;
+                  },
+                  popup: false,
+                  locked: false,
+                  forced: true,
+                  async content(event, trigger, player) {
+                    if (trigger.name == 'useCard') {
+                      trigger.baseDamage *= 2;
+                      trigger.extraDamage *= 2;
+                      return;
+                    }
+                    let target = trigger.target;
+                    let double = trigger.card.storage.jlsg_spwq_wushuang_double;
+                    let index;
+                    if (!double) {
+                      let choice = [0, 1].randomGet();
+                      let skills = target.getSkills(null, false).filter(s => !get.is.locked(s, target));
+                      let hand = target.countCards('he') - 7 * target.countCards('j');
+                      if (get.attitude(player, target) > 0) {
+                        choice = hand <  skills.length ?0: 1;
+                      }
+                       else if (hand <= 0) {
+                        choice = 1;
+                      }
+                       else if (skills.length == 0) {
+                        choice = 0;
+                      }
+                      else if (target.countCards('he') <= 1) {
+                        choice = 1;
+                      }
+                      else if (target.countCards('he') > 2 * skills.length) {
+                        choice = 0;
+                      }
+                      else if (skills.length > 2) {
+                        choice = 0;
+                      }
+                      ({result: {index}} = await player.chooseControlList([
+                        `将${get.translation(target)}区域内所有牌于本回合内移出游戏，其于回合结束时获得这些牌`,
+                        `令${get.translation(target)}非锁定技本回合内失效`,
+                      ], true)
+                      .set('ai', () => _status.event.choice)
+                      .set('choice', choice));
+                    }
+                    if (double || index === 0) {
+                      target.addSkill("jlsg_spwq_wushuang_debuff");
+                      target.addToExpansion(target.getCards('hej'), "giveAuto", target)
+                      .set('gaintag', ['jlsg_spwq_wushuang_debuff']);
+                    }
+                    if (double || index === 1) {
+                      target.addTempSkill('fengyin');
+                    }
+                  },
+                },
+                mark: {
+                  onremove: true,
+                  intro: {
+                    content: '额外发动#次【无双】',
+                  },
+                },
+                debuff: {
+                  trigger: { global: "phaseEnd" },
+                  forced: true,
+                  popup: false,
+                  charlotte: true,
+                  filter: function (event, player) {
+                    return player.getExpansions("jlsg_spwq_wushuang_debuff").length > 0;
+                  },
+                  content: function () {
+                    "step 0";
+                    var cards = player.getExpansions("jlsg_spwq_wushuang_debuff");
+                    player.gain(cards, "draw");
+                    game.log(player, "收回了" + get.cnNumber(cards.length) + "张牌");
+                    "step 1";
+                    player.removeSkill("jlsg_spwq_wushuang_debuff");
+                  },
+                  intro: {
+                    markcount: "expansion",
+                    mark: function (dialog, storage, player) {
+                      var cards = player.getExpansions("jlsg_spwq_wushuang_debuff");
+                      if (player.isUnderControl(true)) dialog.addAuto(cards);
+                      else return "共有" + get.cnNumber(cards.length) + "张牌";
+                    },
+                  },
+                },
+              },
+              ai: {
+                respondSha: true,
+                skillTagFilter: function (player) {
+                  return !!lib.skill.jlsg_spwq_wushuang.viewAsFilter(player);
+                },
+              },
             },
           },
           translate: {
@@ -14210,7 +15336,7 @@ const b = 1;
             jlsg_sslh_qingguo: '倾国',
             jlsg_sslh_qingguo_info: '当其他角色使用【杀】或非延时锦囊牌指定你为目标后，你可以弃置一张黑色手牌并令此牌对你无效，然后若你弃置的牌为黑桃牌，你可以令该角色失去1点体力。',
             jlsg_spwq_wushuang: '无双',
-            jlsg_spwq_wushuang_info: '每回合限一次，当你需要使用【杀】时，你 可以弃置所有手牌并摸等量的牌，视为使用之。你以此法使用的【杀】造成的伤害翻倍，无次数和距离限制，并于指定目标后选择一项: 1.将其区域里的所有牌于本回合内移出游戏; 2.令其的非锁定技于本回合内失效。若你以此法弃置的牌里有武器牌，改为依次执行两项且令此技能于本回合内可再发动一次。',
+            jlsg_spwq_wushuang_info: '每回合限一次，当你需要使用【杀】时，你可以弃置所有手牌并摸等量的牌，视为使用之。你以此法使用的【杀】造成的伤害翻倍，无次数和距离限制，并于指定目标后选择一项: 1.将其区域里的所有牌于本回合内移出游戏; 2.令其的非锁定技于本回合内失效。若你以此法弃置的牌里有武器牌，改为依次执行两项且令此技能于本回合内可再发动一次。',
           },
 
           dynamicTranslate: {},
@@ -31338,6 +32464,63 @@ const b = 1;
         },
         /**
          * 
+         * @param {Element} ele
+         */
+        makeDraggable(ele) {
+          game.broadcastAll(function (ele) {
+            let x0, y0, x1, y1, delta, top0, left0;
+            ele.addEventListener('pointerdown', e => {
+              x0 = x1 = e.screenX;
+              y0 = y1 = e.screenY;
+              delta = 0;
+              ({ top: top0, left: left0 } = getComputedStyle(ele));
+              let ctx = _status.jlsg_draggable.get(ele) || {
+                ids: [],
+              };
+              ctx.ids = [e.pointerId];
+              ele.style.transition = 'none';
+              ele.style.touchAction = 'none';
+              _status.jlsg_draggable.set(ele, ctx);
+            })
+            ele.addEventListener('pointermove', e => {
+              if (e.pressure == 0) {
+                return;
+              }
+              let ctx = _status.jlsg_draggable.get(ele);
+              if (!ctx || !ctx.ids.includes(e.pointerId)) {
+                return;
+              }
+              delta += Math.abs(e.screenX - x1);
+              delta += Math.abs(e.screenY - y1);
+              if (delta < 10) {
+                return;
+              }
+              ele.style.left = `calc(${left0} + ${e.screenX - x0}px / ${game.documentZoom})`;
+              ele.style.top = `calc(${top0} + ${e.screenY - y0}px / ${game.documentZoom})`;
+            });
+            if (!_status.jlsg_draggable) {
+              _status.jlsg_draggable = new Map();
+              let listener = e => {
+                for (let ele of e.composedPath()) {
+                  let ctx = _status.jlsg_draggable.get(ele);
+                  if (!ctx) {
+                    continue;
+                  }
+                  ctx.ids.remove(e.pointerId);
+                  if (!ctx.ids.length) {
+                    ele.style.transition = '';
+                    ele.style.touchAction = '';
+                    _status.jlsg_draggable.delete(ele);
+                  }
+                }
+              };
+              addEventListener('pointerup', listener);
+              addEventListener('pointercancel', listener);
+            }
+          }, ele);
+        },
+        /**
+         * 
          * @param {Array<Number>} dist 
          * @returns {Number}
          */
@@ -32572,7 +33755,7 @@ onclick="if (lib.jlsg) lib.jlsg.showRepoElement(this)"></img>
       diskURL: "",
       forumURL: "",
       mirrorURL: "https://github.com/xiaoas/jilue",
-      version: "2.6.0804",
+      version: "2.6.1003",
       changelog: `
 <a onclick="if (jlsg) jlsg.showRepo()" style="cursor: pointer;text-decoration: underline;">
 Visit Repository</a><br>
@@ -32580,10 +33763,14 @@ Visit Repository</a><br>
 <span onclick="if (jlsg) jlsg.openLink('https://keu1vrp2sz.feishu.cn/docx/CpsrdV4sDoazzUxzChMcqGjIneh')" 
 style="color: red; font-size: x-large;cursor: pointer;text-decoration: underline;">
 汇报bug点我</span><br>
-2024.08.04更新<br>
+2024.10.03更新<br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="thundermm">SK神曹丕</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SP庞统</div><br>
 &ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="woodmm">SK吕岱</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK万年公主</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">SK王元姬</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="watermm">SK张昌蒲</div><br>
+&ensp; 更新武将<div style="display:inline; font-family: xingkai, xinwei;" data-nature="qunmm">杀破万千•吕布</div><br>
 &ensp; 接入无名杀姓名API<br>
 <span style="font-size: large;">历史：</span><br>
 2024.08.04更新<br>
